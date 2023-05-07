@@ -1,0 +1,39 @@
+server:
+  port: ${SERVER_PORT}
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+  mail:
+    host: smtp.office365.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.office365.com
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+  cloud:
+    gcp:
+      vision:
+        enabled: true
+  springdoc:
+    swagger-ui:
+      path: /swagger-ui.html
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
