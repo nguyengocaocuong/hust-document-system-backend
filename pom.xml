@@ -8,11 +8,11 @@
 		<version>3.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.docker.connect.mysql</groupId>
-	<artifactId>dockertest</artifactId>
+	<groupId>com.hust.edu.vn.documentsystem</groupId>
+	<artifactId>documentsystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>dockertest</name>
-	<description>Demo project for Spring Boot</description>
+	<name>hust-document-system</name>
+	<description>Project for DNTN</description>
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud-gcp.version>4.1.4</spring-cloud-gcp.version>
@@ -184,6 +184,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>hust-document-system</finalName>
 	</build>
 
 </project>

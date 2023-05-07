@@ -2,12 +2,7 @@
 
 FROM eclipse-temurin:17-jdk-jammy AS development
 
-WORKDIR /app
+EXPOSE 8080
+ADD target/hust-document-system.jar hust-document-system.jar
+ENTRYPOINT ["java", "-jar","/hust-document-system.jar"]
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
-
-COPY src ./src
-
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=mysql"]
