@@ -39,8 +39,4 @@ public class TestController {
         return "Rea";
     }
 
-    @GetMapping("test")
-    public String tes1t(){
-        return "Rea";
-    }
 }

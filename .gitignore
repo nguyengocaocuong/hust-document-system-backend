@@ -33,3 +33,5 @@ build/
 .vscode/
 .env
 security
+Dockerfile.dev
+docker-compose.dev.yml

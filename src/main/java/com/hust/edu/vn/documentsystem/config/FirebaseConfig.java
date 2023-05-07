@@ -16,7 +16,7 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        File file = new File("security/firebase_key.json");
+        File file = new File(System.getenv("FIREBASE_CREDENTIALS"));
         InputStream inputStream = new FileInputStream(file);
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(inputStream))
