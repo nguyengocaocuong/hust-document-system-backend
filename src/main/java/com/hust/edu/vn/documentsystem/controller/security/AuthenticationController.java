@@ -2,6 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.security;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
+import com.hust.edu.vn.documentsystem.data.dto.UserDto;
 import com.hust.edu.vn.documentsystem.data.model.AuthenticationModel;
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
@@ -10,6 +11,7 @@ import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.service.impl.CustomUserDetailsService;
 import com.hust.edu.vn.documentsystem.utils.JwtUtils;
+import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,8 @@ public class AuthenticationController {
 
     private final JwtUtils jwtUtils;
 
+    private final ModelMapperUtils modelMapperUtils;
+
 
     @Autowired
     public AuthenticationController(
@@ -42,12 +46,13 @@ public class AuthenticationController {
             CustomUserDetailsService userDetailsService,
             UserService userService,
             JwtUtils jwtUtils,
-            UserRepository userRepository) {
+            UserRepository userRepository, ModelMapperUtils modelMapperUtils) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
+        this.modelMapperUtils = modelMapperUtils;
     }
 
     @PostMapping("authenticate")
@@ -99,13 +104,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<CustomResponse> login(@RequestBody UserModel userModel) {
         User user = userService.checkAccountForLogin(userModel);
         if (user == null) {
             return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
         }
-        return CustomResponse.generateResponse(HttpStatus.OK, user);
+        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(user, UserDto.class));
     }
 
 
