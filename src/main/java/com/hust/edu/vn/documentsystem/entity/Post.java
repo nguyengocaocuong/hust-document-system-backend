@@ -36,8 +36,7 @@ public class Post {
     @Column(columnDefinition = "text")
     private String contentEn;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "document_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
     private Document document;
 
     @Column(name = "created_at", nullable = false)
