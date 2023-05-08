@@ -32,6 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 .env
-security
+secure
 Dockerfile.dev
 docker-compose.dev.yml
