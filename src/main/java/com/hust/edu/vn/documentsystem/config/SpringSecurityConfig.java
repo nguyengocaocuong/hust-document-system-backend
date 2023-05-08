@@ -1,6 +1,7 @@
 package com.hust.edu.vn.documentsystem.config;
 
 import com.hust.edu.vn.documentsystem.service.impl.CustomAuthenticationProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +45,19 @@ public class SpringSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
+                .configurationSource(new CorsConfigurationSource() {
+                    @Override
+                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                        CorsConfiguration corsConfiguration = new CorsConfiguration();
+                        corsConfiguration.setAllowedOrigins(Collections.singletonList(System.getenv("FRONTEND_URL")));
+                        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+                        corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+                        corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+                        corsConfiguration.setAllowCredentials(true);
+                        corsConfiguration.setMaxAge(Duration.ofMinutes(20));
+                        return corsConfiguration;
+                    }
+                })
                 .and()
                 .csrf()
                 .disable();

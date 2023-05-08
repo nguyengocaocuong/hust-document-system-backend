@@ -31,7 +31,6 @@ public class PublicUserController {
     }
 
     @GetMapping()
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<CustomResponse> getAllUser(){
         List<User> users = userService.getAllUser();
         return CustomResponse.generateResponse(HttpStatus.OK, users.stream().map(user -> modelMapperUtils.mapAllProperties(user, UserDto.class)));
