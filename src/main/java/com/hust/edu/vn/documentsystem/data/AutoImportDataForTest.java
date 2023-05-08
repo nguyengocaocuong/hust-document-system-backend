@@ -58,6 +58,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (userRepository.findAll().size() != 0) return;
         // Tạo và insert 20 user vào database
         List<User> users = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
