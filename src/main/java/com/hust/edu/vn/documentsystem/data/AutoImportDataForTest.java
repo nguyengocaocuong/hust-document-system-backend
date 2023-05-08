@@ -7,9 +7,11 @@ import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class AutoImportDataForTest implements CommandLineRunner {
 
     @Autowired
