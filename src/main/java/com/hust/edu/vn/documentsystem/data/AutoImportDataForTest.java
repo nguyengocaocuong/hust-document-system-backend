@@ -35,6 +35,9 @@ public class AutoImportDataForTest implements CommandLineRunner {
     @Autowired
     private PostRepository postRepository;
 
+    @Autowired
+    private CommentPostRepository commentPostRepository;
+
     @Override
     public void run(String... args) throws Exception {
         // Tạo và insert 20 user vào database
@@ -54,7 +57,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             users.add(user);
         }
         userRepository.saveAll(users);
-
+        users = userRepository.findAll();
         // Import 50 subjects
         List<Subject> subjects = new ArrayList<>();
         for (int i = 1; i <= 50; i++) {
@@ -73,7 +76,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             subjects.add(subject);
         }
         subjectRepository.saveAll(subjects);
-
+        subjects = subjectRepository.findAll();
         // Import 20 subjects
         List<Teacher> teachers = new ArrayList<>();
         for (int i = 1; i <= 20; i++) {
@@ -96,7 +99,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             teachers.add(teacher);
         }
         teacherRepository.saveAll(teachers);
-
+        teachers = teacherRepository.findAll();
 
         // Import 50 document
         String[] docTypes = {"pdf", "ppt", "png", "docx", "doc"};
@@ -116,7 +119,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             }
         }
         documentRepository.saveAll(documents);
-
+        documents = documentRepository.findAll();
 
         // Imports 40 review subject
         Random rand = new Random();
@@ -136,6 +139,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             reviewSubjects.add(review);
         }
         reviewSubjectRepository.saveAll(reviewSubjects);
+        reviewSubjects = reviewSubjectRepository.findAll();
 
         // Imports 40 review teachers
         List<ReviewTeacher> reviewTeachers = new ArrayList<>();
@@ -151,6 +155,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             reviewTeachers.add(reviewTeacher);
         }
         reviewTeacherRepository.saveAll(reviewTeachers);
+        reviewTeachers = reviewTeacherRepository.findAll();
 
         // Imports 50 post
         List<Post> posts = new ArrayList<>();
@@ -185,6 +190,27 @@ public class AutoImportDataForTest implements CommandLineRunner {
            posts.add(post);
         }
         postRepository.saveAll(posts);
+        posts = postRepository.findAll();
+
+        // Imports comment for post
+        List<CommentPost> commentPosts = new ArrayList<>();
+        for (int i = 1; i <= 100; i++) {
+            Post post = posts.get(rand.nextInt(posts.size()));
+            User user = users.get(rand.nextInt(users.size()));
+            if (post != null && user != null) {
+                for (int j = 1; j <= 2; j++) {
+                    CommentPost comment = new CommentPost();
+                    comment.setComment("Comment " + j + " on post " + i);
+                    comment.setCreatedAt(new Date());
+                    comment.setOwner(user);
+                    comment.setPost(post);
+                    comment.setRating(rand.nextInt(5));
+                    commentPosts.add(comment);
+                }
+            }
+        }
+        commentPostRepository.saveAll(commentPosts);
+        commentPosts = commentPostRepository.findAll();
 
     }
 }
