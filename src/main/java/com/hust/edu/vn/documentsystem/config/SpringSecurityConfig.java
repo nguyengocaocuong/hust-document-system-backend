@@ -53,7 +53,7 @@ public class SpringSecurityConfig {
                         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                         corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
-                        corsConfiguration.setAllowCredentials(true);
+                        corsConfiguration.setAllowCredentials(false);
                         corsConfiguration.setMaxAge(Duration.ofMinutes(20));
                         return corsConfiguration;
                     }
