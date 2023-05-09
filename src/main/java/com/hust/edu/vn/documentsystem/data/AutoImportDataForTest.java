@@ -147,7 +147,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             teacher.setDescription(description);
             teacher.setDob(new Date());
             teacher.setCreatedAt(new Date());
-            teacher.setAvatar("https://example.com/teacher/avatar/" + i);
+            teacher.setAvatar(avatars.get(rand.nextInt(avatars.size())));
             int randomIndex = new Random().nextInt(users.size());
             teacher.setOwner(users.get(randomIndex));
 

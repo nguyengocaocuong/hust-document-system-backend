@@ -49,7 +49,7 @@ public class SpringSecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfiguration = new CorsConfiguration();
-                        corsConfiguration.setAllowedOrigins(Collections.singletonList(System.getenv("FRONTEND_URL")));
+                        corsConfiguration.setAllowedOrigins(Arrays.asList(System.getenv("FRONTEND_URL"),"http://localhost:3000"));
                         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                         corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
