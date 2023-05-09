@@ -41,11 +41,11 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String token = UUID.randomUUID().toString();
 
 
-        boolean isCreatedRootPath = googleCloudStorageService.createFolderForUser(token);
-        if (!isCreatedRootPath) {
-            log.error("Failed to create root path for user: {}", user.getEmail());
-            return;
-        }
+//        boolean isCreatedRootPath = googleCloudStorageService.createFolderForUser(token);
+//        if (!isCreatedRootPath) {
+//            log.error("Failed to create root path for user: {}", user.getEmail());
+//            return;
+//        }
         user.setRootPath(token);
         userRepository.save(user);
 
