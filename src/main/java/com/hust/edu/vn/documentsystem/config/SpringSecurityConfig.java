@@ -49,7 +49,7 @@ public class SpringSecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration corsConfiguration = new CorsConfiguration();
-                        corsConfiguration.setAllowedOrigins(Arrays.asList("*","https://view.officeapps.live.com/op/embed.aspx"));
+                        corsConfiguration.setAllowedOrigins(Arrays.asList("FRONTEND_URL","https://view.officeapps.live.com/op/embed.aspx"));
                         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                         corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                         corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
