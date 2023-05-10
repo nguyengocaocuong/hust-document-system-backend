@@ -33,7 +33,3 @@ spring:
   springdoc:
     swagger-ui:
       path: /swagger-ui.html
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/java

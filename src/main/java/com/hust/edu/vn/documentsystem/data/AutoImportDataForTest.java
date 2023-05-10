@@ -91,10 +91,10 @@ public class AutoImportDataForTest implements CommandLineRunner {
                 "https://funkylife.in/wp-content/uploads/2021/06/good-morning-images-63.jpg",
                 "https://funkylife.in/wp-content/uploads/2021/10/good-morning-10-1024x1024.jpg");
         List<String> docs = Arrays.asList(
-                "docs/docx.docx",
-                "docs/docx.pdf",
-                "docs/image.jpg",
-                "docs/ppt.pptx"
+                "docs/doc.docx",
+                "docs/doc.pdf",
+                "docs/doc.jpg",
+                "docs/doc.pptx"
         );
         List<User> users = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {

@@ -7,9 +7,16 @@ import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.MalformedURLException;
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -33,5 +40,23 @@ public class UserController {
     public ResponseEntity<CustomResponse> updateProfile(@ModelAttribute UserModel userModel) {
         boolean status = userService.updateProfile(userModel);
         return CustomResponse.generateResponse(status ? HttpStatus.OK : HttpStatus.CONFLICT);
+    }
+    @GetMapping("document")
+    @CrossOrigin(origins = "http://localhost:3000")
+    public ResponseEntity<Resource> getFile(){
+        Path pdf = Path.of("docs/doc.docx");
+        try {
+            Resource pdfResource = new UrlResource(pdf.toUri());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
+            headers.setContentDispositionFormData("doc.docx", "doc.docx");
+            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdfResource);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
