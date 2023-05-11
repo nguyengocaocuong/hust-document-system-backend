@@ -22,8 +22,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 
-@Configuration
-@EnableWebSecurity
 public class SpringSecurityConfig {
     private final JwtAthFilter jwtAthFilter;
     private static final String[] WHITE_LIST_URLS = {
@@ -41,7 +39,7 @@ public class SpringSecurityConfig {
     }
 
 
-    @Bean
+
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
@@ -97,7 +95,7 @@ public class SpringSecurityConfig {
                 .authenticationProvider(customAuthenticationProvider);
     }
 
-    @Bean
+
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
