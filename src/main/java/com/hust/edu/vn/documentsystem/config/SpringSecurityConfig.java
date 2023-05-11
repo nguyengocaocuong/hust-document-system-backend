@@ -87,7 +87,6 @@ public class SpringSecurityConfig {
 //
 //        http.httpBasic();
         http.cors().and().csrf().disable().authorizeHttpRequests().anyRequest().permitAll();
-
         return http.build();
 
     }
