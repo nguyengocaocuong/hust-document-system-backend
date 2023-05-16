@@ -99,8 +99,9 @@ public class AutoImportDataForTest implements CommandLineRunner {
         List<User> users = new ArrayList<>();
         for (int i = 1; i <= 30; i++) {
             User user = new User();
-            user.setName("User " + i);
             user.setEmail("user" + i + "@example.com");
+            user.setFirstName("FirstName " + i);
+            user.setLastName("LastName " + i);
             user.setPassword(passwordEncoder.encode("password" + i));
             user.setDob(new Date());
             user.setAvatar(avatars.get(rand.nextInt(avatars.size())));

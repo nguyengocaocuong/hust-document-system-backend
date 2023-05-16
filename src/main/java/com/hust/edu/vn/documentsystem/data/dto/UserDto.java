@@ -15,10 +15,12 @@ import java.util.Date;
 @Setter
 public class UserDto implements Serializable {
     private  Long id;
-    private  String name;
+    private  String lastName;
+    private  String firstName;
     private  String email;
     private  Date dob;
     private  String avatar;
     private  Date createdAt;
     private  String phoneNumber;
+    private String token;
 }

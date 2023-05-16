@@ -109,7 +109,10 @@ public class AuthenticationController {
         if (user == null) {
             return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
         }
-        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(user, UserDto.class));
+        final UserDetails userDetail = userDetailsService.loadUserByUsername(userModel.getEmail());
+        UserDto userDto = modelMapperUtils.mapAllProperties(user, UserDto.class);
+        userDto.setToken(jwtUtils.generateToken(userDetail));
+        return CustomResponse.generateResponse(HttpStatus.OK, userDto );
     }
 
 

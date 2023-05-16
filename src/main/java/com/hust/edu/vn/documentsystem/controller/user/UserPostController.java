@@ -28,6 +28,11 @@ public class UserPostController {
         this.postService = postService;
         this.modelMapperUtils = modelMapperUtils;
     }
+    @GetMapping()
+    public ResponseEntity<CustomResponse> getAllPosts(){
+        List<Object> content = postService.getAllPosts().stream().map(post -> modelMapperUtils.mapAllProperties(post, PostDto.class)).toList();
+        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách bài viết của bạn", content);
+    }
 
     @GetMapping("owner")
     public ResponseEntity<CustomResponse> getAllPostsCreateByUser() {

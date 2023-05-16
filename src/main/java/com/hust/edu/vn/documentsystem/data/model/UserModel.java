@@ -15,7 +15,9 @@ import java.util.Date;
 @ToString
 public class UserModel {
     @NotNull
-    private String name;
+    private String firstName;
+    @NotNull
+    private String lastName;
 
     @NotNull
     private String email;

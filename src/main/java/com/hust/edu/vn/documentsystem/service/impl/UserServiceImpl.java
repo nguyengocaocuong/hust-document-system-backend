@@ -68,13 +68,13 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(userModel.getEmail()))
             return false;
         String rootPath = UUID.randomUUID() + "/";
-
         User user = modelMapperUtils.mapAllProperties(userModel, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoleType(RoleType.USER);
+        user.setRootPath(rootPath);
         userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl));
-        publisher.publishEvent(new NotifyEvent(NotificationType.NEW_USER, user));
+//        publisher.publishEvent(new NotifyEvent(NotificationType.NEW_USER, user));
         return true;
     }
 
