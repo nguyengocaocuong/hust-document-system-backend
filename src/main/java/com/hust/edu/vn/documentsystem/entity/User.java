@@ -31,32 +31,32 @@ public class User {
     @Column( nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column( nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column( nullable = false)
     private String password;
 
-    @Column(name = "dob")
+    @Column()
     private Date dob;
 
-    @Column(name = "avatar")
+    @Column()
     private String avatar;
 
-    @Column(name = "created_at")
+    @Column()
     private Date createdAt = new Date();
 
-    @Column(name = "isEnable")
+    @Column()
     private boolean isEnable = false;
 
-    @Column(name = "phoneNumber")
+    @Column()
     private String phoneNumber;
 
-    @Column(name = "role")
+    @Column()
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 
-    @Column(name = "root_path", unique = true)
+    @Column( unique = true)
     private String rootPath;
     private String address;
     private String username;

@@ -26,14 +26,14 @@ public class ReviewTeacher {
     private boolean done = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id",foreignKey = @ForeignKey(name = "fk_ReviewTeacher_User"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReviewTeacher_User"))
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id", foreignKey = @ForeignKey(name = "fk_ReviewTeacher_Teacher"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReviewTeacher_Teacher"))
     private Teacher teacher;
 
-    @Column(name = "created_at")
+    @Column()
     private Date createdAt = new Date();
 
     private boolean isHidden = false;

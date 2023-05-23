@@ -23,12 +23,12 @@ public class SubjectDocument {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "type", nullable = false)
+    @Column( nullable = false)
     @Enumerated(EnumType.STRING)
     private SubjectDocumentType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id", nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Document"))
+    @JoinColumn(nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Document"))
     private Document document;
 
     @Column(nullable = false)
@@ -37,18 +37,18 @@ public class SubjectDocument {
     @Column(nullable = false)
     private String descriptionEn = "";
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(nullable = false)
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id", nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Subject"))
+    @JoinColumn(nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Subject"))
     @JsonIgnore
     private Subject subject;
 
-    @Column(name = "public")
+    @Column()
     private boolean isPublic = false;
 
-    @Column(name = "semester")
+    @Column()
     private String semester;
 
     @OneToMany(mappedBy = "subjectDocument", fetch = FetchType.LAZY)

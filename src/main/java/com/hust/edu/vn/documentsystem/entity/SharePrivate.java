@@ -27,13 +27,13 @@ public class SharePrivate {
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",foreignKey = @ForeignKey(name = "fk_SharePrivate_User"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_SharePrivate_User"))
 //    @CollectionTable
     private User user;
 
-    @Column(name = "shared_at")
+    @Column()
     private LocalDateTime sharedAt;
 
-    @Column(name = "expiration_time")
+    @Column()
     private Date expirationTime;
 }

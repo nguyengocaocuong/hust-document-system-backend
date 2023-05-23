@@ -26,19 +26,19 @@ public class AnswerSubjectDocument {
     @Column(nullable = false)
     private String type;
 
-    private String path;
-
-    private String name;
-
     @Column(nullable = false)
     private Date createdAt = new Date();
 
+    @OneToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_Document"))
+    private Document document;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_document_id", nullable = false,  foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_SubjectDocument"))
+    @JoinColumn(nullable = false,  foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_SubjectDocument"))
     @JsonIgnore
     private SubjectDocument subjectDocument;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_AnswerSubject_DocumentUser"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_AnswerSubject_DocumentUser"))
     private User owner;
 }

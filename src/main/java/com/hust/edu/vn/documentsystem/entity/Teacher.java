@@ -24,32 +24,32 @@ public class Teacher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column( nullable = false, unique = true)
     private String email;
 
-    @Column(name = "phoneNumber")
+    @Column()
     private String phoneNumber;
 
-    @Column(name = "created_at")
+    @Column()
     private Date createdAt = new Date();
 
-    @Column(name = "avatar")
+    @Column()
     private String avatar;
 
-    @Column(name = "dob")
+    @Column()
     private Date dob;
 
     @ManyToMany(mappedBy = "teachers", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Subject> subjects = new ArrayList<>();
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column( columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false,foreignKey = @ForeignKey(name = "fk_Teacher_User"))
+    @JoinColumn( nullable = false,foreignKey = @ForeignKey(name = "fk_Teacher_User"))
     private User owner;
 
 }

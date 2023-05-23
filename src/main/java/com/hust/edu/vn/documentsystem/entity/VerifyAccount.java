@@ -23,7 +23,7 @@ public class VerifyAccount {
     private Long id;
 
     @OneToOne(fetch =  FetchType.EAGER)
-    @JoinColumn(name = "user_id", unique = true, nullable = false,foreignKey = @ForeignKey(name = "fk_VerifyAccount_User"))
+    @JoinColumn(unique = true, nullable = false,foreignKey = @ForeignKey(name = "fk_VerifyAccount_User"))
     private User user;
 
     private String token;

@@ -19,18 +19,18 @@ public class CommentReviewSubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "comment", nullable = false)
+    @Column(nullable = false)
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_User"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_User"))
     private User owner;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(nullable = false)
     private Date createdAt = new Date();
 
     @ManyToOne
-    @JoinColumn(name = "review_subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_ReviewSubject"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_ReviewSubject"))
     private ReviewSubject reviewSubject;
 
     private boolean isHidden = false;

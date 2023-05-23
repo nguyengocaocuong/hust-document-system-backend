@@ -25,7 +25,6 @@ public class PasswordResetToken {
     private Date expirationTime;
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(
-            name = "user_id",
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_PasswordResetToken_User"))
     private User user;

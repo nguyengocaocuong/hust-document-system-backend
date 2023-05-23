@@ -43,7 +43,7 @@ public class Subject {
     private List<Teacher> teachers = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false,foreignKey = @ForeignKey(name = "fk_Subject_User"))
+    @JoinColumn( nullable = false,foreignKey = @ForeignKey(name = "fk_Subject_User"))
     private User owner;
 
     @Column(nullable = false)

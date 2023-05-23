@@ -24,12 +24,12 @@ public class FavoriteSubjectDocument {
     private SubjectDocument subjectDocument;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubjectDocument_User"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubjectDocument_User"))
     private User user;
 
     private Date createAt = new Date();
 
-    @Column(name = "notification_type")
+    @Column()
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType = NotificationType.ALL;
 }

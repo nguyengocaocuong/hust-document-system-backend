@@ -21,16 +21,16 @@ public class FavoriteSubject {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_Subject"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_Subject"))
     private Subject subject;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_User"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_User"))
     private User user;
 
     private Date createAt = new Date();
 
-    @Column(name = "notification_type")
+    @Column()
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType = NotificationType.ALL;
 }

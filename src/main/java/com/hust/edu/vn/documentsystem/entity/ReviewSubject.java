@@ -33,10 +33,10 @@ public class ReviewSubject {
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id",foreignKey = @ForeignKey(name = "fk_ReviewSubject_Subject"))
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReviewSubject_Subject"))
     private Subject subject;
 
-    @Column(name = "created_at")
+    @Column()
     private Date createdAt = new Date();
 
     private boolean isHidden = false;

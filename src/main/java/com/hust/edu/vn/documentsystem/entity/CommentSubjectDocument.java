@@ -25,11 +25,11 @@ public class CommentSubjectDocument {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_User"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_User"))
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_document_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_SubjectDocument"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_SubjectDocument"))
     private SubjectDocument subjectDocument;
 
     @Column(nullable = false)
