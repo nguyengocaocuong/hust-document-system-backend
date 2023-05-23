@@ -20,7 +20,7 @@ public class ShareByLink {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id")
+    @JoinColumn(name = "document_id",foreignKey = @ForeignKey(name = "fk_ShareByLink_Document"))
     private Document document;
 
     @Column(name = "shared_at")

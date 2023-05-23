@@ -16,7 +16,6 @@ import java.util.Date;
 public class CommentReviewTeacherDto implements Serializable {
     private  Long id;
     private  String comment;
-    private  int rating;
     private  UserDto owner;
     private  Date createdAt;
     private  ReviewTeacherDto reviewTeacher;

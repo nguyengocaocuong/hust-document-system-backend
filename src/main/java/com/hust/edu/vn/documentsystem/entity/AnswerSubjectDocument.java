@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,10 +34,11 @@ public class AnswerSubjectDocument {
     private Date createdAt = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_document_id", nullable = false)
+    @JoinColumn(name = "subject_document_id", nullable = false,  foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_SubjectDocument"))
+    @JsonIgnore
     private SubjectDocument subjectDocument;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_AnswerSubject_DocumentUser"))
     private User owner;
 }

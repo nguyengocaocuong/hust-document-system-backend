@@ -10,27 +10,26 @@ import lombok.Setter;
 import java.util.Date;
 
 @Entity
-@Table(name = "FavoriteSubjects")
+@Table(name = "FavoriteReviewSubjects")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class FavoriteSubject {
+public class FavoriteReviewSubject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_Subject"))
-    private Subject subject;
+    @JoinColumn( nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteReviewSubject_ReviewSubject"))
+    private ReviewSubject reviewSubject;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_User"))
+    @JoinColumn( nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteReviewSubject_User"))
     private User user;
 
     private Date createAt = new Date();
 
-    @Column(name = "notification_type")
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType = NotificationType.ALL;
 }

@@ -1,12 +1,18 @@
 package com.hust.edu.vn.documentsystem.service;
 
+import com.hust.edu.vn.documentsystem.common.CustomResponse;
+import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
+import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface SubjectService {
-    List<Subject> getAllSubjects();
+
+    List<SubjectDto> getAllSubjects();
 
     Subject getSubjectById(Long id);
 
@@ -45,4 +51,14 @@ public interface SubjectService {
     boolean updateDocumentForSubject(SubjectDocumentModel subjectDocumentModel);
 
     boolean deleteDocumentForSubject(SubjectDocumentModel subjectDocumentModel);
+
+    List<User> getAllUserShareWithMe();
+
+    List<SubjectDto> getAllSubjectsForFilter();
+
+    List<String> findAllSemesterForFilter();
+
+    List<SubjectDocumentType> findAllSubjectDocumentType();
+
+    SubjectDocument getStSubjectDetail(Long subjectId);
 }

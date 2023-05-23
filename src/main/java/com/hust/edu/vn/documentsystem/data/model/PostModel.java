@@ -10,12 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class PostModel {
     private Long id;
-    @NotBlank
     private String description;
     private String content;
     @NotNull
     private Long subjectId;
     private MultipartFile[] documents;
+    private Long done;
 }

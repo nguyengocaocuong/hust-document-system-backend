@@ -68,7 +68,6 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
         CommentReviewSubject comment = commentReviewSubjectRepository.findById(commentReviewSubjectModel.getId()).orElse(null);
         if(comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())) return false;
         comment.setComment(commentReviewSubjectModel.getComment());
-        comment.setRating(commentReviewSubjectModel.getRating());
         commentReviewSubjectRepository.save(comment);
         return true;
     }
@@ -143,6 +142,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         ReviewSubject reviewSubject = modelMapperUtils.mapAllProperties(reviewSubjectModel, ReviewSubject.class);
         reviewSubject.setSubject(subject);
+        reviewSubject.setDone(reviewSubjectModel.getDone() == 1);
         reviewSubject.setOwner(user);
         return reviewSubjectRepository.save(reviewSubject);
     }
@@ -155,7 +155,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
         if (reviewSubject == null || !reviewSubject.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         reviewSubject.setReview(reviewSubjectModel.getReview());
-        reviewSubject.setDone(reviewSubjectModel.isDone());
+        reviewSubject.setDone(reviewSubjectModel.getDone() == 1);
         reviewSubjectRepository.save(reviewSubject);
         return true;
     }

@@ -1,5 +1,7 @@
 package com.hust.edu.vn.documentsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,14 +24,12 @@ public class CommentSubjectDocument {
     @Column(nullable = false)
     private String comment;
 
-    private Integer rating;
-
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_User"))
     private User owner;
 
-    @ManyToOne
-    @JoinColumn(name = "document_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_document_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_SubjectDocument"))
     private SubjectDocument subjectDocument;
 
     @Column(nullable = false)

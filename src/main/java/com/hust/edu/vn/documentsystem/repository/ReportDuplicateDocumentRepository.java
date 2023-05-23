@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ReportDuplicateDocumentRepository extends JpaRepository<ReportDuplicateDocument, Long> {
-    @Query("SELECT DISTINCT rd FROM ReportDuplicateDocument rd, Setting s GROUP BY rd.documentFirst, rd.documentSecond HAVING COUNT(rd.id) > s.numberOfReportForNotifications")
+    @Query("SELECT DISTINCT rd FROM ReportDuplicateDocument rd GROUP BY rd.documentFirst, rd.documentSecond HAVING COUNT(rd.id) > 5")
     List<ReportDuplicateDocument> findAllReportDuplicateDocuments();
 }

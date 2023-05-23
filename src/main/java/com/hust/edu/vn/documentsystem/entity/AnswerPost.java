@@ -29,7 +29,7 @@ public class AnswerPost {
     private String type;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id")
+    @JoinColumn(name = "document_id", foreignKey = @ForeignKey(name = "fk_answer_post_document"))
     private Document document;
 
     private String name;
@@ -38,11 +38,11 @@ public class AnswerPost {
     private Date createdAt = new Date();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false , foreignKey = @ForeignKey(name = "fk_AnswerPost_Post"))
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false , foreignKey = @ForeignKey(name = "fk_AnswerPost_User"))
     private User owner;
 
     private boolean isHidden = false;

@@ -43,10 +43,14 @@ public class Subject {
     private List<Teacher> teachers = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false,foreignKey = @ForeignKey(name = "fk_Subject_User"))
     private User owner;
 
-    private String courseCode;
+    @Column(nullable = false)
+    private String subjectCode;
+
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
+    private List<SubjectDocument> subjectDocuments = new ArrayList<>();
 
 }
 

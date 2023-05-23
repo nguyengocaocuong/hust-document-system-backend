@@ -22,14 +22,12 @@ public class CommentPost {
     @Column(nullable = false)
     private String comment;
 
-    private int rating;
-
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentPost_User"))
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentPost_Post"))
     private Post post;
 
     @Column(nullable = false)

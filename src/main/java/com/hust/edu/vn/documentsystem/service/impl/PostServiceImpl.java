@@ -15,6 +15,7 @@ import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@Slf4j
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -78,27 +80,30 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(PostModel postModel) {
-        if (postModel.getContent() == null && postModel.getDocuments().length < 1) return null;
+        if (postModel.getContent() == null && (postModel.getDocuments().length < 1 || postModel.getDescription() == null || postModel.getDescription().length() < 1))
+            return null;
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post post = modelMapperUtils.mapAllProperties(postModel, Post.class);
+        post.setDone(postModel.getDone() == 1);
         post.setOwner(user);
-        post.setDescriptionEn(googleCloudTranslateService.translateText(post.getDescription(), TargetLanguageType.ENGLISH).get(0));
         post.setSubject(subjectRepository.findById(postModel.getSubjectId()).orElse(null));
-        if (post.getContent() != null)
-            post.setContentEn(googleCloudTranslateService.translateText(post.getContent(), TargetLanguageType.ENGLISH).get(0));
-        if (postModel.getDocuments().length > 0) {
+        if (postModel.getDocuments() != null && postModel.getDocuments().length > 0) {
+/*
             try {
                 String path = googleCloudStorageService.uploadDocumentsToGCP(postModel.getDocuments(), user.getRootPath());
-                Document document = new Document();
+*/
+            Document document = new Document();
                 document.setName(postModel.getDocuments()[0].getOriginalFilename());
                 document.setContentType(postModel.getDocuments()[0].getContentType());
-                document.setPath(path);
-                document.setType(DocumentType.POST_DOCUMENT);
+                document.setPath("path");
+                document.setType(DocumentType.getDocumentTypeFromExtension(postModel.getDocuments()[0].getOriginalFilename().substring(postModel.getDocuments()[0].getOriginalFilename().lastIndexOf("."))));
                 documentRepository.save(document);
                 post.setDocument(document);
+/*
             } catch (IOException e) {
                 return null;
             }
+*/
         }
         Post response = postRepository.save(post);
         applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.NEW_POST, post));
@@ -167,7 +172,7 @@ public class PostServiceImpl implements PostService {
                 document.setName(answerPostModel.getAnswerFile()[0].getOriginalFilename());
                 document.setContentType(answerPostModel.getAnswerFile()[0].getContentType());
                 document.setPath(path);
-                document.setType(DocumentType.ANSWER_POST);
+                document.setType(DocumentType.getDocumentTypeFromExtension(answerPostModel.getAnswerFile()[0].getOriginalFilename().substring(answerPostModel.getAnswerFile()[0].getOriginalFilename().lastIndexOf("."))));
                 documentRepository.save(document);
                 answerPost.setDocument(document);
             } catch (IOException e) {
@@ -199,7 +204,6 @@ public class PostServiceImpl implements PostService {
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         comment.setComment(commentPostModel.getComment());
-        comment.setRating(commentPostModel.getRating());
         commentPostRepository.save(comment);
         applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_POST, comment));
         return true;
@@ -244,7 +248,7 @@ public class PostServiceImpl implements PostService {
         if (post == null || user.getRoleType() != RoleType.ADMIN) return false;
         post.setHidden(true);
         postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_PORT,post));
+        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_PORT, post));
         return true;
     }
 
@@ -255,7 +259,7 @@ public class PostServiceImpl implements PostService {
             return false;
         comment.setHidden(false);
         commentPostRepository.save(comment);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_COMMENT_PORT,comment));
+        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_COMMENT_PORT, comment));
         return true;
     }
 
@@ -266,7 +270,7 @@ public class PostServiceImpl implements PostService {
         if (post == null || user.getRoleType() != RoleType.ADMIN || !post.isHidden()) return false;
         post.setHidden(false);
         postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_PORT,post));
+        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_PORT, post));
         return true;
     }
 

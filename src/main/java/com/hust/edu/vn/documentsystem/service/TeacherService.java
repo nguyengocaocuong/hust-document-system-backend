@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service;
 
+import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 
@@ -23,4 +24,6 @@ public interface TeacherService {
     boolean deleteSubject(TeacherModel teacherModel);
 
     boolean addSubjects(TeacherModel teacherModel);
+
+    List<TeacherDto> getAllTeachersForFilter();
 }

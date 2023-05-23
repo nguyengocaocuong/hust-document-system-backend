@@ -16,8 +16,6 @@ import java.util.Date;
 public class CommentSubjectDocumentDto implements Serializable {
     private  Long id;
     private  String comment;
-    private  Integer rating;
     private  UserDto owner;
-    private  SubjectDocumentDto subjectDocument;
     private  Date created_at;
 }

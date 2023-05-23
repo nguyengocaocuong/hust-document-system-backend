@@ -1,10 +1,7 @@
 package com.hust.edu.vn.documentsystem.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -14,6 +11,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Post {
 
     @Id
@@ -21,13 +19,13 @@ public class Post {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner", nullable = false)
+    @JoinColumn(name = "owner", nullable = false, foreignKey = @ForeignKey(name = "fk_Post_User"))
     private User owner;
 
-    @Column(nullable = false)
+    @Column()
     private String description;
 
-    @Column(nullable = false)
+    @Column()
     private String descriptionEn;
 
     @Column(columnDefinition = "text")

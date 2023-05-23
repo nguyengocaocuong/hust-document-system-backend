@@ -25,4 +25,9 @@ public class TeacherDto implements Serializable {
     private  List<SubjectDto> subjects;
     private  String description;
     private  UserDto owner;
+
+    public TeacherDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

@@ -24,11 +24,11 @@ public class AdminSubjectController {
     }
 
 
-    @GetMapping()
-    public ResponseEntity<CustomResponse> getAllSubjects() {
-        Object content = subjectService.getAllSubjects().stream().map(subject -> modelMapperUtils.mapAllProperties(subject, SubjectDto.class)).toList();
-        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các môn học có trong hệ thống", content);
-    }
+//    @GetMapping()
+//    public ResponseEntity<CustomResponse> getAllSubjects() {
+//        Object content = subjectService.getAllSubjects().stream().map(subject -> modelMapperUtils.mapAllProperties(subject, SubjectDto.class)).toList();
+//        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các môn học có trong hệ thống", content);
+//    }
     @DeleteMapping("subjects/{id}")
     public ResponseEntity<CustomResponse> deleteSubject(@PathVariable("id") Long subjectId){
         boolean status = subjectService.deleteSubject(subjectId);

@@ -19,6 +19,5 @@ public class AnswerSubjectDocumentDto implements Serializable {
     private  String type;
     private  String name;
     private  Date createdAt;
-    private  SubjectDocumentDto subjectDocument;
     private  UserDto owner;
 }

@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
@@ -129,5 +130,10 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.getSubjects().add(subject);
         teacherRepository.save(teacher);
         return true;
+    }
+
+    @Override
+    public List<TeacherDto> getAllTeachersForFilter() {
+        return teacherRepository.findAllTeacherForFilter();
     }
 }

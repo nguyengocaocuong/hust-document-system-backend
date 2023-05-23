@@ -43,14 +43,13 @@ public class Teacher {
     private Date dob;
 
     @ManyToMany(mappedBy = "teachers", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<Subject> subjects = new ArrayList<>();
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false,foreignKey = @ForeignKey(name = "fk_Teacher_User"))
     private User owner;
 
 }

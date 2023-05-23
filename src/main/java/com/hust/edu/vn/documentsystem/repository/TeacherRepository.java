@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.repository;
 
+import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
     List<Teacher> findAllByOwner(User user);
 
     Teacher findByEmail(String email);
+
+    @Query(value = "SELECT new com.hust.edu.vn.documentsystem.data.dto.TeacherDto(t.id, t.name) FROM Teacher AS t")
+    List<TeacherDto> findAllTeacherForFilter();
 }

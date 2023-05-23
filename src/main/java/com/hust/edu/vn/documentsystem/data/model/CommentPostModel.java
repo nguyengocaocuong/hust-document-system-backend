@@ -14,8 +14,6 @@ public class CommentPostModel {
 
     private String comment;
 
-    private int rating;
-
     @NotNull
     private Long postId;
 

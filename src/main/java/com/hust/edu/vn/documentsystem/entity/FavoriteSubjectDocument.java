@@ -9,23 +9,22 @@ import lombok.Setter;
 
 import java.util.Date;
 
-@Entity
-@Table(name = "FavoriteSubjects")
+@Table(name = "FavoriteSubjectDocuments")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class FavoriteSubject {
+public class FavoriteSubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_Subject"))
-    private Subject subject;
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubjectDocument_SubjectDocument"))
+    private SubjectDocument subjectDocument;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_User"))
+    @JoinColumn(name= "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubjectDocument_User"))
     private User user;
 
     private Date createAt = new Date();

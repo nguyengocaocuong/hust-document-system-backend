@@ -7,7 +7,6 @@ public enum SubjectDocumentType {
     MIDTERM_EXAM,
     FINAL_EXAM,
     PROJECT,
-    LECTURE,
     HOMEWORK,
     TEXTBOOK,
     REFERENCE_BOOK,

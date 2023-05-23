@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.SubjectDocument} entity
@@ -19,6 +20,7 @@ public class SubjectDocumentDto implements Serializable {
     private  DocumentDto document;
     private  String description;
     private  UserDto owner;
-    private  SubjectDto subject;
     private  String semester;
+    private List<CommentSubjectDocumentDto> commentSubjectDocumentList;
+    private List<AnswerSubjectDocumentDto> answerSubjectDocumentList;
 }

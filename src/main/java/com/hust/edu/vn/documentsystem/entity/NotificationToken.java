@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Entity
 @Getter
+@Table(name = "NotificationToken")
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class NotificationToken {
     private Long id;
 
     @OneToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_NotificationToken_User"))
     private User user;
     @Column(nullable = false)
     private String token;

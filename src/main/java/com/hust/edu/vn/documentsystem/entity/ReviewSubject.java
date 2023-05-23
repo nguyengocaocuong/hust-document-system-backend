@@ -29,11 +29,11 @@ public class ReviewSubject {
     private boolean isDone = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id",foreignKey = @ForeignKey(name = "fk_ReviewSubject_User"))
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_id")
+    @JoinColumn(name = "subject_id",foreignKey = @ForeignKey(name = "fk_ReviewSubject_Subject"))
     private Subject subject;
 
     @Column(name = "created_at")

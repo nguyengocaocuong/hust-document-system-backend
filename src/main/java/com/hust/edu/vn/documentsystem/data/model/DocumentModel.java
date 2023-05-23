@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.data.model;
 
-import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,12 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class DocumentModel {
 
     private Long id;
-
-    private String title;
-
-    private String description;
-
-    private DocumentType type;
 
     private MultipartFile[] documents;
 

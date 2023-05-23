@@ -13,8 +13,6 @@ public class CommentReviewSubjectModel {
 
     private String comment;
 
-    private int rating;
-
     @NotNull
     private Long reviewSubjectId;
 }

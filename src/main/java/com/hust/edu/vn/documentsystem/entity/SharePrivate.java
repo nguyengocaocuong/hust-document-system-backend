@@ -23,12 +23,12 @@ public class SharePrivate {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id")
+    @JoinColumn(name = "document_id", foreignKey = @ForeignKey(name = "fk_SharePrivate_Document"))
     private Document document;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @CollectionTable
+    @JoinColumn(name = "user_id",foreignKey = @ForeignKey(name = "fk_SharePrivate_User"))
+//    @CollectionTable
     private User user;
 
     @Column(name = "shared_at")

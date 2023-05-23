@@ -43,7 +43,7 @@ public class UserPostController {
     @PostMapping()
     public ResponseEntity<CustomResponse> createPost(@ModelAttribute PostModel postModel) {
         Post post = postService.createPost(postModel);
-        return CustomResponse.generateResponse(HttpStatus.OK, "Đăng bài viết thành công", post);
+        return CustomResponse.generateResponse(HttpStatus.OK, "Đăng bài viết thành công", modelMapperUtils.mapAllProperties(post,  PostDto.class));
     }
 
     @PatchMapping()

@@ -18,7 +18,7 @@ public class ReviewTeacherModel {
     @NotBlank
     private String review;
 
-    private boolean isDone = false;
+    private Long done;
 
     @NotBlank
     private Long teacherId;

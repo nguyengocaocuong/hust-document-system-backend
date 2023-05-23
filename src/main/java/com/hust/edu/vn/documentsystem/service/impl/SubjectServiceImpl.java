@@ -3,7 +3,9 @@ package com.hust.edu.vn.documentsystem.service.impl;
 import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.NotificationType;
+import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.event.NotifyEvent;
@@ -69,9 +71,25 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public List<Subject> getAllSubjects() {
-        return subjectRepository.findAll();
+    public List<SubjectDto> getAllSubjectsForFilter() {
+        return subjectRepository.findAllSubjectName();
     }
+
+    @Override
+    public List<String> findAllSemesterForFilter() {
+        return subjectDocumentRepository.findAllSemester();
+    }
+
+    @Override
+    public List<SubjectDocumentType> findAllSubjectDocumentType() {
+        return subjectDocumentRepository.findAllSubjectDocumentType();
+    }
+
+    @Override
+    public SubjectDocument getStSubjectDetail(Long subjectId) {
+        return subjectDocumentRepository.findById(subjectId).orElse(null);
+    }
+
 
     @Override
     public Subject getSubjectById(Long id) {
@@ -135,13 +153,10 @@ public class SubjectServiceImpl implements SubjectService {
             try {
                 String path = googleCloudStorageService.uploadDocumentsToGCP(subjectDocumentModel.getDocuments(), user.getRootPath());
                 Document document = modelMapperUtils.mapAllProperties(subjectDocumentModel, Document.class);
-                document.setType(length > 1 ? DocumentType.FOLDER : DocumentType.FILE);
+                document.setType(length > 1 ? DocumentType.FOLDER : DocumentType.getDocumentTypeFromExtension(subjectDocumentModel.getDocuments()[0].getOriginalFilename().substring(subjectDocumentModel.getDocuments()[0].getOriginalFilename().lastIndexOf("."))));
                 document.setContentType(length > 1 ? "multipart/form-data" : subjectDocumentModel.getDocuments()[0].getContentType());
                 document.setName(subjectDocumentModel.getDocuments()[0].getOriginalFilename());
-                document.setType(DocumentType.SUBJECT_DOCUMENT);
                 document.setPath(path);
-                if (document.getContent() != null)
-                    document.setContentEn(translateService.translateText(document.getContent(), TargetLanguageType.ENGLISH).get(0));
 
                 Document documentEntity = documentRepository.save(document);
                 Subject subject = subjectRepository.findById(subjectDocumentModel.getSubjectId()).orElse(null);
@@ -258,7 +273,6 @@ public class SubjectServiceImpl implements SubjectService {
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         comment.setComment(commentSubjectDocumentModel.getComment());
-        comment.setRating(commentSubjectDocumentModel.getRating());
         commentSubjectDocumentRepository.save(comment);
         publisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_SUBJECT_DOCUMENT, comment));
         return true;
@@ -328,5 +342,16 @@ public class SubjectServiceImpl implements SubjectService {
         subjectDocumentRepository.delete(subjectDocument);
         documentRepository.delete(subjectDocument.getDocument());
         return true;
+    }
+
+    @Override
+    public List<User> getAllUserShareWithMe() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return sharePrivateRepository.findByUser(user);
+    }
+
+    @Override
+    public List<SubjectDto> getAllSubjects() {
+        return subjectRepository.findAllSubjects();
     }
 }

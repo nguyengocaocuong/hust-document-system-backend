@@ -14,9 +14,6 @@ public class CommentSubjectDocumentModel {
 
     private String comment;
 
-    @Size(min = 0, max = 5)
-    private int rating = 3;
-
     @NotNull
     private Long subjectDocumentId;
 }

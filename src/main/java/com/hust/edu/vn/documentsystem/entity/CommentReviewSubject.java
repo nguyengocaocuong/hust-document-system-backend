@@ -22,18 +22,15 @@ public class CommentReviewSubject {
     @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(name = "rating", nullable = false)
-    private int rating;
-
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_User"))
     private User owner;
 
     @Column(name = "created_at", nullable = false)
     private Date createdAt = new Date();
 
     @ManyToOne
-    @JoinColumn(name = "review_subject_id", nullable = false)
+    @JoinColumn(name = "review_subject_id", nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewSubject_ReviewSubject"))
     private ReviewSubject reviewSubject;
 
     private boolean isHidden = false;

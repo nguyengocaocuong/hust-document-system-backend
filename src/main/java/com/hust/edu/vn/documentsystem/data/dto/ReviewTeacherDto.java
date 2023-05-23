@@ -22,7 +22,6 @@ public class ReviewTeacherDto implements Serializable {
     private  TeacherDto teacher;
     private  Date createdAt;
     private boolean isHidden;
-    private boolean isApproved;
     private ApproveType approved;
 
 }

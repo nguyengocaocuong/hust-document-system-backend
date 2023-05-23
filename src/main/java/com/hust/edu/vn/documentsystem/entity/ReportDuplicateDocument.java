@@ -28,7 +28,7 @@ public class ReportDuplicateDocument {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_User"))
     private User owner;
 
     @Column(nullable = false)
@@ -38,11 +38,11 @@ public class ReportDuplicateDocument {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "first", referencedColumnName = "id")
+    @JoinColumn(name = "first", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_DocumentFirst"))
     private Document documentFirst;
 
     @ManyToOne
-    @JoinColumn(name = "second", referencedColumnName = "id")
+    @JoinColumn(name = "second", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_DocumentSecond"))
     private Document documentSecond;
 
 }

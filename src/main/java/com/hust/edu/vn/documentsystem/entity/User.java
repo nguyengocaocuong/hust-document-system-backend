@@ -24,6 +24,10 @@ public class User {
     @Column( nullable = false)
     private String firstName;
 
+    private String facebookUrl;
+    private String instagramUrl;
+    private String twitterUrl;
+
     @Column( nullable = false)
     private String lastName;
 
@@ -54,4 +58,6 @@ public class User {
 
     @Column(name = "root_path", unique = true)
     private String rootPath;
+    private String address;
+    private String username;
 }

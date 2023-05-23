@@ -21,4 +21,5 @@ public class DocumentDto implements Serializable {
     private  Date createdAt;
     private  String name;
     private  String contentType;
+    private  String thumbnail;
 }

@@ -36,10 +36,10 @@ public class ReportContent {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_User"))
     private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "document_id", nullable = false)
+    @JoinColumn(name = "document_id", nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_Document"))
     private Document document;
 }

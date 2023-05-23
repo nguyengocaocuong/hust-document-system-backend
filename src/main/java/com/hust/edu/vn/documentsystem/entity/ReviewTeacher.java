@@ -9,9 +9,7 @@ import lombok.Setter;
 import java.util.Date;
 
 @Entity
-@Table(name = "Review_teachers", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"owner_id", "owner_id"})
-})
+@Table(name = "Review_teachers")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -28,11 +26,11 @@ public class ReviewTeacher {
     private boolean done = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "owner_id",foreignKey = @ForeignKey(name = "fk_ReviewTeacher_User"))
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @JoinColumn(name = "teacher_id", foreignKey = @ForeignKey(name = "fk_ReviewTeacher_Teacher"))
     private Teacher teacher;
 
     @Column(name = "created_at")

@@ -34,5 +34,8 @@ public class UserTeacherController {
         Object content = teacherService.getAllTeachersCreateByUser().stream().map(teacher -> modelMapperUtils.mapAllProperties(teacher, TeacherDto.class)).toList();
         return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các giảng viên",content);
     }
-
+    @GetMapping("allTeacherForFilter")
+    public  ResponseEntity<CustomResponse> getAllSubjectForFilter(){
+        return CustomResponse.generateResponse(HttpStatus.OK, teacherService.getAllTeachersForFilter());
+    }
 }

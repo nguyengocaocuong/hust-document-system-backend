@@ -20,20 +20,19 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "text")
-    private String content;
-
-    @Column(columnDefinition = "text")
-    private String contentEn;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DocumentType type;
 
     private String path;
 
+    private String thumbnail;
+
     @Column(nullable = false)
     private Date createdAt = new Date();
+
+    @Column(nullable = false)
+    private Date updateAt = new Date();
 
     private String name;
 

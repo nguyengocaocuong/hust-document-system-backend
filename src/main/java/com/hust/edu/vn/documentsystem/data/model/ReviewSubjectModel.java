@@ -12,7 +12,7 @@ public class ReviewSubjectModel {
 
     private String review;
 
-    private boolean isDone = false;
+    private Long done;
 
     private Long subjectId;
 }

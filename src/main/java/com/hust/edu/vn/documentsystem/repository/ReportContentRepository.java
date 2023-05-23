@@ -13,6 +13,6 @@ import java.util.List;
 public interface ReportContentRepository extends JpaRepository<ReportContent, Long> {
     ReportContent findByDocumentAndOwner(Document document, User user);
 
-    @Query("SELECT DISTINCT rc FROM ReportContent rc, Setting s GROUP BY rc.document HAVING COUNT(rc.id) > s.numberOfReportForNotifications")
+    @Query("SELECT DISTINCT rc FROM ReportContent rc GROUP BY rc.document HAVING COUNT(rc.id) > 5")
     List<ReportContent> findAllReports();
 }

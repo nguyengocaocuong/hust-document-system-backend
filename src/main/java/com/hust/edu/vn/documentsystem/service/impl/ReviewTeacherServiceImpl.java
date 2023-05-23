@@ -69,6 +69,7 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
         ReviewTeacher reviewTeacher = modelMapperUtils.mapAllProperties(reviewTeacherModel, ReviewTeacher.class);
         reviewTeacher.setTeacher(teacher);
         reviewTeacher.setOwner(user);
+        reviewTeacher.setDone(reviewTeacherModel.getDone() ==1 );
         reviewTeacher = reviewTeacherRepository.save(reviewTeacher);
         publisher.publishEvent(new NotifyEvent(NotificationType.NEW_REVIEW_TEACHER, reviewTeacher));
         return reviewTeacher;
@@ -89,7 +90,7 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
         if (teacher == null || reviewTeacher == null || !reviewTeacher.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         reviewTeacher.setReview(reviewTeacherModel.getReview());
-        reviewTeacher.setDone(reviewTeacherModel.isDone());
+        reviewTeacher.setDone(reviewTeacherModel.getDone() ==1);
         reviewTeacher.setTeacher(teacher);
         reviewTeacherRepository.save(reviewTeacher);
         publisher.publishEvent(new NotifyEvent(NotificationType.EDIT_REVIEW_TEACHER, reviewTeacher));
@@ -115,7 +116,6 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         comment.setComment(commentReviewTeacherModel.getComment());
-        comment.setRating(commentReviewTeacherModel.getRating());
         commentReviewTeacherRepository.save(comment);
         publisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_REVIEW_TEACHER, comment));
         return true;

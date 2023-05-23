@@ -109,7 +109,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             user.setRoleType(i == 1 ? RoleType.ADMIN : RoleType.USER);
             user.setRootPath(UUID.randomUUID().toString());
             user.setCreatedAt(new Date());
-            user.setEnable(i == 1 || Math.random() >= 0.5); // Sinh ngẫu nhiên giá trị enable
+            user.setEnable(true); // Sinh ngẫu nhiên giá trị enable
             users.add(user);
         }
         userRepository.saveAll(users);
@@ -122,7 +122,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
             subject.setSubjectId("SUB" + i);
             subject.setDescription("Description " + i);
             subject.setCreatedAt(new Date());
-            subject.setCourseCode("CODE" + i);
+            subject.setSubjectCode("CODE" + i);
 
             // Random owner for subject
             int randomIndex = new Random().nextInt(users.size());
@@ -200,14 +200,14 @@ public class AutoImportDataForTest implements CommandLineRunner {
         for (int i = 0; i < 20; i++) {
             User user = userRepository.findById((long) (i % 20 + 1)).orElse(null);
             if (user != null) {
+                String type = docTypes[i % 5];
                 Document document = new Document();
-                document.setContent("Content of document " + i);
-                document.setContentEn("Content of document " + i + " in English");
-                document.setType(DocumentType.POST_DOCUMENT);
-                document.setPath(docs.get(rand.nextInt(docs.size())));
+                document.setType(DocumentType.getDocumentTypeFromExtension("." + type));
+                document.setPath("doc." + type);
+                document.setThumbnail("https://picsum.photos/200/300");
                 document.setCreatedAt(new Date());
-                document.setName("Document " + i + "." + docTypes[i % 5]);
-                document.setContentType("application/" + docTypes[i % 5]);
+                document.setName("doc." +type);
+                document.setContentType(type);
                 documentForPosts.add(document);
             }
         }
@@ -261,7 +261,6 @@ public class AutoImportDataForTest implements CommandLineRunner {
                 comment.setCreatedAt(new Date());
                 comment.setOwner(user);
                 comment.setPost(post);
-                comment.setRating(rand.nextInt(5));
                 commentPosts.add(comment);
             }
         }
@@ -273,14 +272,14 @@ public class AutoImportDataForTest implements CommandLineRunner {
         for (int i = 0; i < 20; i++) {
             User user = userRepository.findById((long) (i % 20 + 1)).orElse(null);
             if (user != null) {
+                String type = docTypes[i % 5];
                 Document document = new Document();
-                document.setContent("Content of document " + i);
-                document.setContentEn("Content of document " + i + " in English");
-                document.setType(DocumentType.SUBJECT_DOCUMENT);
-                document.setPath(docs.get(rand.nextInt(docs.size())));
+                document.setType(DocumentType.getDocumentTypeFromExtension("." + type));
+                document.setPath("doc." + type);
+                document.setThumbnail("https://picsum.photos/200/300");
                 document.setCreatedAt(new Date());
-                document.setName("Document " + i + "." + docTypes[i % 5]);
-                document.setContentType("application/" + docTypes[i % 5]);
+                document.setName("doc." +type);
+                document.setContentType(type);
                 documentForSubjects.add(document);
             }
         }
@@ -292,7 +291,7 @@ public class AutoImportDataForTest implements CommandLineRunner {
         String[] semesters = {"20181", "20182", "20191", "20192", "20201", "20202", "20211", "20212"};
         SubjectDocumentType[] types = {SubjectDocumentType.SLIDE, SubjectDocumentType.EXAM, SubjectDocumentType.QUIZ,
                 SubjectDocumentType.MIDTERM_EXAM, SubjectDocumentType.FINAL_EXAM, SubjectDocumentType.PROJECT,
-                SubjectDocumentType.LECTURE, SubjectDocumentType.HOMEWORK, SubjectDocumentType.TEXTBOOK,
+                SubjectDocumentType.HOMEWORK, SubjectDocumentType.TEXTBOOK,
                 SubjectDocumentType.REFERENCE_BOOK, SubjectDocumentType.SYLLABUS, SubjectDocumentType.PAPER,
                 SubjectDocumentType.HANDOUT};
         for (int i = 0; i < 40; i++) {
@@ -328,7 +327,6 @@ public class AutoImportDataForTest implements CommandLineRunner {
                 comment.setCreatedAt(new Date());
                 comment.setOwner(user);
                 comment.setReviewSubject(reviewSubject);
-                comment.setRating(rand.nextInt(5));
                 commentReviewSubjects.add(comment);
             }
         }
@@ -346,7 +344,6 @@ public class AutoImportDataForTest implements CommandLineRunner {
                 comment.setCreatedAt(new Date());
                 comment.setOwner(user);
                 comment.setReviewTeacher(reviewTeacher);
-                comment.setRating(rand.nextInt(5));
                 commentReviewTeachers.add(comment);
             }
         }
@@ -374,15 +371,14 @@ public class AutoImportDataForTest implements CommandLineRunner {
         List<Document> documentForAnswerPost = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             User user = userRepository.findById((long) (i % 20 + 1)).orElse(null);
+            String type = docTypes[i % 5];
             if (user != null) {
                 Document document = new Document();
-                document.setContent("Content of document " + i);
-                document.setContentEn("Content of document " + i + " in English");
-                document.setType(DocumentType.ANSWER_POST);
+                document.setType(DocumentType.getDocumentTypeFromExtension("." + type));
                 document.setPath(docs.get(rand.nextInt(docs.size())));
                 document.setCreatedAt(new Date());
-                document.setName("Document " + i + "." + docTypes[i % 5]);
-                document.setContentType("application/" + docTypes[i % 5]);
+                document.setName("doc."+ type );
+                document.setContentType(type);
                 documentForSubjects.add(document);
             }
         }
