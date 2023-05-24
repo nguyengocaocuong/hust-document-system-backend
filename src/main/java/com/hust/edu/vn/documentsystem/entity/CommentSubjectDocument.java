@@ -3,12 +3,11 @@ package com.hust.edu.vn.documentsystem.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "CommentSubjectDocuments")
@@ -16,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class CommentSubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,5 +37,12 @@ public class CommentSubjectDocument {
 
     private boolean isHidden = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_CommentSubjectDocument_CommentSubjectDocument"))
+    @JsonIgnore
+    private CommentSubjectDocument parentComment = null;
+
+    @OneToMany(mappedBy = "parentComment")
+    private List<CommentSubjectDocument> childComment = new ArrayList<>();
 
 }

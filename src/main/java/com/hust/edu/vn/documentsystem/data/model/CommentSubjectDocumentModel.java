@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class CommentSubjectDocumentModel {
     private Long id;
 
@@ -16,4 +17,8 @@ public class CommentSubjectDocumentModel {
 
     @NotNull
     private Long subjectDocumentId;
+
+    private Long ownerId;
+
+    private Long parentCommentId;
 }

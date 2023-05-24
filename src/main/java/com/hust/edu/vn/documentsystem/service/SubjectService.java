@@ -61,4 +61,12 @@ public interface SubjectService {
     List<SubjectDocumentType> findAllSubjectDocumentType();
 
     SubjectDocument getStSubjectDetail(Long subjectId);
+
+    SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
+
+    List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
+
+    boolean favoriteSubjectDocument(Long subjectDocumentId);
+
+    AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId,AnswerSubjectDocumentModel answerSubjectDocumentModel);
 }

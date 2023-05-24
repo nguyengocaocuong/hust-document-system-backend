@@ -1,8 +1,6 @@
 package com.hust.edu.vn.documentsystem.utils;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +14,7 @@ import java.util.function.Function;
 public class JwtUtils {
     private static final String JWT_SIGNING_KEY = "secret";
 
-    public String extractUserName(String token) {
+    public String extractUserName(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException{
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -28,7 +26,7 @@ public class JwtUtils {
         return claims.get(claimName) != null;
     }
 
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String token) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException{
         return Jwts.parser().setSigningKey(JWT_SIGNING_KEY).parseClaimsJws(token).getBody();
     }
 
@@ -57,7 +55,7 @@ public class JwtUtils {
         return  expiration.before(new Date());
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException{
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }

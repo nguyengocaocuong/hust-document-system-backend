@@ -2,6 +2,7 @@ package com.hust.edu.vn.documentsystem.config;
 
 import com.hust.edu.vn.documentsystem.service.impl.CustomUserDetailsService;
 import com.hust.edu.vn.documentsystem.utils.JwtUtils;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +47,12 @@ public class JwtAthFilter extends OncePerRequestFilter {
             return;
         }
         jwtToken = authHeader.substring(7);
-        userEmail = jwtUtils.extractUserName(jwtToken);
+        try{
+            userEmail = jwtUtils.extractUserName(jwtToken);
+        }catch (ExpiredJwtException e){
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
             if (userDetails.isEnabled() && jwtUtils.isTokenValid(jwtToken, userDetails)) {

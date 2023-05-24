@@ -23,4 +23,5 @@ public class SubjectDocumentDto implements Serializable {
     private  String semester;
     private List<CommentSubjectDocumentDto> commentSubjectDocumentList;
     private List<AnswerSubjectDocumentDto> answerSubjectDocumentList;
+    private List<FavoriteSubjectDocumentDto> favoriteSubjectDocumentList;
 }

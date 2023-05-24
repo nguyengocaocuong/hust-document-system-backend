@@ -22,12 +22,17 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class SubjectServiceImpl implements SubjectService {
+    private final AnswerSubjectRepository answerSubjectRepository;
+    private final FavoriteSubjectDocumentRepository favoriteSubjectDocumentRepository;
     private final CommentSubjectDocumentRepository commentSubjectDocumentRepository;
     private final FavoriteSubjectRepository favoriteSubjectRepository;
     private final SharePrivateRepository sharePrivateRepository;
@@ -54,8 +59,9 @@ public class SubjectServiceImpl implements SubjectService {
             SharePrivateRepository sharePrivateRepository,
             FavoriteSubjectRepository favoriteSubjectRepository,
             CommentSubjectDocumentRepository commentSubjectDocumentRepository,
-            ApplicationEventPublisher publisher
-    ) {
+            ApplicationEventPublisher publisher,
+            FavoriteSubjectDocumentRepository favoriteSubjectDocumentRepository,
+            AnswerSubjectRepository answerSubjectRepository) {
         this.subjectRepository = subjectRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.userRepository = userRepository;
@@ -68,6 +74,8 @@ public class SubjectServiceImpl implements SubjectService {
         this.favoriteSubjectRepository = favoriteSubjectRepository;
         this.commentSubjectDocumentRepository = commentSubjectDocumentRepository;
         this.publisher = publisher;
+        this.favoriteSubjectDocumentRepository = favoriteSubjectDocumentRepository;
+        this.answerSubjectRepository = answerSubjectRepository;
     }
 
     @Override
@@ -88,6 +96,71 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public SubjectDocument getStSubjectDetail(Long subjectId) {
         return subjectDocumentRepository.findById(subjectId).orElse(null);
+    }
+
+    @Override
+    public SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId) {
+        return subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
+    }
+
+    @Override
+    public List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId) {
+        return commentSubjectDocumentRepository.findAllCommentById(subjectDocumentId);
+    }
+
+    @Override
+    public boolean favoriteSubjectDocument(Long subjectDocumentId) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        FavoriteSubjectDocument favoriteSubjectDocument = favoriteSubjectDocumentRepository.findByUser(user);
+        if (favoriteSubjectDocument != null && favoriteSubjectDocument.getSubjectDocument().getId().equals(subjectDocumentId)) {
+            favoriteSubjectDocumentRepository.delete(favoriteSubjectDocument);
+            return true;
+        }
+        if (favoriteSubjectDocument == null) {
+            SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
+            if (subjectDocument != null) {
+                favoriteSubjectDocument = new FavoriteSubjectDocument();
+                favoriteSubjectDocument.setSubjectDocument(subjectDocument);
+                favoriteSubjectDocument.setUser(user);
+                favoriteSubjectDocument.setNotificationType(NotificationType.ALL);
+                favoriteSubjectDocumentRepository.save(favoriteSubjectDocument);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId, AnswerSubjectDocumentModel answerSubjectDocumentModel) {
+        SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        log.info(answerSubjectDocumentModel.toString());
+        if(subjectDocument == null || (answerSubjectDocumentModel.getContent().isEmpty() && answerSubjectDocumentModel.getDocuments().length == 0))
+            return null;
+        AnswerSubjectDocument answerSubjectDocument = modelMapperUtils.mapAllProperties(answerSubjectDocumentModel, AnswerSubjectDocument.class);
+        if(answerSubjectDocumentModel.getDocuments().length > 0){
+            try {
+                String fileName = answerSubjectDocumentModel.getDocuments()[0].getOriginalFilename();
+                byte[] bytes = answerSubjectDocumentModel.getDocuments()[0].getBytes();
+                Path path = Paths.get("src/main/resources/" + fileName);
+                Files.write(path, bytes);
+                Document document = modelMapperUtils.mapAllProperties(answerSubjectDocumentModel, Document.class);
+                document.setType(DocumentType.PDF);
+                document.setContentType(answerSubjectDocumentModel.getDocuments().length > 1 ? "multipart/form-data" : answerSubjectDocumentModel.getDocuments()[0].getContentType());
+                document.setName(answerSubjectDocumentModel.getDocuments()[0].getOriginalFilename());
+                document.setPath(fileName);
+
+                Document documentEntity = documentRepository.save(document);
+                answerSubjectDocument.setDocument(documentEntity);
+                answerSubjectDocument.setSubjectDocument(subjectDocument);
+                answerSubjectDocument.setOwner(user);
+                answerSubjectRepository.save(answerSubjectDocument);
+                return answerSubjectDocument;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 
 
@@ -151,12 +224,16 @@ public class SubjectServiceImpl implements SubjectService {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (length > 0) {
             try {
-                String path = googleCloudStorageService.uploadDocumentsToGCP(subjectDocumentModel.getDocuments(), user.getRootPath());
+//                String path = googleCloudStorageService.uploadDocumentsToGCP(subjectDocumentModel.getDocuments(), user.getRootPath());
+                String fileName = subjectDocumentModel.getDocuments()[0].getOriginalFilename();
+                byte[] bytes = subjectDocumentModel.getDocuments()[0].getBytes();
+                Path path = Paths.get("src/main/resources/" + fileName);
+                Files.write(path, bytes);
                 Document document = modelMapperUtils.mapAllProperties(subjectDocumentModel, Document.class);
-                document.setType(length > 1 ? DocumentType.FOLDER : DocumentType.getDocumentTypeFromExtension(subjectDocumentModel.getDocuments()[0].getOriginalFilename().substring(subjectDocumentModel.getDocuments()[0].getOriginalFilename().lastIndexOf("."))));
+                document.setType(DocumentType.PDF);
                 document.setContentType(length > 1 ? "multipart/form-data" : subjectDocumentModel.getDocuments()[0].getContentType());
                 document.setName(subjectDocumentModel.getDocuments()[0].getOriginalFilename());
-                document.setPath(path);
+                document.setPath(fileName);
 
                 Document documentEntity = documentRepository.save(document);
                 Subject subject = subjectRepository.findById(subjectDocumentModel.getSubjectId()).orElse(null);
@@ -164,7 +241,7 @@ public class SubjectServiceImpl implements SubjectService {
                 subjectDocument.setDocument(documentEntity);
                 subjectDocument.setOwner(user);
                 subjectDocument.setSubject(subject);
-                subjectDocument.setDescriptionEn(translateService.translateText(subjectDocument.getDescription(), TargetLanguageType.ENGLISH).get(0));
+//                subjectDocument.setDescriptionEn(translateService.translateText(subjectDocument.getDescription(), TargetLanguageType.ENGLISH).get(0));
                 subjectDocument = subjectDocumentRepository.save(subjectDocument);
                 publisher.publishEvent(new NotifyEvent(NotificationType.NEW_SUBJECT_DOCUMENT, subjectDocument));
                 return subjectDocument;
@@ -259,6 +336,10 @@ public class SubjectServiceImpl implements SubjectService {
         SharePrivate sharePrivate = sharePrivateRepository.findByDocumentAndUser(subjectDocument.getDocument(), user);
         if (!subjectDocument.isPublic() && sharePrivate == null) return null;
         CommentSubjectDocument comment = modelMapperUtils.mapAllProperties(commentSubjectDocumentModel, CommentSubjectDocument.class);
+        if (commentSubjectDocumentModel.getParentCommentId() != null) {
+            CommentSubjectDocument tmp = commentSubjectDocumentRepository.findById(commentSubjectDocumentModel.getParentCommentId()).orElse(null);
+            if (tmp != null) comment.setParentComment(tmp);
+        }
         comment.setSubjectDocument(subjectDocument);
         comment.setOwner(user);
         comment = commentSubjectDocumentRepository.save(comment);
@@ -283,6 +364,8 @@ public class SubjectServiceImpl implements SubjectService {
         CommentSubjectDocument comment = commentSubjectDocumentRepository.findById(id).orElse(null);
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
+
+        comment.getChildComment().forEach(commentSubjectDocument -> commentSubjectDocumentRepository.delete(commentSubjectDocument));
         commentSubjectDocumentRepository.deleteById(id);
         publisher.publishEvent(new NotifyEvent(NotificationType.DELETE_COMMENT_SUBJECT_DOCUMENT, comment));
         return true;
@@ -335,7 +418,7 @@ public class SubjectServiceImpl implements SubjectService {
         SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentModel.getId()).orElse(null);
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if (subjectDocument == null || !subjectDocument.getOwner().getEmail().equals(user.getEmail())) return false;
-        String path =user.getRootPath() + "documents/" + subjectDocument.getDocument().getPath();
+        String path = user.getRootPath() + "documents/" + subjectDocument.getDocument().getPath();
         boolean status = googleCloudStorageService.deleteAllDocumentByRootPath(path);
         log.info(user.getRootPath() + "documents/" + subjectDocument.getDocument().getPath());
         if (!status) return false;

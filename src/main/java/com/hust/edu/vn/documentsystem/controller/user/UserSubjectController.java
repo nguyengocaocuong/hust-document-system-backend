@@ -1,9 +1,7 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.data.dto.CommentSubjectDocumentDto;
-import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
-import com.hust.edu.vn.documentsystem.data.dto.UserDto;
+import com.hust.edu.vn.documentsystem.data.dto.*;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.DocumentRepository;
@@ -11,6 +9,7 @@ import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -25,6 +24,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/users/subjects")
 @Tag(name = "Subjects - api")
+@Slf4j
 public class UserSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
@@ -59,21 +59,33 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(isDeleted);
     }
 
-    @PostMapping("document")
+    @PostMapping("subjectDocument")
     public ResponseEntity<CustomResponse> uploadDocumentForSubject(@ModelAttribute SubjectDocumentModel subjectDocumentModel) {
         SubjectDocument subjectDocument = subjectService.saveDocumentForSubject(subjectDocumentModel);
         subjectDocument.setSubject(null);
         subjectDocument.setOwner(null);
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocument);
     }
+    @PostMapping("subjectDocument/{subjectDocumentId}/answerSubjectDocument")
+    public ResponseEntity<CustomResponse> uploadAnswerForSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId,@ModelAttribute AnswerSubjectDocumentModel answerSubjectDocumentModel){
+        AnswerSubjectDocument answerSubjectDocument = subjectService.saveAnswerForSubjectDocument(subjectDocumentId,answerSubjectDocumentModel);
+        answerSubjectDocument.setSubjectDocument(null);
+        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class));
+    }
+    @GetMapping("subjectDocument/{subjectDocumentId}")
+    public ResponseEntity<CustomResponse> getSubjectDocumentDetail(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(subjectDocumentId);
+        subjectDocument.getSubject().setSubjectDocuments(null);
+        return CustomResponse.generateResponse(subjectDocument != null ? HttpStatus.OK : HttpStatus.NOT_FOUND,subjectDocument != null ? modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentAllDto.class) : null);
+    }
 
-    @PatchMapping("document")
+    @PatchMapping("subjectDocument")
     public ResponseEntity<CustomResponse> updateDocumentForSubject(@ModelAttribute SubjectDocumentModel subjectDocumentModel) {
         boolean status = subjectService.updateDocumentForSubject(subjectDocumentModel);
         return CustomResponse.generateResponse(status);
     }
 
-    @DeleteMapping("document")
+    @DeleteMapping("subjectDocument")
     public ResponseEntity<CustomResponse> deleteDocumentFoSubject(@ModelAttribute SubjectDocumentModel subjectDocumentModel) {
         boolean status = subjectService.deleteDocumentForSubject(subjectDocumentModel);
         return CustomResponse.generateResponse(status);
@@ -113,19 +125,30 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(status);
     }
 
-    @PostMapping("document/comment")
+    @PostMapping("subjectDocument/comment")
     public ResponseEntity<CustomResponse> createComment(@ModelAttribute CommentSubjectDocumentModel commentSubjectDocumentModel) {
         CommentSubjectDocument comment = subjectService.createCommentForSubjectDocument(commentSubjectDocumentModel);
-        return CustomResponse.generateResponse(comment != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST, modelMapperUtils.mapAllProperties(comment, CommentSubjectDocumentDto.class));
+        return CustomResponse.generateResponse(comment != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST,comment != null ? modelMapperUtils.mapAllProperties(comment, CommentSubjectDocumentDto.class) : null);
     }
 
+    @GetMapping("subjectDocument/{subjectDocumentId}/comment")
+    public ResponseEntity<CustomResponse> getSubjectDocumentComment(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+        List<CommentSubjectDocument> subjectDocuments = subjectService.getSubjectDocumentCommentBySubjectDocumentId(subjectDocumentId);
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, CommentSubjectDocumentDto.class)));
+    }
+
+
+    @PostMapping("subjectDocument/{subjectDocumentId}/favorite")
+    public ResponseEntity<CustomResponse> favoriteSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+        return CustomResponse.generateResponse(subjectService.favoriteSubjectDocument(subjectDocumentId));
+    }
     @PatchMapping("document/comment")
     public ResponseEntity<CustomResponse> updateComment(@ModelAttribute CommentSubjectDocumentModel commentSubjectDocumentModel) {
         boolean status = subjectService.updateCommentForSubjectDocument(commentSubjectDocumentModel);
         return CustomResponse.generateResponse(status);
     }
 
-    @DeleteMapping("document/comment/{id}")
+    @DeleteMapping("subjectDocument/comment/{id}")
     public ResponseEntity<CustomResponse> deleteComment(@PathVariable("id") Long id) {
         boolean status = subjectService.deleteCommentForSubjectDocument(id);
         return CustomResponse.generateResponse(status);
@@ -137,11 +160,11 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, users.stream().map(user -> modelMapperUtils.mapAllProperties(user, UserDto.class)).toList());
     }
 
-    @GetMapping("allSubjects")
+    @GetMapping()
     public ResponseEntity<CustomResponse> getAllSubjects(){
         return CustomResponse.generateResponse(HttpStatus.OK,subjectService.getAllSubjects() );
     }
-    @GetMapping("subjectDetail/{subjectId}")
+    @GetMapping("{subjectId}")
     public ResponseEntity<CustomResponse> getSubjectDetail(@PathVariable Long subjectId){
         Subject subject = subjectService.getSubjectById(subjectId);
         return CustomResponse.generateResponse(HttpStatus.OK, "Thông tin chi tiết môn học", modelMapperUtils.mapAllProperties(subject, SubjectDto.class));
@@ -163,7 +186,7 @@ public class UserSubjectController {
     @GetMapping("subjectDocuments/readFile/{subjectDocumentId}")
     public ResponseEntity<byte[]> readSubjectDocument(@PathVariable("subjectDocumentId") Long id){
 //        byte[] bytes = subjectService.readSubjectDocument(subjectDocumentId);
-        Document document = documentRepository.findById(id).orElse(null);
+        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(id);
         Map<String, String> CONTENT_TYPES = new HashMap<>();
 
         CONTENT_TYPES.put("bmp", "image/bmp");
@@ -184,19 +207,19 @@ public class UserSubjectController {
         CONTENT_TYPES.put("txt", "text/plain");
         CONTENT_TYPES.put("xls", "application/vnd.ms-excel");
         CONTENT_TYPES.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        Resource resource = resourceLoader.getResource(document.getPath());
+        Resource resource = resourceLoader.getResource("classpath:" + subjectDocument.getDocument().getPath());
         try {
             byte[] bytes = resource.getContentAsByteArray();
+            log.info("Length : {}", bytes.length);
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf(CONTENT_TYPES.get(document.getContentType())));
-            headers.setContentDisposition(ContentDisposition.attachment().filename(document.getName()).build());
+            headers.setContentType(MediaType.valueOf(subjectDocument.getDocument().getContentType()));
+            headers.setContentDisposition(ContentDisposition.attachment().filename(subjectDocument.getDocument().getName()).build());
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(bytes);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(null);
         }
-
-
     }
+
 }
