@@ -6,7 +6,6 @@ import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/generals/teachers")
-@Tag(name = "Teachers - api")
 @Slf4j
 public class GeneralTeacherController {
     private final TeacherService teacherService;
@@ -39,12 +37,6 @@ public class GeneralTeacherController {
     public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacherModel) {
         Teacher teacher = teacherService.createTeacher(teacherModel);
         return CustomResponse.generateResponse(teacher != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST, teacher);
-    }
-
-    @PatchMapping()
-    public ResponseEntity<CustomResponse> updateTeacher(@ModelAttribute TeacherModel teacherModel) {
-        boolean status = teacherService.updateTeacher(teacherModel);
-        return CustomResponse.generateResponse(status);
     }
 
 

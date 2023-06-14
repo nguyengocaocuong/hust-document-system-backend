@@ -1,8 +1,10 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
+import com.hust.edu.vn.documentsystem.data.dto.SubjectDocumentDto;
 import com.hust.edu.vn.documentsystem.data.dto.UserDto;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.nio.file.Path;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -38,25 +41,18 @@ public class UserController {
 
     @PatchMapping()
     public ResponseEntity<CustomResponse> updateProfile(@ModelAttribute UserModel userModel) {
-        boolean status = userService.updateProfile(userModel);
-        return CustomResponse.generateResponse(status ? HttpStatus.OK : HttpStatus.CONFLICT);
+        User status = userService.updateProfile(userModel);
+        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(status, UserDto.class));
     }
-    @GetMapping("document")
-    @CrossOrigin(origins = "http://localhost:3000")
-    public ResponseEntity<Resource> getFile(){
-        Path pdf = Path.of("docs/doc.docx");
-        try {
-            Resource pdfResource = new UrlResource(pdf.toUri());
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.wordprocessingml.document"));
-            headers.setContentDispositionFormData("doc.docx", "doc.docx");
-            headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(pdfResource);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    @GetMapping("allUserForFilter")
+    public ResponseEntity<CustomResponse> getAllUserForFilter(){
+        List<User> users = userService.getAllUser();
+        return CustomResponse.generateResponse(HttpStatus.OK, users.stream().map(user -> modelMapperUtils.mapAllProperties(user, UserDto.class)));
+    }
+    @GetMapping("trash")
+    public ResponseEntity<CustomResponse> getAllTrash(){
+        List<SubjectDocument> subjectDocuments = userService.getAllSubjectDocumentTrash();
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
     }
 }

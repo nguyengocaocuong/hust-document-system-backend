@@ -1,22 +1,26 @@
 package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
+import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
+import com.hust.edu.vn.documentsystem.entity.Subject;
+import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.spire.ms.System.Collections.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("/api/v1/admins/teachers")
-@Tag(name = "Teacher - api")
 @Slf4j
 public class AdminTeacherController {
     private final TeacherService teacherService;
@@ -29,13 +33,16 @@ public class AdminTeacherController {
     }
     @GetMapping()
     public ResponseEntity<CustomResponse> getAllTeachers() {
-        List<Object> content = teacherService.getAllTeachers().stream().map(teacher -> modelMapperUtils.mapAllProperties(teacher, TeacherDto.class)).toList();
-        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các giảng viên",content);
-    }
-    @DeleteMapping("{id}")
-    public ResponseEntity<CustomResponse> deleteTeacher(@PathVariable("id") Long teacherId ){
-        boolean isDeleted = teacherService.deleteTeacher(teacherId);
-        return CustomResponse.generateResponse(isDeleted);
+        List<Object[]> results = teacherService.getAllTeacherForAdmin();
+        List<Map<String, Object>> resultMap = new ArrayList();
+        results.forEach(result ->{
+            Map<String, Object> map = new HashMap<>();
+            Teacher teacher = (Teacher) result[0];
+            map.put("teacher", modelMapperUtils.mapAllProperties(teacher, TeacherDto.class));
+            map.put("reviewTeacherTotal", result[1]);
+            resultMap.add(map);
+        });
+        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các giảng viên",resultMap);
     }
 
 }

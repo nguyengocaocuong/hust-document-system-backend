@@ -13,9 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ShareSubjectDocumentModel {
     @NotNull
-    private Long documentId;
-
-    @NotNull
     private ShareType shareType;
 
     private List<Long> userIds;

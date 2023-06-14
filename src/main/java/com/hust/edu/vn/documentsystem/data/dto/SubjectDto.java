@@ -21,7 +21,6 @@ import java.util.List;
 public class SubjectDto implements Serializable {
     private Long id;
     private String name;
-    private String subjectId;
     private String description;
     private Date createdAt;
     private String subjectCode;

@@ -13,6 +13,5 @@ public class CommentReviewSubjectModel {
 
     private String comment;
 
-    @NotNull
-    private Long reviewSubjectId;
+    private Long parentCommentId;
 }

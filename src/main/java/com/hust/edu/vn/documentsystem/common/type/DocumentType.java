@@ -22,44 +22,45 @@ public enum DocumentType {
     MP4,
     UN_KNOW;
 
-    public static DocumentType getDocumentTypeFromExtension(String fileExtension) {
-        if (fileExtension.equalsIgnoreCase("pdf")) {
-            return DocumentType.PDF;
-        } else if (fileExtension.equalsIgnoreCase("doc")) {
-            return DocumentType.DOC;
-        } else if (fileExtension.equalsIgnoreCase("docx")) {
-            return DocumentType.DOCX;
-        } else if (fileExtension.equalsIgnoreCase("xlsx")) {
-            return DocumentType.XLSX;
-        } else if (fileExtension.equalsIgnoreCase("xls")) {
-            return DocumentType.XLS;
-        } else if (fileExtension.equalsIgnoreCase("jpg") || fileExtension.equalsIgnoreCase("jpeg")) {
-            return DocumentType.JPG;
-        } else if (fileExtension.equalsIgnoreCase("png")) {
-            return DocumentType.PNG;
-        } else if (fileExtension.equalsIgnoreCase("ppt")) {
-            return DocumentType.PPT;
-        } else if (fileExtension.equalsIgnoreCase("pptx")) {
-            return DocumentType.PPTX;
-        } else if (fileExtension.equalsIgnoreCase("csv")) {
-            return DocumentType.CSV;
-        } else if (fileExtension.equalsIgnoreCase("xml")) {
-            return DocumentType.XML;
-        } else if (fileExtension.equalsIgnoreCase("json")) {
-            return DocumentType.JSON;
-        } else if (fileExtension.equalsIgnoreCase("gif")) {
-            return DocumentType.GIF;
-        } else if (fileExtension.equalsIgnoreCase("svg")) {
-            return DocumentType.SVG;
-        } else if (fileExtension.equalsIgnoreCase("bmp")) {
-            return DocumentType.BMP;
-        } else if (fileExtension.equalsIgnoreCase("mp3")) {
-            return DocumentType.MP3;
-        } else if (fileExtension.equalsIgnoreCase("mp4")) {
-            return DocumentType.MP4;
-        } else {
-            return DocumentType.UN_KNOW;
+    public static DocumentType getDocumentTypeFromContentType(String contentType) {
+        switch (contentType) {
+            case "application/pdf":
+                return DocumentType.PDF;
+            case "application/msword":
+                return DocumentType.DOC;
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                return DocumentType.DOCX;
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                return DocumentType.XLSX;
+            case "application/vnd.ms-excel":
+                return DocumentType.XLS;
+            case "image/jpeg":
+            case "image/jpg":
+                return DocumentType.JPG;
+            case "image/png":
+                return DocumentType.PNG;
+            case "application/vnd.ms-powerpoint":
+                return DocumentType.PPT;
+            case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+                return DocumentType.PPTX;
+            case "text/csv":
+                return DocumentType.CSV;
+            case "application/xml":
+                return DocumentType.XML;
+            case "application/json":
+                return DocumentType.JSON;
+            case "image/gif":
+                return DocumentType.GIF;
+            case "image/svg+xml":
+                return DocumentType.SVG;
+            case "image/bmp":
+                return DocumentType.BMP;
+            case "audio/mp3":
+                return DocumentType.MP3;
+            case "video/mp4":
+                return DocumentType.MP4;
+            default:
+                return DocumentType.UN_KNOW;
         }
     }
-
 }

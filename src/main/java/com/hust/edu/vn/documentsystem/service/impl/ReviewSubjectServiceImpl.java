@@ -5,16 +5,14 @@ import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.data.model.ReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.entity.*;
-import com.hust.edu.vn.documentsystem.repository.CommentReviewSubjectRepository;
-import com.hust.edu.vn.documentsystem.repository.ReviewSubjectRepository;
-import com.hust.edu.vn.documentsystem.repository.SubjectRepository;
-import com.hust.edu.vn.documentsystem.repository.UserRepository;
+import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,6 +22,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     private final SubjectRepository subjectRepository;
     private final ModelMapperUtils modelMapperUtils;
     private final CommentReviewSubjectRepository commentReviewSubjectRepository;
+    private final FavoriteReviewSubjectRepository favoriteReviewSubjectRepository;
 
     @Autowired
     public ReviewSubjectServiceImpl(
@@ -31,13 +30,14 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
             UserRepository userRepository,
             SubjectRepository subjectRepository,
             ModelMapperUtils modelMapperUtils,
-            CommentReviewSubjectRepository commentReviewSubjectRepository
-    ) {
+            CommentReviewSubjectRepository commentReviewSubjectRepository,
+            FavoriteReviewSubjectRepository favoriteReviewSubjectRepository) {
         this.reviewSubjectRepository = reviewSubjectRepository;
         this.userRepository = userRepository;
         this.subjectRepository = subjectRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.commentReviewSubjectRepository = commentReviewSubjectRepository;
+        this.favoriteReviewSubjectRepository = favoriteReviewSubjectRepository;
     }
 
     @Override
@@ -52,9 +52,9 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     }
 
     @Override
-    public CommentReviewSubject createCommentForReviewSubject(CommentReviewSubjectModel commentReviewSubjectModel) {
+    public CommentReviewSubject createCommentForReviewSubject(Long reviewSubjectId, CommentReviewSubjectModel commentReviewSubjectModel) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        ReviewSubject reviewSubject = reviewSubjectRepository.findById(commentReviewSubjectModel.getReviewSubjectId()).orElse(null);
+        ReviewSubject reviewSubject = reviewSubjectRepository.findById(reviewSubjectId).orElse(null);
         if (reviewSubject == null || user == null || !reviewSubject.isDone() || reviewSubject.isHidden()) return null;
         CommentReviewSubject commentReviewSubject = modelMapperUtils.mapAllProperties(commentReviewSubjectModel, CommentReviewSubject.class);
         commentReviewSubject.setReviewSubject(reviewSubject);
@@ -64,9 +64,10 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
 
     @Override
     public boolean updateCommentForCommentReviewSubject(CommentReviewSubjectModel commentReviewSubjectModel) {
-        if(commentReviewSubjectModel.getId() == null) return false;
+        if (commentReviewSubjectModel.getId() == null) return false;
         CommentReviewSubject comment = commentReviewSubjectRepository.findById(commentReviewSubjectModel.getId()).orElse(null);
-        if(comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())) return false;
+        if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
+            return false;
         comment.setComment(commentReviewSubjectModel.getComment());
         commentReviewSubjectRepository.save(comment);
         return true;
@@ -75,7 +76,8 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     @Override
     public boolean deleteCommentForReviewSubject(Long id) {
         CommentReviewSubject comment = commentReviewSubjectRepository.findById(id).orElse(null);
-        if(comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())) return false;
+        if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
+            return false;
         commentReviewSubjectRepository.delete(comment);
         return true;
     }
@@ -83,7 +85,8 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     @Override
     public boolean hiddenCommentForReviewSubject(Long id) {
         CommentReviewSubject comment = commentReviewSubjectRepository.findByIdAndIsHidden(id, false);
-        if(comment == null || comment.getReviewSubject().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName())) return false;
+        if (comment == null || comment.getReviewSubject().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
+            return false;
         comment.setHidden(true);
         commentReviewSubjectRepository.save(comment);
         return true;
@@ -92,7 +95,8 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     @Override
     public boolean activeCommentForReviewSubject(Long id) {
         CommentReviewSubject comment = commentReviewSubjectRepository.findByIdAndIsHidden(id, true);
-        if (comment == null ||!comment.getReviewSubject().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) || !comment.isHidden()) return false;
+        if (comment == null || !comment.getReviewSubject().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) || !comment.isHidden())
+            return false;
         comment.setHidden(false);
         commentReviewSubjectRepository.save(comment);
         return true;
@@ -119,7 +123,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
 
     @Override
     public List<ReviewSubject> getAllReviewSubjects() {
-        return reviewSubjectRepository.findByIsDone(true);
+        return reviewSubjectRepository.findAllByIsDone(true);
     }
 
     @Override
@@ -163,7 +167,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     @Override
     public boolean approvedReviewSubject(Long id) {
         ReviewSubject reviewSubject = reviewSubjectRepository.findById(id).orElse(null);
-        if( reviewSubject == null || reviewSubject.getApproved() == ApproveType.APPROVED) return false;
+        if (reviewSubject == null || reviewSubject.getApproved() == ApproveType.APPROVED) return false;
         reviewSubject.setApproved(ApproveType.APPROVED);
         reviewSubjectRepository.save(reviewSubject);
         return true;
@@ -172,9 +176,47 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     @Override
     public boolean unApprovedReviewSubject(Long id) {
         ReviewSubject reviewSubject = reviewSubjectRepository.findById(id).orElse(null);
-        if( reviewSubject == null || reviewSubject.getApproved() == ApproveType.REJECT) return false;
+        if (reviewSubject == null || reviewSubject.getApproved() == ApproveType.REJECT) return false;
         reviewSubject.setApproved(ApproveType.REJECT);
         reviewSubjectRepository.save(reviewSubject);
         return true;
+    }
+
+    @Override
+    public boolean toggleFavoriteReviewSubject(Long reviewSubjectId) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReviewSubject reviewSubject = reviewSubjectRepository.findById(reviewSubjectId).orElse(null);
+        if (reviewSubject == null) return false;
+        FavoriteReviewSubject favoriteReviewSubject = favoriteReviewSubjectRepository.findByReviewSubjectAndUser(reviewSubject, user);
+        if (favoriteReviewSubject != null) {
+            favoriteReviewSubjectRepository.delete(favoriteReviewSubject);
+            return true;
+        }
+        favoriteReviewSubject = new FavoriteReviewSubject();
+        favoriteReviewSubject.setReviewSubject(reviewSubject);
+        favoriteReviewSubject.setUser(user);
+        favoriteReviewSubjectRepository.save(favoriteReviewSubject);
+        return true;
+    }
+
+    @Override
+    public List<FavoriteReviewSubject> getAllFavoriteForReviewSubject(Long reviewSubjectId) {
+        return favoriteReviewSubjectRepository.findAllByReviewSubjectId(reviewSubjectId);
+    }
+
+    @Override
+    public List<ReviewSubject> getAllReviewSubjectsCreateByUser() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return reviewSubjectRepository.findAllByOwner(user);
+    }
+
+    @Override
+    public List<ReviewSubject> getAllNewReviewSubject() {
+        return reviewSubjectRepository.findAllNewReviewSubject();
+    }
+
+    @Override
+    public List<Object[]> getReviewForDashboard(Date startDate) {
+        return reviewSubjectRepository.getReviewForDashboard(startDate);
     }
 }

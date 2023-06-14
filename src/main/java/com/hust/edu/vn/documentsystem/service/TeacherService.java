@@ -1,7 +1,11 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
+import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
+import com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher;
+import com.hust.edu.vn.documentsystem.entity.FavoriteReviewTeacher;
+import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 
 import java.util.List;
@@ -13,17 +17,27 @@ public interface TeacherService {
 
     Teacher createTeacher(TeacherModel teacherModel);
 
-    List<Teacher> findTeacherByKeyword(String keyword);
-
-    boolean updateTeacher(TeacherModel teacherModel);
-
-    boolean deleteTeacher(Long teacherId);
-
-    List<Teacher> getAllTeachersCreateByUser();
-
-    boolean deleteSubject(TeacherModel teacherModel);
-
     boolean addSubjects(TeacherModel teacherModel);
 
     List<TeacherDto> getAllTeachersForFilter();
+
+    List<ReviewTeacher> findAllReviewTeacher();
+
+    boolean toggleFavoriteReviewTeacher(Long reviewTeacherId);
+
+    CommentReviewTeacher createCommentForReviewTeacher(Long reviewTeacherId, CommentReviewTeacherModel commentReviewTeacherModel);
+
+    List<CommentReviewTeacher> getAllCommentForReviewTeacher(Long reviewTeacherId);
+
+    boolean deleteCommentReview(Long commentId);
+
+    boolean updateCommentReview(Long commentId, CommentReviewTeacherModel commentReviewTeacherModel);
+
+    List<FavoriteReviewTeacher> getAllFavoriteReviewTeacher(Long reviewTeacherId);
+
+    boolean deleteReviewTeacher(Long reviewTeacherId);
+
+    List<ReviewTeacher> getAllReviewTeacherCreatedByUser();
+
+    List<Object[]> getAllTeacherForAdmin();
 }

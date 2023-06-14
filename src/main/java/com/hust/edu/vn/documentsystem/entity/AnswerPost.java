@@ -1,12 +1,15 @@
 package com.hust.edu.vn.documentsystem.entity;
 
+import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "AnswerPosts")
@@ -19,21 +22,13 @@ public class AnswerPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @Column(columnDefinition = "TEXT")
-    private String contentEn;
-
-    @Column(nullable = false)
-    private String type;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_answer_post_document"))
     private Document document;
 
-    private String name;
+    private DocumentType type;
 
+    private String description;
     @Column(nullable = false)
     private Date createdAt = new Date();
 
@@ -46,4 +41,7 @@ public class AnswerPost {
     private User owner;
 
     private boolean isHidden = false;
+
+    @OneToMany(mappedBy = "answerPost", cascade = CascadeType.REMOVE)
+    private List<FavoriteAnswerPost> favorites = new ArrayList<>();
 }

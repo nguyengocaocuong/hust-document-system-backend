@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.controller.security;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.data.dto.UserDto;
@@ -8,11 +9,11 @@ import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
+import com.hust.edu.vn.documentsystem.service.FirebaseService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.service.impl.CustomUserDetailsService;
 import com.hust.edu.vn.documentsystem.utils.JwtUtils;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 
 @RestController
 @RequestMapping("/api/v1/authentication")
-@Tag(name = "Authentication - api")
 @Slf4j
 public class AuthenticationController {
     private final UserRepository userRepository;
@@ -39,6 +41,8 @@ public class AuthenticationController {
 
     private final ModelMapperUtils modelMapperUtils;
 
+    private final FirebaseService firebaseService;
+
 
     @Autowired
     public AuthenticationController(
@@ -46,13 +50,14 @@ public class AuthenticationController {
             CustomUserDetailsService userDetailsService,
             UserService userService,
             JwtUtils jwtUtils,
-            UserRepository userRepository, ModelMapperUtils modelMapperUtils) {
+            UserRepository userRepository, ModelMapperUtils modelMapperUtils, FirebaseService firebaseService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
         this.modelMapperUtils = modelMapperUtils;
+        this.firebaseService = firebaseService;
     }
 
     @PostMapping("authenticate")
@@ -106,7 +111,7 @@ public class AuthenticationController {
     @PostMapping("login")
     public ResponseEntity<CustomResponse> login(@RequestBody UserModel userModel) {
         User user = userService.checkAccountForLogin(userModel);
-        if (user == null) {
+        if (user == null || !user.isEnable()) {
             return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
         }
         final UserDetails userDetail = userDetailsService.loadUserByUsername(userModel.getEmail());
@@ -132,5 +137,9 @@ public class AuthenticationController {
        userRepository.save(user);
        return "done";
     }
-    //
+    @GetMapping("test")
+    public String testNotification(@RequestParam("token") String token) throws FirebaseMessagingException {
+        firebaseService.sendMessage(token,"Hello","Test",new HashMap<>());
+        return "ok";
+    }
 }

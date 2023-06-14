@@ -10,6 +10,5 @@ import lombok.*;
 @NoArgsConstructor
 public class FavoriteSubjectModel {
     private Long id;
-    private Long subjectId;
     private NotificationType notificationType = NotificationType.ALL;
 }

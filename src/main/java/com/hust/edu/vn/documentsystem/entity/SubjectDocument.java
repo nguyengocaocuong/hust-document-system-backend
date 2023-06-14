@@ -1,11 +1,13 @@
 package com.hust.edu.vn.documentsystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -23,7 +25,9 @@ public class SubjectDocument {
 
     @Column( nullable = false)
     @Enumerated(EnumType.STRING)
-    private SubjectDocumentType type;
+    private SubjectDocumentType subjectDocumentType;
+
+    private DocumentType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Document"))
@@ -48,11 +52,22 @@ public class SubjectDocument {
 
     @Column()
     private String semester;
+    private Date createdAt = new Date();
+    private Date lastEditedAt = new Date();
 
-    @OneToMany(mappedBy = "subjectDocument", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<CommentSubjectDocument> commentSubjectDocumentList = new ArrayList<>();
-    @OneToMany(mappedBy = "subjectDocument", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<AnswerSubjectDocument> answerSubjectDocumentList = new ArrayList<>();
-    @OneToMany(mappedBy = "subjectDocument", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<FavoriteSubjectDocument> favoriteSubjectDocumentList = new ArrayList<>();
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
+    List<SharePrivate> shared = new ArrayList<>();
+
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
+    List<ShareByLink> shareByLinks = new ArrayList<>();
+
+    private Date deletedAt = new Date();
+
+    private boolean isDelete = false;
 }

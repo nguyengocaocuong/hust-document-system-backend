@@ -1,7 +1,5 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
-import com.hust.edu.vn.documentsystem.data.model.ProcessDuplicateModel;
 import com.hust.edu.vn.documentsystem.data.model.ProcessReportContentModel;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentModel;
 import com.hust.edu.vn.documentsystem.data.model.ReportDuplicateModel;
@@ -15,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ReportServiceImpl implements ReportService {
@@ -44,25 +41,25 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ReportContent reportContent(ReportContentModel reportContentModel) {
-        Document document = documentRepository.findById(reportContentModel.getDocumentId()).orElse(null);
-        if (document == null) return null;
+        SubjectDocument subjectDocument = subjectDocumentRepository.findById(reportContentModel.getSubjectDocumentId()).orElse(null);
+        if (subjectDocument == null) return null;
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        ReportContent reportContent = reportContentRepository.findByDocumentAndOwner(document, user);
+        ReportContent reportContent = reportContentRepository.findBySubjectDocumentAndOwner(subjectDocument, user);
         if (reportContent != null) return null;
         reportContent = modelMapperUtils.mapAllProperties(reportContentModel, ReportContent.class);
-        reportContent.setDocument(document);
+        reportContent.setSubjectDocument(subjectDocument);
         reportContent.setOwner(user);
         return reportContentRepository.save(reportContent);
     }
 
     @Override
     public ReportDuplicateDocument reportDuplicate(ReportDuplicateModel reportDuplicateModel) {
-        Document documentFirst = documentRepository.findById(reportDuplicateModel.getDocumentFirstId()).orElse(null);
-        Document documentSecond = documentRepository.findById(reportDuplicateModel.getDocumentSecondId()).orElse(null);
+        SubjectDocument documentFirst = subjectDocumentRepository.findById(reportDuplicateModel.getDocumentFirstId()).orElse(null);
+        SubjectDocument documentSecond = subjectDocumentRepository.findById(reportDuplicateModel.getDocumentSecondId()).orElse(null);
         if (documentFirst == null || documentSecond == null) return null;
         ReportDuplicateDocument reportDuplicateDocument = modelMapperUtils.mapAllProperties(reportDuplicateModel, ReportDuplicateDocument.class);
-        reportDuplicateDocument.setDocumentFirst(documentFirst);
-        reportDuplicateDocument.setDocumentSecond(documentSecond);
+        reportDuplicateDocument.setSubjectDocumentFirst(documentFirst);
+        reportDuplicateDocument.setSubjectDocumentSecond(documentSecond);
         reportDuplicateDocument.setOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
         return reportDuplicateDocumentRepository.save(reportDuplicateDocument);
     }
@@ -77,27 +74,6 @@ public class ReportServiceImpl implements ReportService {
         return true;
     }
 
-    @Override
-    public boolean processReportDuplicate(ProcessDuplicateModel processDuplicateModel) {
-        ReportDuplicateDocument reportDuplicateDocument = reportDuplicateDocumentRepository.findById(processDuplicateModel.getId()).orElse(null);
-        if (reportDuplicateDocument == null) return false;
-        reportDuplicateDocument.setMessage(processDuplicateModel.getMessage());
-        reportDuplicateDocument.setStatus(processDuplicateModel.getReportStatus());
-        reportDuplicateDocument.setStatus(processDuplicateModel.getReportStatus());
-        if (processDuplicateModel.getReportStatus() == ReportStatus.ACCESS) {
-            Document documentDelete = reportDuplicateDocument.getDocumentFirst().getId().intValue() == processDuplicateModel.getRemoveDocumentId().intValue() ? reportDuplicateDocument.getDocumentFirst() : reportDuplicateDocument.getDocumentSecond();
-            Document documentHolder = reportDuplicateDocument.getDocumentFirst().getId().intValue() == processDuplicateModel.getRemoveDocumentId().intValue() ? reportDuplicateDocument.getDocumentFirst() : reportDuplicateDocument.getDocumentSecond();
-            documentDelete.setPath(documentHolder.getPath());
-            User user = subjectDocumentRepository.findByDocument(documentDelete).getOwner();
-            if (user == null)
-                return false;
-            googleCloudStorageService.deleteDocumentByRootPath(Objects.requireNonNull(user).getRootPath() + "documents/" + documentDelete.getPath());
-            documentRepository.save(documentDelete);
-        }
-
-        reportDuplicateDocumentRepository.save(reportDuplicateDocument);
-        return true;
-    }
 
     @Override
     public List<ReportContent> getAllReportContents() {

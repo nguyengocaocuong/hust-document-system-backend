@@ -17,6 +17,6 @@ public class ReportDuplicateDocumentDto implements Serializable {
     private UserDto owner;
     private ReportStatus status;
     private String message;
-    private DocumentDto documentFirst;
-    private DocumentDto documentSecond;
+    private SubjectDocumentDto subjectDocumentFirst;
+    private SubjectDocumentDto subjectDocumentSecond;
 }

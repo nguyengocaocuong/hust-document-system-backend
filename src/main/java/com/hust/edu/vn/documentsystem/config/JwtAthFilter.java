@@ -20,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtAthFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtUtils jwtUtils;
@@ -39,11 +40,15 @@ public class JwtAthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         final String userEmail;
         final String jwtToken;
-        if (authHeader == null && request.getRequestURI().startsWith("/api/v1/socket")) {
+        if (authHeader == null && request.getRequestURI().startsWith("/api/v1/users/subject")) {
             authHeader = "Bearer " + request.getParameter("token");
         }
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            try{
+                filterChain.doFilter(request, response);
+            }catch (IllegalArgumentException e){
+                log.info(e.getMessage());
+            }
             return;
         }
         jwtToken = authHeader.substring(7);

@@ -1,12 +1,10 @@
 package com.hust.edu.vn.documentsystem.service;
 
-import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
+import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -26,11 +24,11 @@ public interface SubjectService {
 
     List<Subject> findSubjectByKeywordAndTeachers(String keyword, Teacher teacher);
 
-    SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel);
+    SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
 
-    Object shareDocument(ShareSubjectDocumentModel shareSubjectDocumentModel);
+    Object shareDocument(Long subjectDocumentId,ShareSubjectDocumentModel shareSubjectDocumentModel);
 
-    boolean favoriteSubject(FavoriteSubjectModel favoriteSubjectModel);
+    boolean favoriteSubject(Long subjectId, FavoriteSubjectModel favoriteSubjectModel);
 
     boolean unFavoriteSubject(Long subjectId);
 
@@ -40,17 +38,11 @@ public interface SubjectService {
 
     boolean updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel);
 
-    boolean deleteCommentForSubjectDocument(Long id);
-
     boolean hiddenCommentForSubjectDocument(Long id);
 
     boolean activeCommentForSubjectDocument(Long id);
 
     List<FavoriteSubject> getFavoriteSubjects();
-
-    boolean updateDocumentForSubject(SubjectDocumentModel subjectDocumentModel);
-
-    boolean deleteDocumentForSubject(SubjectDocumentModel subjectDocumentModel);
 
     List<User> getAllUserShareWithMe();
 
@@ -69,4 +61,44 @@ public interface SubjectService {
     boolean favoriteSubjectDocument(Long subjectDocumentId);
 
     AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId,AnswerSubjectDocumentModel answerSubjectDocumentModel);
+
+    List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
+
+    boolean favoriteAnswerSubjectDocument(Long answerSubjectDocumentID);
+
+    List<FavoriteAnswerSubjectDocument> getAllFavoriteAnswerSubjectDocument(Long answerSubjectDocumentId);
+
+    List<AnswerSubjectDocument> getAllAnswerSubjectDocument(Long subjectDocumentId);
+
+    List<CommentReviewSubject> getAllCommentForReviewSubject(Long reviewSubjectId);
+
+    List<User> getAllUserShared(Long subjectDocumentId);
+
+    List<SubjectDocument> getAllSubjectDocumentCreateByUser();
+
+    String generatePublicOnInternetUrlForSubjectDocument(Long subjectDocumentId);
+
+    List<SharePrivate> getAllSubjectDocumentShared();
+
+    String generatePublicOnWebsiteUrlForSubjectDocument(Long subjectDocumentId);
+
+    boolean deleteSubjectDocumentForever(Long subjectDocumentId);
+
+    boolean moveSubjectDocumentToTrash(Long subjectDocumentId);
+
+    boolean restoreSubjectDocument(Long subjectDocumentId);
+
+    boolean makeSubjectDocumentPublic(Long subjectDocumentId);
+
+    boolean makeSubjectDocumentPrivate(Long subjectDocumentId);
+
+    boolean clearSharedPrivateSubjectDocument(Long sharedId);
+
+    List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
+
+    boolean deleteReviewSubject(Long reviewSubjectId);
+
+    List<ReviewSubject> getAllReviewSubjectCreatedByUser();
+
+    List<Object[]> getAllSubjectForAdmin();
 }

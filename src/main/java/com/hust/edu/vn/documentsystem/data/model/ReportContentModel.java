@@ -19,5 +19,5 @@ public class ReportContentModel {
     private String message;
 
     @NotNull
-    private Long documentId;
+    private Long subjectDocumentId;
 }

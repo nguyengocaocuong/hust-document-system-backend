@@ -16,8 +16,8 @@ import java.util.Date;
 @Getter
 public class SharePrivateDto implements Serializable {
     private  Long id;
-    private  DocumentDto document;
     private  UserDto user;
-    private  LocalDateTime sharedAt;
+    private  Date sharedAt;
     private  Date expirationTime;
+//    private SubjectDocumentAllDto subjectDocument;
 }

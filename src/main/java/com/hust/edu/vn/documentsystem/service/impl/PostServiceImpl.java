@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import co.elastic.thumbnails4j.core.ThumbnailingException;
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
@@ -10,23 +11,29 @@ import com.hust.edu.vn.documentsystem.data.model.PostModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.repository.*;
+import com.hust.edu.vn.documentsystem.service.DocumentService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import com.itextpdf.text.DocumentException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @Slf4j
 public class PostServiceImpl implements PostService {
+    private final FavoriteAnswerPostRepository favoriteAnswerPostRepository;
+    private final FavoritePostRepository favoritePostRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final ModelMapperUtils modelMapperUtils;
@@ -37,6 +44,7 @@ public class PostServiceImpl implements PostService {
     private final AnswerPostRepository answerPostRepository;
     private final CommentPostRepository commentPostRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final DocumentService documentService;
 
     @Autowired
     public PostServiceImpl(
@@ -49,8 +57,10 @@ public class PostServiceImpl implements PostService {
             SubjectRepository subjectRepository,
             AnswerPostRepository answerPostRepository,
             CommentPostRepository commentPostRepository,
-            ApplicationEventPublisher applicationEventPublisher
-    ) {
+            ApplicationEventPublisher applicationEventPublisher,
+            DocumentService documentService,
+            FavoritePostRepository favoritePostRepository,
+            FavoriteAnswerPostRepository favoriteAnswerPostRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.modelMapperUtils = modelMapperUtils;
@@ -61,17 +71,16 @@ public class PostServiceImpl implements PostService {
         this.answerPostRepository = answerPostRepository;
         this.commentPostRepository = commentPostRepository;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.documentService = documentService;
+        this.favoritePostRepository = favoritePostRepository;
+        this.favoriteAnswerPostRepository = favoriteAnswerPostRepository;
     }
 
     @Override
-    public List<Post> getAllPosts() {
-        return postRepository.findByIsDone(true);
+    public List<Object[]> getAllPosts() {
+        return postRepository.getPostForHomePage();
     }
 
-    @Override
-    public List<Post> getAllPostsCreateByUser() {
-        return postRepository.findByOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
-    }
 
     @Override
     public Post getPostById(@NotNull Long id) {
@@ -80,134 +89,42 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(PostModel postModel) {
-        if (postModel.getContent() == null && (postModel.getDocuments().length < 1 || postModel.getDescription() == null || postModel.getDescription().length() < 1))
+        Subject subject = subjectRepository.findById(postModel.getSubjectId()).orElse(null);
+        if (subject == null || postModel.getDocuments().length < 1 || postModel.getDescription() == null || postModel.getDescription().length() < 1)
             return null;
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post post = modelMapperUtils.mapAllProperties(postModel, Post.class);
         post.setDone(postModel.getDone() == 1);
         post.setOwner(user);
-        post.setSubject(subjectRepository.findById(postModel.getSubjectId()).orElse(null));
-        if (postModel.getDocuments() != null && postModel.getDocuments().length > 0) {
-/*
-            try {
-                String path = googleCloudStorageService.uploadDocumentsToGCP(postModel.getDocuments(), user.getRootPath());
-*/
-            Document document = new Document();
-                document.setName(postModel.getDocuments()[0].getOriginalFilename());
-                document.setContentType(postModel.getDocuments()[0].getContentType());
-                document.setPath("path");
-                document.setType(DocumentType.getDocumentTypeFromExtension(postModel.getDocuments()[0].getOriginalFilename().substring(postModel.getDocuments()[0].getOriginalFilename().lastIndexOf("."))));
-                documentRepository.save(document);
-                post.setDocument(document);
-/*
-            } catch (IOException e) {
-                return null;
-            }
-*/
+        post.setSubject(subject);
+        try {
+            Document documentEntity = documentService.savePublicDocumentToGoogleCloud(postModel.getDocuments());
+            post.setDocument(documentEntity);
+            Post response = postRepository.save(post);
+            return response;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        Post response = postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.NEW_POST, post));
-        return response;
     }
 
     @Override
-    public boolean updatePost(PostModel postModel) {
-        Post post = postRepository.findById(postModel.getId()).orElse(null);
-        if (post == null) return false;
-        if (post.getDescription() == null || !post.getDescription().equalsIgnoreCase(postModel.getDescription())) {
-            post.setDescription(postModel.getDescription());
-            post.setDescriptionEn(googleCloudTranslateService.translateText(postModel.getDescription(), TargetLanguageType.ENGLISH).get(0));
-        }
-        if (post.getContent() == null || !post.getContent().equalsIgnoreCase(postModel.getContent())) {
-            post.setContent(postModel.getContent());
-            post.setContentEn(googleCloudTranslateService.translateText(postModel.getContent(), TargetLanguageType.ENGLISH).get(0));
-        }
-        post.setSubject(subjectRepository.findById(postModel.getSubjectId()).orElse(null));
-
-        if (postModel.getDocuments().length > 0) {
-            User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-            boolean status = googleCloudStorageService.deleteDocumentByRootPath(user.getRootPath() + "documents/" + post.getDocument().getPath());
-            if (!status) return false;
-            try {
-                String path = googleCloudStorageService.uploadDocumentsToGCP(postModel.getDocuments(), user.getRootPath());
-                Document document = post.getDocument();
-                if (path == null) return false;
-                document.setPath(path);
-                documentRepository.save(document);
-            } catch (IOException e) {
-                return false;
-            }
-        }
-        postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.EDIT_POST, post));
-        return true;
-    }
-
-    @Override
-    public boolean deletePost(@NotNull Long postId) {
+    public CommentPost createComment(Long postId, CommentPostModel commentPostModel) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post post = postRepository.findById(postId).orElse(null);
-        if (post == null || !post.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
-        postRepository.delete(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.DELETE_POST, post));
-        return true;
-    }
-
-    @Override
-    public boolean uploadAnswer(AnswerPostModel answerPostModel) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Post post = postRepository.findById(answerPostModel.getPostId()).orElse(null);
-        if (post == null || user == null) return false;
-        AnswerPost answerPost = modelMapperUtils.mapAllProperties(answerPostModel, AnswerPost.class);
-        answerPost.setPost(post);
-        answerPost.setOwner(user);
-        if (answerPostModel.getContent() != null && answerPostModel.getContent().length() > 0) {
-            answerPost.setContent(answerPostModel.getContent());
-            answerPost.setContentEn(googleCloudTranslateService.translateText(answerPostModel.getContent(), TargetLanguageType.ENGLISH).get(0));
-        }
-        if (answerPostModel.getAnswerFile().length > 0) {
-            try {
-                String path = googleCloudStorageService.uploadDocumentsToGCP(answerPostModel.getAnswerFile(), user.getRootPath());
-                Document document = new Document();
-                document.setName(answerPostModel.getAnswerFile()[0].getOriginalFilename());
-                document.setContentType(answerPostModel.getAnswerFile()[0].getContentType());
-                document.setPath(path);
-                document.setType(DocumentType.getDocumentTypeFromExtension(answerPostModel.getAnswerFile()[0].getOriginalFilename().substring(answerPostModel.getAnswerFile()[0].getOriginalFilename().lastIndexOf("."))));
-                documentRepository.save(document);
-                answerPost.setDocument(document);
-            } catch (IOException e) {
-                return false;
-            }
-        }
-        answerPostRepository.save(answerPost);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.NEW_ANSWER, answerPost));
-        return true;
-    }
-
-    @Override
-    public boolean createComment(CommentPostModel commentPostModel) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Post post = postRepository.findById(commentPostModel.getPostId()).orElse(null);
-        if (post == null || user == null) return false;
-        CommentPost commentPost = modelMapperUtils.mapAllProperties(commentPostModel, CommentPost.class);
+        if (post == null || user == null) return null;
+        CommentPost commentPost = new CommentPost();
+        commentPost.setComment(commentPostModel.getComment());
         commentPost.setPost(post);
         commentPost.setOwner(user);
+        if (commentPostModel.getParentCommentId() != null) {
+            CommentPost parent = commentPostRepository.findById(commentPostModel.getParentCommentId()).orElse(null);
+            if (parent == null) return null;
+            commentPost.setParentComment(parent);
+        }
         commentPostRepository.save(commentPost);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.NEW_COMMENT_POST, commentPost));
-        return true;
+        return commentPost;
     }
 
-    @Override
-    public boolean updateCommentForPost(CommentPostModel commentPostModel) {
-        if (commentPostModel.getId() == null) return false;
-        CommentPost comment = commentPostRepository.findById(commentPostModel.getId()).orElse(null);
-        if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
-        comment.setComment(commentPostModel.getComment());
-        commentPostRepository.save(comment);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_POST, comment));
-        return true;
-    }
 
     @Override
     public boolean deleteCommentForPost(@NotNull Long id) {
@@ -215,7 +132,6 @@ public class PostServiceImpl implements PostService {
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         commentPostRepository.delete(comment);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_POST, comment));
         return true;
     }
 
@@ -283,5 +199,107 @@ public class PostServiceImpl implements PostService {
         answerPostRepository.save(answerPost);
         applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_ANSWER_PORT, answerPost));
         return true;
+    }
+
+    @Override
+    public List<CommentPost> getAllCommentForPost(Long postId) {
+        return commentPostRepository.findAllComment(postId, SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public CommentPost updateCommentForPost(Long commentId, CommentPostModel commentPostModel) {
+        CommentPost commentPost = commentPostRepository.findByIdAndUserEmail(commentId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (commentPost == null) return null;
+        commentPost.setComment(commentPostModel.getComment());
+        return commentPostRepository.save(commentPost);
+    }
+
+    @Override
+    public List<AnswerPost> findAllAnswerForPost(Long postId) {
+        return answerPostRepository.findAllAnswerForPost(postId);
+    }
+
+    @Override
+    public AnswerPost createAnswerForPost(Long postId, AnswerPostModel answerPostModel) {
+        Post post  = postRepository.findById(postId).orElse(null);
+        if(post == null) return null;
+        try {
+            AnswerPost answerPost = new AnswerPost();
+            answerPost.setPost(post);
+            Document document;
+
+            if(answerPostModel.getType() != DocumentType.LINK ){
+                document = documentService.savePublicDocumentToGoogleCloud(answerPostModel.getDocuments());
+            }else{
+                document = new Document();
+                document.setUrl(answerPostModel.getUrl());
+                answerPost.setType(DocumentType.LINK);
+                document.setContentType(MediaType.ALL.getType());
+                document = documentRepository.save(document);
+            }
+            answerPost.setDescription(answerPostModel.getDescription());
+            answerPost.setDocument(document);
+            answerPost.setOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
+            return answerPostRepository.save(answerPost);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean toggleFavoriteAnswerPost(Long answerId) {
+        AnswerPost answerPost = answerPostRepository.findById(answerId).orElse(null);
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (answerPost == null) return false;
+        FavoriteAnswerPost favoriteAnswerPost = favoriteAnswerPostRepository.findByIdAndUser(answerId, user);
+        if(favoriteAnswerPost != null){
+            favoriteAnswerPostRepository.delete(favoriteAnswerPost);
+            return true;
+        }
+        favoriteAnswerPost = new FavoriteAnswerPost();
+        favoriteAnswerPost.setAnswerPost(answerPost);
+        favoriteAnswerPost.setUser(user);
+        favoriteAnswerPostRepository.save(favoriteAnswerPost);
+        return true;
+    }
+
+    @Override
+    public List<FavoriteAnswerPost> getAllFavoriteForAnswer(Long answerId) {
+        return favoriteAnswerPostRepository.findAllByAnswerId(answerId);
+    }
+
+    @Override
+    public List<Object> translatePost(Long postId, TargetLanguageType targetLanguage) {
+        Post post = postRepository.findById(postId).orElse(null);
+        if(post == null) return null;
+        String url = googleCloudTranslateService.translatePost(post.getDocument(), targetLanguage);
+        return List.of(post.getDocument(), url);
+    }
+
+    @Override
+    public List<Object> readAnswerPost(Long answerId) {
+        AnswerPost answerPost = answerPostRepository.findById(answerId).orElse(null);
+        if(answerPost == null || answerPost.getType() == DocumentType.LINK) return null;
+        String path = answerPost.getDocument().getPath().split(System.getenv("BUCKET_NAME") + "/")[1];
+        byte[] data = googleCloudStorageService.readBlobByPath(path);
+        return List.of(answerPost.getDocument(), data);
+    }
+
+    @Override
+    public List<Post> getAllPostCreatedByUser() {
+        return postRepository.findAllPostCreatedByUser(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public boolean deletePost(Long postId) {
+        Post post = postRepository.findByIdAndUserEmail(postId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(post == null) return false;
+        postRepository.delete(post);
+        return true;
+    }
+
+    @Override
+    public List<Object[]> getPostForDashboard(Date sevenDaysAgo) {
+        return postRepository.getPostForDashboard(sevenDaysAgo);
     }
 }

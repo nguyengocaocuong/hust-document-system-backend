@@ -1,10 +1,12 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import co.elastic.thumbnails4j.core.ThumbnailingException;
 import com.google.cloud.storage.*;
 import com.hust.edu.vn.documentsystem.common.type.BlobType;
 import com.hust.edu.vn.documentsystem.common.type.GoogleTranslateSupportType;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.ThumbnailService;
+import com.itextpdf.text.DocumentException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService {
-    private static final String END_FIX_THUMBNAIL = "_thumbnail";
-    private static final String BUCKET_NAME = "hust-document-file";
+    private static final String THUMBNAIL = "thumbnail";
+    private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
     private final Storage storage;
     private final ThumbnailService thumbnailService;
 
@@ -46,24 +48,15 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws IOException {
+    public boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws IOException, ThumbnailingException, DocumentException {
         String name = document.getOriginalFilename();
         String filename = document.getOriginalFilename();
         if (filename == null)
             return false;
-        byte[] thumbnailBytes = switch (filename.substring(filename.lastIndexOf(".") + 1)) {
-            case "pdf" -> thumbnailService.generateThumbnailForPDF(document);
-            case "jpg", "jpeg", "png" -> thumbnailService.generateThumbnailForImage(document);
-            case "docx" -> thumbnailService.generateThumbnailForDocx(document);
-            case "xlsx" -> thumbnailService.generateThumbnailForXlsx(document);
-            case "pptx" -> thumbnailService.generateThumbnailForPptx(document);
-            case "xls" -> thumbnailService.generateThumbnailForXls(document);
-            case "doc" -> thumbnailService.generateThumbnailForDoc(document);
-            default -> thumbnailService.generateThumbnailForTxt(document);
-        };
+        byte[] thumbnailBytes = thumbnailService.generateThumbnail(document);
         ArrayList<Acl> owner = new ArrayList<>();
         owner.add(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-        String thumbnailPath = rootPath +  name.substring(0, name.lastIndexOf(".")) + END_FIX_THUMBNAIL + ".jpeg";
+        String thumbnailPath = rootPath + name.substring(0, name.lastIndexOf(".")) + THUMBNAIL + ".jpeg";
         uploadToGCP(
                 thumbnailBytes,
                 "image/jpeg",
@@ -109,7 +102,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath) throws IOException {
+    public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath) throws IOException, ThumbnailingException, DocumentException {
         String path = UUID.randomUUID() + "/";
         String childPath = rootPath + "documents/" + path;
         for (MultipartFile document : documents) {
@@ -189,10 +182,10 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public boolean updateDocumentByRootPath(String path, MultipartFile document) throws IOException {
-        var list = storage.list(BUCKET_NAME, Storage.BlobListOption.prefix(path),Storage.BlobListOption.currentDirectory(), Storage.BlobListOption.fields(Storage.BlobField.NAME)).getValues();
+    public boolean updateDocumentByRootPath(String path, MultipartFile document) throws IOException, ThumbnailingException, DocumentException {
+        var list = storage.list(BUCKET_NAME, Storage.BlobListOption.prefix(path), Storage.BlobListOption.currentDirectory(), Storage.BlobListOption.fields(Storage.BlobField.NAME)).getValues();
         list.forEach(value -> deleteDocumentByRootPath(value.getName()));
-        uploadDocumentToGCP(document,path);
+        uploadDocumentToGCP(document, path);
         return true;
     }
 
@@ -213,6 +206,50 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     @Override
     public Blob getBlobByPath(String path) {
         return storage.get(BlobId.of(BUCKET_NAME, path));
+    }
+
+    @Override
+    public List<String> createThumbnailAndUploadDocumentToGCP(MultipartFile multipartFile, List<Acl> owner) throws IOException {
+        String documentPath = UUID.randomUUID() + "/";
+        String thumbnailPath = documentPath + THUMBNAIL + ".png";
+        String filePath = documentPath + multipartFile.getOriginalFilename();
+        ArrayList<Acl> ownerForThumbnail = new ArrayList<>();
+        ownerForThumbnail.add(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+
+        BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
+        BlobId blobThumbnailId = BlobId.of(BUCKET_NAME, thumbnailPath);
+
+        BlobInfo.Builder blobInfoBuilder = BlobInfo.newBuilder(blobId)
+                .setContentType(multipartFile.getContentType());
+        BlobInfo.Builder blobThumbnailInfoBuilder = BlobInfo.newBuilder(blobThumbnailId)
+                .setContentType("image/png");
+        if (owner!= null && !owner.isEmpty())
+            blobInfoBuilder.setAcl(owner);
+        blobThumbnailInfoBuilder.setAcl(ownerForThumbnail);
+
+        BlobInfo blobThumbnailInfo = blobThumbnailInfoBuilder.build();
+        BlobInfo blobInfo = blobInfoBuilder.build();
+        storage.create(blobInfo, multipartFile.getInputStream());
+        try {
+            byte[] thumbnail = thumbnailService.generateThumbnail(multipartFile);
+            if (thumbnail != null && thumbnail.length > 0) {
+                storage.create(blobThumbnailInfo, thumbnail);
+                log.info(thumbnailPath);
+                log.info(generateUriFromPath(thumbnailPath));
+                return List.of((owner == null || owner.isEmpty()) ? filePath : generateUriFromPath(filePath), generateUriFromPath(thumbnailPath));
+            }
+        } catch (ThumbnailingException e) {
+            throw new RuntimeException(e);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        }
+        return List.of(owner.isEmpty() ? filePath : generateUriFromPath(filePath));
+    }
+
+    @Override
+    public byte[] readBlobByPath(String path) {
+        Blob blob = storage.get(BlobId.of(BUCKET_NAME, path));
+        return blob.getContent();
     }
 
     @Override

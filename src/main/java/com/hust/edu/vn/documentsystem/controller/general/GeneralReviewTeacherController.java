@@ -3,7 +3,6 @@ package com.hust.edu.vn.documentsystem.controller.general;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/generals/teachers/reviewTeacher")
-@Tag(name = "Review teacher - api")
 public class GeneralReviewTeacherController {
     private final ReviewTeacherService reviewTeacherService;
 

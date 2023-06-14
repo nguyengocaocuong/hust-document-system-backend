@@ -42,7 +42,7 @@ public class CommentSubjectDocument {
     @JsonIgnore
     private CommentSubjectDocument parentComment = null;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.REMOVE)
     private List<CommentSubjectDocument> childComment = new ArrayList<>();
 
 }

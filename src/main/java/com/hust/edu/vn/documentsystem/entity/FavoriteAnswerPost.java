@@ -29,6 +29,4 @@ public class FavoriteAnswerPost {
 
     private Date createAt = new Date();
 
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType = NotificationType.ALL;
 }

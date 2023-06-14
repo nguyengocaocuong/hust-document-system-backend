@@ -20,15 +20,15 @@ public class ShareByLink {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ShareByLink_Document"))
-    private Document document;
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_ShareByLink_SubjectDocument"))
+    private SubjectDocument subjectDocument;
 
     @Column()
     private Date sharedAt = new Date();
 
     private Date expirationTime;
 
-    @Column()
+    @Column(columnDefinition = "TEXT")
     private String token;
 
 }

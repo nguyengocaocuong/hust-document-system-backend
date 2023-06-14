@@ -4,12 +4,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class SubjectModel implements Serializable {
     private Long id;
 
@@ -18,9 +20,8 @@ public class SubjectModel implements Serializable {
 
     private String description;
 
-    @NotBlank
-    private Long teacherId;
+    private List<Long> teacherId;
 
-    private String subjectId;
+    private String subjectCode;
 
 }

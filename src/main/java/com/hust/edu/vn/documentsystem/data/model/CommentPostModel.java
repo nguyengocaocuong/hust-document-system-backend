@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.data.model;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
@@ -10,11 +9,6 @@ import lombok.*;
 @Setter
 @Getter
 public class CommentPostModel {
-    private Long id;
-
     private String comment;
-
-    @NotNull
-    private Long postId;
-
+    private Long parentCommentId;
 }

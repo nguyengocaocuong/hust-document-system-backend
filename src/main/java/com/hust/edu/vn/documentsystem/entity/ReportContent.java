@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ReportContents", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "owner_id", "document_id" })
+        @UniqueConstraint(columnNames = { "owner_id", "subject_document_id" })
 })
 @Getter
 @Setter
@@ -40,6 +40,6 @@ public class ReportContent {
     private User owner;
 
     @ManyToOne
-    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_Document"))
-    private Document document;
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_SubjectDocument"))
+    private SubjectDocument subjectDocument;
 }

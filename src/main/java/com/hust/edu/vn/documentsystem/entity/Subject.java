@@ -26,8 +26,6 @@ public class Subject {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "subject_id", unique = true)
-    private String subjectId;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;

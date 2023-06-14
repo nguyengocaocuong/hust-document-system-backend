@@ -16,7 +16,6 @@ public interface ReportService {
 
     boolean processReportContent(ProcessReportContentModel processReportContentModel);
 
-    boolean processReportDuplicate(ProcessDuplicateModel processDuplicateModel);
 
     List<ReportContent> getAllReportContents();
 

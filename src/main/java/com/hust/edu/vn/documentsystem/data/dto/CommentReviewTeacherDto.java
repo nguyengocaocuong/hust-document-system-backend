@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher} entity
@@ -18,5 +19,5 @@ public class CommentReviewTeacherDto implements Serializable {
     private  String comment;
     private  UserDto owner;
     private  Date createdAt;
-    private  ReviewTeacherDto reviewTeacher;
+    private List<CommentReviewTeacherDto> childComment;
 }

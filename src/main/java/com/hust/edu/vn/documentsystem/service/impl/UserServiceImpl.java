@@ -1,15 +1,16 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
+import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.PasswordResetToken;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.entity.VerifyAccount;
-import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.event.RegistrationCompleteEvent;
 import com.hust.edu.vn.documentsystem.repository.PasswordResetTokenRepository;
+import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.repository.VerifyAccountRepository;
 import com.hust.edu.vn.documentsystem.service.EmailService;
@@ -23,13 +24,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+    private final SubjectDocumentRepository subjectDocumentRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -52,7 +56,8 @@ public class UserServiceImpl implements UserService {
             VerifyAccountRepository verifyAccountRepository,
             PasswordResetTokenRepository passwordResetTokenRepository,
             ApplicationEventPublisher publisher, ModelMapperUtils modelMapperUtils,
-            GoogleCloudStorageService googleCloudStorageService, EmailService emailService) {
+            GoogleCloudStorageService googleCloudStorageService, EmailService emailService,
+            SubjectDocumentRepository subjectDocumentRepository) {
         this.googleCloudStorageService = googleCloudStorageService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -61,20 +66,18 @@ public class UserServiceImpl implements UserService {
         this.modelMapperUtils = modelMapperUtils;
         this.publisher = publisher;
         this.emailService = emailService;
+        this.subjectDocumentRepository = subjectDocumentRepository;
     }
 
     @Override
     public boolean registerUser(UserModel userModel, String applicationUrl) {
         if (userRepository.existsByEmail(userModel.getEmail()))
             return false;
-        String rootPath = UUID.randomUUID() + "/";
         User user = modelMapperUtils.mapAllProperties(userModel, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoleType(RoleType.USER);
-        user.setRootPath(rootPath);
         userRepository.save(user);
         publisher.publishEvent(new RegistrationCompleteEvent(user, applicationUrl));
-//        publisher.publishEvent(new NotifyEvent(NotificationType.NEW_USER, user));
         return true;
     }
 
@@ -144,18 +147,92 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateProfile(UserModel userModel) {
+    public User updateProfile(UserModel userModel) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(userModel.getId() == null || !userModel.getId().equals(user.getId()) || userModel.getEmail().equals(user.getEmail()))
-            return false;
-        User updateUser = modelMapperUtils.mapAllProperties(userModel, User.class);
-        userRepository.save(updateUser);
-        return true;
+        user.setAvatar(userModel.getAvatar());
+        if (userModel.getAvatarFile() != null) {
+            try {
+                List<String> urls = googleCloudStorageService.createThumbnailAndUploadDocumentToGCP(userModel.getAvatarFile(), List.of(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER)));
+                user.setAvatar(urls.get(0));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        user.setLastName(userModel.getLastName());
+        user.setEmail(userModel.getEmail());
+        user.setFirstName(userModel.getFirstName());
+        user.setPhoneNumber(userModel.getPhoneNumber());
+        user.setAddress(userModel.getAddress());
+        user.setFacebookUrl(userModel.getFacebookUrl());
+        user.setTwitterUrl(userModel.getTwitterUrl());
+        user.setInstagramUrl(userModel.getInstagramUrl());
+//        user.setDob(userModel.getDob());
+
+
+        return userRepository.save(user);
     }
 
     @Override
-    public User getProfileUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+    public List<SubjectDocument> getAllSubjectDocumentTrash() {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return subjectDocumentRepository.findAllByIsDeleteAndOwner(true, user);
+    }
+
+    @Override
+    public List<Object[]> getUserForDashboard(Date sevenDaysAgo) {
+        return userRepository.getUserForDashboard(sevenDaysAgo);
+    }
+
+    @Override
+    public List<User> getAllNewUser() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -7);
+        Date sevenDaysAgo = calendar.getTime();
+        return userRepository.getAllNewUser(sevenDaysAgo);
+    }
+
+    @Override
+    public List<User> getAllForAdminUser() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Object[] getProfileForUser(Long userId) {
+        return userRepository.getProfileUser(userId);
+    }
+
+    @Override
+    public Object[] getSubjectDocumentForProfile(Long userId) {
+        return userRepository.getSubjectDocumentForProfile(userId);
+    }
+
+    @Override
+    public boolean createUser(UserModel userModel) {
+        log.info(userModel.toString());
+        if (userRepository.existsByEmail(userModel.getEmail()) || !userModel.getEmail().endsWith("@sis.hust.edu.vn") || userModel.getPassword().length() < 8 ) return false;
+        User user = new User();
+        if (userModel.getAvatarFile() != null) {
+            try {
+                List<String> urls = googleCloudStorageService.createThumbnailAndUploadDocumentToGCP(userModel.getAvatarFile(), List.of(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER)));
+                user.setAvatar(urls.get(0));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        user.setLastName(userModel.getLastName());
+        user.setEmail(userModel.getEmail());
+        user.setFirstName(userModel.getFirstName());
+        user.setPhoneNumber(userModel.getPhoneNumber());
+        user.setAddress(userModel.getAddress());
+        user.setFacebookUrl(userModel.getFacebookUrl());
+        user.setTwitterUrl(userModel.getTwitterUrl());
+        user.setInstagramUrl(userModel.getInstagramUrl());
+        user.setEnable(true);
+        user.setRoleType(userModel.getRoleType());
+//        user.setDob(userModel.getDob());
+        userRepository.save(user);
+        return true;
     }
 
     private boolean resendVerificationAccountTokenMail(String applicationUrl, VerifyAccount verifyAccount) {

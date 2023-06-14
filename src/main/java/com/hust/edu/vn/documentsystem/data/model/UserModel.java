@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.data.model;
 
+import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 public class UserModel {
+    private String userName;
     @NotNull
     private String firstName;
     @NotNull
@@ -22,17 +24,20 @@ public class UserModel {
     @NotNull
     private String email;
 
-    @NotNull
-    private String password;
-
-    private Date dob;
+//    private Date dob;
 
     private String phoneNumber;
 
-    @NotNull
+    private MultipartFile avatarFile;
+    private String avatar;
+    private String password;
     private String matchingPassword;
 
-    private MultipartFile avatar;
+    private String facebookUrl;
+    private String instagramUrl;
+    private String twitterUrl;
 
-    private Long id;
+    private String address;
+
+    private RoleType roleType = RoleType.USER;
 }

@@ -16,10 +16,10 @@ import java.util.Date;
 @Setter
 public class DocumentDto implements Serializable {
     private  Long id;
-    private  String content;
-    private  DocumentType type;
     private  Date createdAt;
     private  String name;
     private  String contentType;
     private  String thumbnail;
+    private String path;
+    private String url;
 }

@@ -12,13 +12,17 @@ import java.util.List;
 
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
-    @Query("SELECT t FROM Teacher t WHERE t.name LIKE %:keyword% OR (t.description IS NOT NULL AND t.description LIKE %:keyword%)")
-    List<Teacher> searchTeacherByKeyword(@Param("keyword") String keyword);
 
-    List<Teacher> findAllByOwner(User user);
-
-    Teacher findByEmail(String email);
+    Teacher findByEmailHust(String email);
 
     @Query(value = "SELECT new com.hust.edu.vn.documentsystem.data.dto.TeacherDto(t.id, t.name) FROM Teacher AS t")
     List<TeacherDto> findAllTeacherForFilter();
+
+    @Query(value = "" +
+            "SELECT t, COUNT(DISTINCT rt.id) " +
+            "FROM Teacher t " +
+            "LEFT JOIN ReviewTeacher rt " +
+            "ON t.id = rt.teacher.id " +
+            "GROUP BY t.id")
+    List<Object[]> getAllTeacherForAdmin();
 }

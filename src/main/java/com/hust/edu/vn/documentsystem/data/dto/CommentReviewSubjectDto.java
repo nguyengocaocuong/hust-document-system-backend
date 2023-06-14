@@ -18,5 +18,4 @@ public class CommentReviewSubjectDto implements Serializable {
     private String comment;
     private UserDto owner;
     private Date createdAt;
-    private ReviewSubjectDto reviewSubject;
 }

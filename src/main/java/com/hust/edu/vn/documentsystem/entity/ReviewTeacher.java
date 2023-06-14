@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Review_teachers")
@@ -19,7 +20,7 @@ public class ReviewTeacher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String review;
 
     @Column(name = "is_done")
@@ -36,8 +37,16 @@ public class ReviewTeacher {
     @Column()
     private Date createdAt = new Date();
 
-    private boolean isHidden = false;
+    private boolean hidden = false;
 
     @Enumerated(EnumType.STRING)
     private ApproveType approved = ApproveType.NEW;
+
+    @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE)
+    private List<FavoriteReviewTeacher> favorites;
+    @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE)
+    private List<CommentReviewTeacher> comments;
+
+    private boolean isDelete = false;
+
 }

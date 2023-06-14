@@ -23,16 +23,15 @@ public class SharePrivate {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id", foreignKey = @ForeignKey(name = "fk_SharePrivate_Document"))
-    private Document document;
+    @JoinColumn(name = "subject_document_id", foreignKey = @ForeignKey(name = "fk_SharePrivate_SubjectDocument"))
+    private SubjectDocument subjectDocument;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_SharePrivate_User"))
-//    @CollectionTable
     private User user;
 
     @Column()
-    private LocalDateTime sharedAt;
+    private Date sharedAt = new Date();
 
     @Column()
     private Date expirationTime;

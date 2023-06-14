@@ -56,8 +56,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 
-    @Column( unique = true)
-    private String rootPath;
     private String address;
+
     private String username;
+
 }

@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.entity;
 
-import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,12 +17,10 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DocumentType type;
-
+    @Column(columnDefinition = "TEXT")
     private String path;
 
+    @Column(columnDefinition = "TEXT")
     private String thumbnail;
 
     @Column(nullable = false)
@@ -36,4 +33,6 @@ public class Document {
 
     @Column(nullable = false)
     private String contentType;
+
+    private String url;
 }

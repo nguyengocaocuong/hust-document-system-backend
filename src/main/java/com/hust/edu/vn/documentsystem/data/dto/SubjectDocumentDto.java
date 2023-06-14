@@ -1,11 +1,13 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
+import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,13 +17,19 @@ import java.util.List;
 @Setter
 @Getter
 public class SubjectDocumentDto implements Serializable {
-    private  Long id;
-    private  SubjectDocumentType type;
-    private  DocumentDto document;
-    private  String description;
-    private  UserDto owner;
-    private  String semester;
+    private Long id;
+    private SubjectDocumentType subjectDocumentType;
+    private DocumentType type;
+    private DocumentDto document;
+    private String description;
+    private UserDto owner;
+    private String semester;
     private List<CommentSubjectDocumentDto> commentSubjectDocumentList;
     private List<AnswerSubjectDocumentDto> answerSubjectDocumentList;
     private List<FavoriteSubjectDocumentDto> favoriteSubjectDocumentList;
+    private List<SharePrivateDto> shared;
+    private Date createdAt;
+    private Date lastEditedAt;
+    private Date deletedAt ;
+    private boolean isPublic;
 }

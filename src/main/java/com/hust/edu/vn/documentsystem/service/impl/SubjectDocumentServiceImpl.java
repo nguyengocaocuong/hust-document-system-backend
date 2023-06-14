@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
 import com.hust.edu.vn.documentsystem.service.SubjectDocumentService;

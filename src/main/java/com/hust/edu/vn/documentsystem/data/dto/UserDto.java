@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
+import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,5 +23,12 @@ public class UserDto implements Serializable {
     private  String avatar;
     private  Date createdAt;
     private  String phoneNumber;
+
+    private String facebookUrl;
+    private String instagramUrl;
+    private String twitterUrl;
     private String token;
+
+    private RoleType roleType;
+    private boolean isEnable;
 }

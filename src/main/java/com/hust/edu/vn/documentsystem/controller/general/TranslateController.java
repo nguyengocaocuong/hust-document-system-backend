@@ -6,7 +6,6 @@ import com.hust.edu.vn.documentsystem.data.model.TranslateImageModel;
 import com.hust.edu.vn.documentsystem.data.model.TranslateTextModel;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,7 +17,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/generals/translates")
-@Tag(name = "Translates - api")
 public class TranslateController {
     private final GoogleCloudTranslateService googleCloudTranslateService;
     private final GoogleCloudStorageService generateUriFromPath;

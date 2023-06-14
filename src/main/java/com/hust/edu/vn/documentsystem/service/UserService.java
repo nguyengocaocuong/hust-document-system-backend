@@ -2,8 +2,10 @@ package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
 
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -30,7 +32,20 @@ public interface UserService {
 
     User getProfile();
 
-    boolean updateProfile(UserModel userModel);
+    User updateProfile(UserModel userModel);
 
-    User getProfileUserById(Long userId);
+
+    List<SubjectDocument> getAllSubjectDocumentTrash();
+
+    List<Object[]> getUserForDashboard(Date sevenDaysAgo);
+
+    List<User> getAllNewUser();
+
+    List<User> getAllForAdminUser();
+
+    Object[] getProfileForUser(Long userId);
+
+    Object[] getSubjectDocumentForProfile(Long userId);
+
+    boolean createUser(UserModel userModel);
 }

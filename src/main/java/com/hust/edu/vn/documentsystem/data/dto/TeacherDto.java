@@ -3,6 +3,7 @@ package com.hust.edu.vn.documentsystem.data.dto;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,19 +16,21 @@ import java.util.List;
 @Getter
 @Setter
 public class TeacherDto implements Serializable {
-    private  Long id;
-    private  String name;
-    private  String email;
-    private  String phoneNumber;
-    private  Date createdAt;
-    private  String avatar;
-    private  Date dob;
-    private  List<SubjectDto> subjects;
-    private  String description;
-    private  UserDto owner;
+    public Long id;
+    public String name;
+    public String emailHust;
+    public String emailPrivate;
+    private String description;
+    public String phoneNumber;
+    public String avatar;
+    public Date dob;
+    public List<SubjectDto> subjects;
 
     public TeacherDto(Long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public TeacherDto() {
     }
 }

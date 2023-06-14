@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostModel {
     private Long id;
     private String description;
-    private String content;
     @NotNull
     private Long subjectId;
     private MultipartFile[] documents;

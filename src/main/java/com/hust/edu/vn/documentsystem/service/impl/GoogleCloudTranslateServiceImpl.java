@@ -6,11 +6,13 @@ import com.google.cloud.translate.v3.*;
 import com.google.protobuf.ByteString;
 import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -91,6 +93,74 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
         cloudStorageService.setAclForAccessBlob(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER),path);
         publisher.publishEvent(new NotifyEvent(NotificationType.TRANSLATED, path));
         return path;
+    }
+
+    @Override
+    public byte[] translateSubjectDocument(Document document, TargetLanguageType targetLanguageType) {
+        String output = getOutputTranslatePath(document.getPath());
+        LocationName parent = LocationName.of(System.getenv("PROJECT_ID"), "global");
+        byte[] inputs = cloudStorageService.readBlobByPath(document.getPath());
+        DocumentOutputConfig documentOutputConfig = DocumentOutputConfig.newBuilder()
+                .setGcsDestination(
+                        GcsDestination.newBuilder()
+                                .setOutputUriPrefix(output)
+                                .build()
+                )
+                .setMimeType(Objects.requireNonNull(document.getContentType()))
+                .build();
+        DocumentInputConfig documentInputConfig =  DocumentInputConfig
+                .newBuilder()
+                .setMimeType(document.getContentType())
+                .setContent(ByteString.copyFrom(inputs))
+                .build();
+        TranslateDocumentRequest request = TranslateDocumentRequest
+                .newBuilder()
+                .setParent(parent.toString())
+                .setDocumentInputConfig(documentInputConfig)
+                .setDocumentOutputConfig(documentOutputConfig)
+                .setTargetLanguageCode(targetLanguageType.getCode())
+                .build();
+        TranslateDocumentResponse translateDocumentResponse = translationServiceClient.translateDocument(request);
+        return  translateDocumentResponse.getDocumentTranslation().getByteStreamOutputs(0).toByteArray();
+    }
+
+    @Override
+    public String translatePost(Document document, TargetLanguageType targetLanguageType) {
+        String output = getOutputTranslatePath(document.getPath());
+        LocationName parent = LocationName.of(System.getenv("PROJECT_ID"), "global");
+        String paths[] = document.getPath().split("/");
+        String filename = document.getName();
+        String path =paths[paths.length - 2] +  "/translated_document_" + targetLanguageType.getCode() + "_translations" + filename.substring(filename.lastIndexOf("."));
+        byte[] inputs = cloudStorageService.readBlobByPath(paths[paths.length - 2] + "/" + document.getName());
+        DocumentOutputConfig documentOutputConfig = DocumentOutputConfig.newBuilder()
+                .setGcsDestination(
+                        GcsDestination.newBuilder()
+                                .setOutputUriPrefix(output)
+                                .build()
+                )
+                .setMimeType(Objects.requireNonNull(MediaType.APPLICATION_PDF.toString()))
+                .build();
+        DocumentInputConfig documentInputConfig =  DocumentInputConfig
+                .newBuilder()
+                .setMimeType(document.getContentType())
+                .setContent(ByteString.copyFrom(inputs))
+                .build();
+        TranslateDocumentRequest request = TranslateDocumentRequest
+                .newBuilder()
+                .setParent(parent.toString())
+                .setDocumentInputConfig(documentInputConfig)
+                .setDocumentOutputConfig(documentOutputConfig)
+                .setTargetLanguageCode(targetLanguageType.getCode())
+                .build();
+        translationServiceClient.translateDocument(request);
+        cloudStorageService.setAclForAccessBlob(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER),path);
+        return  cloudStorageService.generateUriFromPath(path);
+    }
+
+    private String getOutputTranslatePath(String path){
+        String paths[] = path.split("/");
+
+        return "gs://" + System.getenv("BUCKET_NAME") + "/" + paths[paths.length - 2]  + "/";
     }
 }
 

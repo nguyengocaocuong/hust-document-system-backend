@@ -1,7 +1,6 @@
 package com.hust.edu.vn.documentsystem.config;
 
 import com.hust.edu.vn.documentsystem.service.impl.CustomAuthenticationProvider;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -27,8 +25,6 @@ public class SpringSecurityConfig {
     private static final String[] WHITE_LIST_URLS = {
             "/api/v1/authentication/**",
             "/api/v1/public/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**"
     };
 
     private final CustomAuthenticationProvider customAuthenticationProvider;
@@ -43,18 +39,15 @@ public class SpringSecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors()
-                .configurationSource(new CorsConfigurationSource() {
-                    @Override
-                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                        CorsConfiguration corsConfiguration = new CorsConfiguration();
-                        corsConfiguration.setAllowedOrigins(Arrays.asList("FRONTEND_URL","https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000"));
-                        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
-                        corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-                        corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
-                        corsConfiguration.setAllowCredentials(false);
-                        corsConfiguration.setMaxAge(Duration.ofMinutes(20));
-                        return corsConfiguration;
-                    }
+                .configurationSource(request -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowedOrigins(Arrays.asList("*","https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000"));
+                    corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+                    corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+                    corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+                    corsConfiguration.setAllowCredentials(false);
+                    corsConfiguration.setMaxAge(Duration.ofMinutes(20));
+                    return corsConfiguration;
                 })
                 .and()
                 .csrf()
@@ -99,5 +92,4 @@ public class SpringSecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
 }

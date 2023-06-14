@@ -28,7 +28,10 @@ public class Teacher {
     private String name;
 
     @Column( nullable = false, unique = true)
-    private String email;
+    private String emailHust;
+
+    @Column( unique = true)
+    private String emailPrivate;
 
     @Column()
     private String phoneNumber;
@@ -42,15 +45,11 @@ public class Teacher {
     @Column()
     private Date dob;
 
-    @ManyToMany(mappedBy = "teachers", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "teachers")
     private List<Subject> subjects = new ArrayList<>();
 
     @Column( columnDefinition = "TEXT")
     private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn( nullable = false,foreignKey = @ForeignKey(name = "fk_Teacher_User"))
-    private User owner;
 
 }
 

@@ -1,11 +1,14 @@
 package com.hust.edu.vn.documentsystem.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "CommentReviewTeachers")
@@ -32,6 +35,14 @@ public class CommentReviewTeacher {
     @ManyToOne
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_CommentReviewTeacher_ReviewTeacher"))
     private ReviewTeacher reviewTeacher;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(foreignKey = @ForeignKey(name = "fk_CommentReviewTeacher_CommentReviewTeacher"))
+    @JsonIgnore
+    private CommentReviewTeacher parentComment = null;
+
+    @OneToMany(mappedBy = "parentComment")
+    private List<CommentReviewTeacher> childComment = new ArrayList<>();
 
     private boolean isHidden = false;
 }

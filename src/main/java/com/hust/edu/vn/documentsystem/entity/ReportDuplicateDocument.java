@@ -38,11 +38,11 @@ public class ReportDuplicateDocument {
     private String message;
 
     @ManyToOne
-    @JoinColumn(name = "first", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_DocumentFirst"))
-    private Document documentFirst;
+    @JoinColumn(name = "first", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_SubjectDocumentFirst"))
+    private SubjectDocument subjectDocumentFirst;
 
     @ManyToOne
-    @JoinColumn(name = "second", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_DocumentSecond"))
-    private Document documentSecond;
+    @JoinColumn(name = "second", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_SubjectDocumentSecond"))
+    private SubjectDocument subjectDocumentSecond;
 
 }
