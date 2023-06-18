@@ -8,6 +8,7 @@ import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/subjects")
+@Slf4j
 public class UserSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;

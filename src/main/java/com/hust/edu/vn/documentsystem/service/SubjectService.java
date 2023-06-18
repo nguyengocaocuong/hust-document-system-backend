@@ -22,7 +22,6 @@ public interface SubjectService {
 
     List<Subject> getAllSubjectsCreateByUser();
 
-    List<Subject> findSubjectByKeywordAndTeachers(String keyword, Teacher teacher);
 
     SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
 
@@ -52,7 +51,6 @@ public interface SubjectService {
 
     List<SubjectDocumentType> findAllSubjectDocumentType();
 
-    SubjectDocument getStSubjectDetail(Long subjectId);
 
     SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
 

@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.dev
       target: development
     ports:
-      - "8081:8081"
+      - "8080:8080"
     environment:
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
@@ -25,7 +25,7 @@ services:
       - mysqlserver
 
   mysqlserver:
-    image: mysql:8.0
+    image: mysql:8.0-laste
     container_name: mysqlserver
     ports:
       - "3306:3306"

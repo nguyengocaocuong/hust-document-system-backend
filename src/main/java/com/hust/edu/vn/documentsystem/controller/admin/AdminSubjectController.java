@@ -2,6 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
+import com.hust.edu.vn.documentsystem.data.model.SubjectModel;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
@@ -42,6 +43,16 @@ public class AdminSubjectController {
             resultMap.add(map);
         });
         return CustomResponse.generateResponse(HttpStatus.OK, resultMap);
+    }
+    @PatchMapping()
+    public ResponseEntity<CustomResponse> updateSubject(@ModelAttribute SubjectModel subjectModel){
+        boolean status = subjectService.updateSubject(subjectModel);
+        return  CustomResponse.generateResponse(HttpStatus.OK, status);
+    }
+    @DeleteMapping("{subjectId}")
+    public ResponseEntity<CustomResponse> deleteSubject(@PathVariable("subjectId") Long subjectId){
+        boolean status = subjectService.deleteSubject(subjectId);
+        return  CustomResponse.generateResponse(HttpStatus.OK, status);
     }
 
 }

@@ -3,6 +3,7 @@ package com.hust.edu.vn.documentsystem.controller.admin;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
+import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
@@ -45,4 +46,15 @@ public class AdminTeacherController {
         return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các giảng viên",resultMap);
     }
 
+    @PatchMapping()
+    public ResponseEntity<CustomResponse> updateTeacher(@ModelAttribute TeacherModel teacherModel){
+        boolean status = teacherService.updateTeacher(teacherModel);
+        return CustomResponse.generateResponse(status);
+    }
+
+    @DeleteMapping("{teacherId}")
+    public ResponseEntity<CustomResponse> deleteTeacher(@PathVariable("teacherId") Long teacherId){
+        boolean status = teacherService.deleteTeacher(teacherId);
+        return CustomResponse.generateResponse(status);
+    }
 }

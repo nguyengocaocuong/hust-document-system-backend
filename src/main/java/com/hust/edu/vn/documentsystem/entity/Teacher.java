@@ -51,6 +51,9 @@ public class Teacher {
     @Column( columnDefinition = "TEXT")
     private String description;
 
+    @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<ReviewTeacher> reviews = new ArrayList<>();
+
 }
 
 

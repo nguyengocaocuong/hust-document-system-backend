@@ -33,7 +33,7 @@ public class Subject {
     @Column(name = "created_at")
     private Date createdAt = new Date();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "Teachings",
             joinColumns = @JoinColumn(name = "subject_id"),
@@ -47,8 +47,11 @@ public class Subject {
     @Column(nullable = false)
     private String subjectCode;
 
-    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<SubjectDocument> subjectDocuments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<FavoriteSubject> favorites = new ArrayList<>();
 
 }
 

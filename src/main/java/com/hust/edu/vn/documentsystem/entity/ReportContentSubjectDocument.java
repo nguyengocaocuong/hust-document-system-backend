@@ -10,21 +10,18 @@ import lombok.Setter;
 import java.util.Date;
 
 @Entity
-@Table(name = "ReportContents", uniqueConstraints = {
+@Table(name = "ReportContentSubjectDocuments", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "owner_id", "subject_document_id" })
 })
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportContent {
+public class ReportContentSubjectDocument {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private String content;
 
     @Column(nullable = false)
     private Date createdAt = new Date();
@@ -34,6 +31,7 @@ public class ReportContent {
     private ReportStatus status = ReportStatus.NEW_REPORT;
 
     private String message;
+    private String processMessage;
 
     @ManyToOne
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_User"))

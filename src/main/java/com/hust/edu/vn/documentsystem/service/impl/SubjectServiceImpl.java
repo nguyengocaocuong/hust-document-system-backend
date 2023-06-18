@@ -120,11 +120,6 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public SubjectDocument getStSubjectDetail(Long subjectId) {
-        return subjectDocumentRepository.findById(subjectId).orElse(null);
-    }
-
-    @Override
     public SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId) {
         return subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
     }
@@ -390,9 +385,8 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public boolean updateSubject(SubjectModel subjectModel) {
         Subject subject = subjectRepository.findById(subjectModel.getId()).orElse(null);
-        if (subject == null || !subject.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
         subject.setName(subjectModel.getName());
+        subject.setSubjectCode(subjectModel.getSubjectCode());
         subject.setDescription(subjectModel.getDescription());
         subjectRepository.save(subject);
         return true;
@@ -413,12 +407,6 @@ public class SubjectServiceImpl implements SubjectService {
         return subjectRepository.findAllByOwner(user);
     }
 
-    @Override
-    public List<Subject> findSubjectByKeywordAndTeachers(String keyword, Teacher teacher) {
-        List<Subject> subjects = subjectRepository.findByKeywordAndTeachers(keyword, teacher);
-        log.info("Number of subjectLists : {}", subjects.size());
-        return subjects;
-    }
 
     @Override
     public SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId) {

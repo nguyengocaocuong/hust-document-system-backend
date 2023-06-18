@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -171,5 +173,35 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public List<Object[]> getAllTeacherForAdmin() {
         return teacherRepository.getAllTeacherForAdmin();
+    }
+
+    @Override
+    public boolean updateTeacher(TeacherModel teacherModel) {
+        Teacher teacher = teacherRepository.findById(teacherModel.getId()).orElse(null);
+        if(teacher == null) return false;
+        teacher.setAvatar(teacherModel.getAvatar());
+        if(teacherModel.getAvatarFile() != null ){
+            try {
+                List<String> urls = googleCloudStorageService.createThumbnailAndUploadDocumentToGCP(teacherModel.getAvatarFile(), List.of(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER)));
+                teacherModel.setAvatar(urls.get(0));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        teacher.setName(teacherModel.getName());
+        teacher.setDescription(teacherModel.getDescription());
+        teacher.setDob(teacherModel.getDob());
+        teacher.setEmailHust(teacherModel.getEmailHust());
+        teacher.setPhoneNumber(teacherModel.getPhoneNumber());
+        teacher.setEmailPrivate(teacherModel.getEmailPrivate());
+        teacherRepository.save(teacher);
+        return true;
+    }
+
+    @Override
+    public boolean deleteTeacher(Long teacherId) {
+        if(!teacherRepository.existsById(teacherId)) return false;
+        teacherRepository.deleteById(teacherId);
+        return true;
     }
 }

@@ -40,4 +40,8 @@ public interface TeacherService {
     List<ReviewTeacher> getAllReviewTeacherCreatedByUser();
 
     List<Object[]> getAllTeacherForAdmin();
+
+    boolean updateTeacher(TeacherModel teacherModel);
+
+    boolean deleteTeacher(Long teacherId);
 }

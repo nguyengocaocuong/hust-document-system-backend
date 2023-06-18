@@ -26,7 +26,7 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
     SubjectDocument findByIdAndUserEmail(Long subjectDocumentId, String name);
 
     @Query("SELECT DISTINCT sd FROM SubjectDocument sd " +
-            "JOIN SharePrivate sp " +
+            "LEFT JOIN SharePrivate sp " +
             "ON sd.id = sp.subjectDocument.id  " +
             "OR sd.isPublic = true " +
             "OR sd.owner.id = :userId " +
