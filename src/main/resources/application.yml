@@ -32,8 +32,4 @@ spring:
     gcp:
       vision:
         enabled: true
-  springdoc:
-    swagger-ui:
-      path: /swagger-ui.html
-
 
