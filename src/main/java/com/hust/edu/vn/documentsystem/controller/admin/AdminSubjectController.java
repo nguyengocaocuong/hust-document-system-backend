@@ -3,21 +3,30 @@ package com.hust.edu.vn.documentsystem.controller.admin;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.SubjectModel;
+import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.entity.Subject;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.spire.ms.System.Collections.ArrayList;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admins/subjects")
+@Slf4j
 public class AdminSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
@@ -55,4 +64,16 @@ public class AdminSubjectController {
         return  CustomResponse.generateResponse(HttpStatus.OK, status);
     }
 
+    @GetMapping("subjectDocuments/{subjectDocumentId}/readFile")
+    public ResponseEntity<Resource> readSubjectDocument(@PathVariable("subjectDocumentId") Long id) {
+        List<Object> data = subjectService.readSubjectDocumentFile(id, null);
+        if (data == null || ((byte[]) data.get(1)).length == 0) return ResponseEntity.notFound().build();
+        Document document = (Document) data.get(0);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(document.getContentType()));
+        headers.setContentDisposition(ContentDisposition.attachment().filename(document.getName()).build());
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ByteArrayResource((byte[]) data.get(1)));
+    }
 }

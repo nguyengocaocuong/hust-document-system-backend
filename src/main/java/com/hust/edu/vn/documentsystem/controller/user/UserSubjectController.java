@@ -209,23 +209,23 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.findAllSubjectDocumentType());
     }
 
-    @GetMapping("subjectDocuments/{subjectDocumentId}/readFile")
-    public ResponseEntity<Resource> readSubjectDocument(@PathVariable("subjectDocumentId") Long id) {
-        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(id);
-        try {
-            File file = new File(subjectDocument.getDocument().getPath());
-            FileInputStream fileInputStream = new FileInputStream(file);
-            Resource resource = new InputStreamResource(fileInputStream);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.valueOf(subjectDocument.getDocument().getContentType()));
-            headers.setContentDisposition(ContentDisposition.attachment().filename(subjectDocument.getDocument().getName()).build());
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(resource);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
+//    @GetMapping("subjectDocuments/{subjectDocumentId}/readFile")
+//    public ResponseEntity<Resource> readSubjectDocument(@PathVariable("subjectDocumentId") Long id) {
+//        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(id);
+//        try {
+//            File file = new File(subjectDocument.getDocument().getPath());
+//            FileInputStream fileInputStream = new FileInputStream(file);
+//            Resource resource = new InputStreamResource(fileInputStream);
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.valueOf(subjectDocument.getDocument().getContentType()));
+//            headers.setContentDisposition(ContentDisposition.attachment().filename(subjectDocument.getDocument().getName()).build());
+//            return ResponseEntity.ok()
+//                    .headers(headers)
+//                    .body(resource);
+//        } catch (IOException e) {
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//    }
 
     @PostMapping()
     public ResponseEntity<CustomResponse> createSubject(@ModelAttribute SubjectModel subjectModel) {
