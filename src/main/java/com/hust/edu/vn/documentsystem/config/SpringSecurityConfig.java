@@ -41,7 +41,7 @@ public class SpringSecurityConfig {
                 .cors()
                 .configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(Arrays.asList("*","https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000"));
+                    corsConfiguration.setAllowedOrigins(Arrays.asList("*",System.getenv("FRONTEND_URL"),"https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000"));
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                     corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                     corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
