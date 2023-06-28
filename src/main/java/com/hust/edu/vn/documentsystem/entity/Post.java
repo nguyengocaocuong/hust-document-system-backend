@@ -43,13 +43,12 @@ public class Post {
     private boolean isHidden = false;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<FavoritePost> favoritePostList = new ArrayList<>();
+    private List<FavoritePost> favorites = new ArrayList<>();
 
     @OneToMany(mappedBy = "post" , cascade = CascadeType.REMOVE)
-    private List<AnswerPost> answerPostList = new ArrayList<>();
+    private List<AnswerPost> answers = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
-    private List<CommentPost> commentPosts = new ArrayList<>();
-
+    private List<CommentPost> comments = new ArrayList<>();
     private boolean isDelete = false;
 }

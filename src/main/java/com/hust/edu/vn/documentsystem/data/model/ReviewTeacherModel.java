@@ -20,8 +20,5 @@ public class ReviewTeacherModel {
 
     private Long done;
 
-    @NotBlank
-    private Long teacherId;
-
     private ApproveType approved = ApproveType.NEW;
 }

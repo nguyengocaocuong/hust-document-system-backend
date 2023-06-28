@@ -25,7 +25,7 @@ public interface SubjectService {
 
     SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
 
-    Object shareDocument(Long subjectDocumentId,ShareSubjectDocumentModel shareSubjectDocumentModel);
+    Object shareDocument(Long subjectDocumentId, ShareSubjectDocumentModel shareSubjectDocumentModel);
 
     boolean favoriteSubject(Long subjectId, FavoriteSubjectModel favoriteSubjectModel);
 
@@ -33,13 +33,12 @@ public interface SubjectService {
 
     boolean updateFavoriteSubject(FavoriteSubjectModel favoriteSubjectModel);
 
-    CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel);
+    CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId);
 
-    boolean updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel);
+    CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId, Long commentId);
 
-    boolean hiddenCommentForSubjectDocument(Long id);
+    boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId);
 
-    boolean activeCommentForSubjectDocument(Long id);
 
     List<FavoriteSubject> getFavoriteSubjects();
 
@@ -58,7 +57,7 @@ public interface SubjectService {
 
     boolean favoriteSubjectDocument(Long subjectDocumentId);
 
-    AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId,AnswerSubjectDocumentModel answerSubjectDocumentModel);
+    AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId, AnswerSubjectDocumentModel answerSubjectDocumentModel);
 
     List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
 
@@ -68,7 +67,6 @@ public interface SubjectService {
 
     List<AnswerSubjectDocument> getAllAnswerSubjectDocument(Long subjectDocumentId);
 
-    List<CommentReviewSubject> getAllCommentForReviewSubject(Long reviewSubjectId);
 
     List<User> getAllUserShared(Long subjectDocumentId);
 
@@ -94,9 +92,15 @@ public interface SubjectService {
 
     List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
 
-    boolean deleteReviewSubject(Long reviewSubjectId);
-
     List<ReviewSubject> getAllReviewSubjectCreatedByUser();
 
     List<Object[]> getAllSubjectForAdmin();
+
+    boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId);
+
+    ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel);
+
+    ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId, ReportContentSubjectDocumentModel reportContentSubjectDocumentModel);
+
+    ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId, ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
 }

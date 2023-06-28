@@ -3,6 +3,7 @@ package com.hust.edu.vn.documentsystem.repository;
 import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.entity.Post;
 import com.hust.edu.vn.documentsystem.entity.User;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,16 +21,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post findByIdAndIsHidden(Long id, boolean b);
 
 
-    @Query("SELECT p, COUNT(DISTINCT fp.id), COUNT(DISTINCT ap.id), COUNT(DISTINCT cp.id) " +
-            "FROM Post p LEFT JOIN FavoritePost fp " +
-            "ON p.id = fp.post.id LEFT JOIN AnswerPost ap " +
-            "ON p.id = ap.post.id LEFT JOIN CommentPost cp " +
-            "ON p.id = cp.post.id " +
-            "WHERE p.isDone = true AND p.isHidden = false " +
-            "GROUP BY p.id " +
-            "ORDER BY p.createdAt " +
-            "LIMIT 10")
-    List<Object[]> getPostForHomePage();
+    @Query(value = "SELECT p FROM Post p WHERE p.isDone = true")
+    List<Post> getPostForHomePage(PageRequest pageRequest);
 
     @Query(value = "SELECT p FROM Post p WHERE p.owner.email = :email")
     List<Post> findAllPostCreatedByUser(String email);

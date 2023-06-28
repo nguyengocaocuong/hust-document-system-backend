@@ -2,10 +2,7 @@ package com.hust.edu.vn.documentsystem.service.impl;
 
 import co.elastic.thumbnails4j.core.ThumbnailingException;
 import com.google.cloud.storage.Acl;
-import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
-import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.common.type.*;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
@@ -30,6 +27,9 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class SubjectServiceImpl implements SubjectService {
+    private final ReportDuplicateSubjectDocumentRepository reportDuplicateSubjectDocumentRepository;
+    private final ReportContentSubjectDocumentRepository reportContentSubjectDocumentRepository;
+    private final ReportContentReviewSubjectRepository reportContentReviewSubjectRepository;
     private final ReviewSubjectRepository reviewSubjectRepository;
     private final ShareByLinkRepository shareByLinkRepository;
     private final CommentReviewSubjectRepository commentReviewSubjectRepository;
@@ -77,7 +77,10 @@ public class SubjectServiceImpl implements SubjectService {
             FavoriteAnswerSubjectDocumentRepository favoriteAnswerSubjectDocumentRepository,
             CommentReviewSubjectRepository commentReviewSubjectRepository,
             ShareByLinkRepository shareByLinkRepository, GoogleCloudTranslateService googleCloudTranslateService,
-            ReviewSubjectRepository reviewSubjectRepository) {
+            ReviewSubjectRepository reviewSubjectRepository,
+            ReportContentReviewSubjectRepository reportContentReviewSubjectRepository,
+            ReportContentSubjectDocumentRepository reportContentSubjectDocumentRepository,
+            ReportDuplicateSubjectDocumentRepository reportDuplicateSubjectDocumentRepository) {
         this.subjectRepository = subjectRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.userRepository = userRepository;
@@ -102,6 +105,9 @@ public class SubjectServiceImpl implements SubjectService {
         this.shareByLinkRepository = shareByLinkRepository;
         this.googleCloudTranslateService = googleCloudTranslateService;
         this.reviewSubjectRepository = reviewSubjectRepository;
+        this.reportContentReviewSubjectRepository = reportContentReviewSubjectRepository;
+        this.reportContentSubjectDocumentRepository = reportContentSubjectDocumentRepository;
+        this.reportDuplicateSubjectDocumentRepository = reportDuplicateSubjectDocumentRepository;
     }
 
     @Override
@@ -227,10 +233,6 @@ public class SubjectServiceImpl implements SubjectService {
         return answerSubjectDocumentRepository.findAllBySubjectDocumentId(subjectDocumentId);
     }
 
-    @Override
-    public List<CommentReviewSubject> getAllCommentForReviewSubject(Long reviewSubjectId) {
-        return commentReviewSubjectRepository.findAllByReviewSubjectId(reviewSubjectId);
-    }
 
     @Override
     public List<User> getAllUserShared(Long subjectDocumentId) {
@@ -307,7 +309,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public boolean makeSubjectDocumentPublic(Long subjectDocumentId) {
         SubjectDocument subjectDocument = subjectDocumentRepository.findByIdAndUserEmailAndIsPublic(subjectDocumentId, SecurityContextHolder.getContext().getAuthentication().getName(), false);
-        if(subjectDocument == null) return false;
+        if (subjectDocument == null) return false;
         subjectDocument.setPublic(true);
         subjectDocumentRepository.save(subjectDocument);
         return true;
@@ -316,7 +318,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public boolean makeSubjectDocumentPrivate(Long subjectDocumentId) {
         SubjectDocument subjectDocument = subjectDocumentRepository.findByIdAndUserEmailAndIsPublic(subjectDocumentId, SecurityContextHolder.getContext().getAuthentication().getName(), true);
-        if(subjectDocument == null) return false;
+        if (subjectDocument == null) return false;
         subjectDocument.setPublic(false);
         subjectDocumentRepository.save(subjectDocument);
         return true;
@@ -325,7 +327,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public boolean clearSharedPrivateSubjectDocument(Long sharedId) {
         SharePrivate sharePrivate = sharePrivateRepository.findByIdAndUserEmail(sharedId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(sharePrivate == null) return false;
+        if (sharePrivate == null) return false;
         sharePrivateRepository.delete(sharePrivate);
         return true;
     }
@@ -333,18 +335,11 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType) {
         SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
-        if(subjectDocument == null || subjectDocument.getType() == DocumentType.LINK) return null;
-        byte[] data = googleCloudTranslateService.translateSubjectDocument(subjectDocument.getDocument(),targetLanguageType);
-        return List.of(subjectDocument.getDocument(),data);
+        if (subjectDocument == null || subjectDocument.getType() == DocumentType.LINK) return null;
+        byte[] data = googleCloudTranslateService.translateSubjectDocument(subjectDocument.getDocument(), targetLanguageType);
+        return List.of(subjectDocument.getDocument(), data);
     }
 
-    @Override
-    public boolean deleteReviewSubject(Long reviewSubjectId) {
-        ReviewSubject reviewSubject = reviewSubjectRepository.findByIdAndUserEmail(reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(reviewSubject == null) return false;
-        reviewSubjectRepository.deleteById(reviewSubject.getId());
-        return true;
-    }
 
     @Override
     public List<ReviewSubject> getAllReviewSubjectCreatedByUser() {
@@ -354,6 +349,56 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<Object[]> getAllSubjectForAdmin() {
         return subjectRepository.getAllSubjectForAdmin();
+    }
+
+    @Override
+    public boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId) {
+        CommentSubjectDocument commentSubjectDocument = commentSubjectDocumentRepository.findByIdAndSubjectDocumentIdAndOwnerEmail(commentId, subjectDocumentId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (commentSubjectDocument == null) return false;
+        commentSubjectDocumentRepository.delete(commentSubjectDocument);
+        return true;
+    }
+
+    @Override
+    public ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel) {
+        ReviewSubject reviewSubject = reviewSubjectRepository.findById(reviewSubjectId).orElse(null);
+        if(reviewSubject == null) return null;
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportContentReviewSubject reportContentReviewSubject = new ReportContentReviewSubject();
+        reportContentReviewSubject.setReviewSubject(reviewSubject);
+        reportContentReviewSubject.setOwner(user);
+        reportContentReviewSubject.setMessage(reportContentReviewSubjectModel.getMessage());
+        reportContentReviewSubject.setStatus(ReportStatus.NEW_REPORT);
+        return reportContentReviewSubjectRepository.save(reportContentReviewSubject);
+    }
+
+    @Override
+    public ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId, ReportContentSubjectDocumentModel reportContentSubjectDocumentModel) {
+        SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
+        if(subjectDocument == null) return null;
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportContentSubjectDocument reportContentSubjectDocument = new ReportContentSubjectDocument();
+        reportContentSubjectDocument.setOwner(user);
+        reportContentSubjectDocument.setSubjectDocument(subjectDocument);
+        reportContentSubjectDocument.setStatus(ReportStatus.NEW_REPORT);
+        reportContentSubjectDocument.setMessage(reportContentSubjectDocumentModel.getMessage());
+
+        return reportContentSubjectDocumentRepository.save(reportContentSubjectDocument);
+    }
+
+    @Override
+    public ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId, ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel) {
+        SubjectDocument subjectDocumentFirst = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
+        if(subjectDocumentFirst == null) return null;
+        SubjectDocument subjectDocumentSecond = subjectDocumentRepository.findById(reportContentSubjectDocumentModel.getSubjectDocumentId()).orElse(null);
+        if(subjectDocumentSecond == null) return null;
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportDuplicateSubjectDocument reportDuplicateSubjectDocument = new ReportDuplicateSubjectDocument();
+        reportDuplicateSubjectDocument.setOwner(user);
+        reportDuplicateSubjectDocument.setSubjectDocumentFirst(subjectDocumentFirst);
+        reportDuplicateSubjectDocument.setSubjectDocumentSecond(subjectDocumentSecond);
+
+        return reportDuplicateSubjectDocumentRepository.save(reportDuplicateSubjectDocument);
     }
 
 
@@ -526,12 +571,13 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel) {
+    public CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        SubjectDocument subjectDocument = subjectDocumentRepository.findById(commentSubjectDocumentModel.getSubjectDocumentId()).orElse(null);
+        SubjectDocument subjectDocument = subjectDocumentRepository.findById(subjectDocumentId).orElse(null);
         if (subjectDocument == null) return null;
         SharePrivate sharePrivate = sharePrivateRepository.findBySubjectDocumentAndUser(subjectDocument, user);
-        if (!subjectDocument.isPublic() && sharePrivate == null && !subjectDocument.getOwner().getId().equals(user.getId())) return null;
+        if (!subjectDocument.isPublic() && sharePrivate == null && !subjectDocument.getOwner().getId().equals(user.getId()))
+            return null;
         CommentSubjectDocument comment = modelMapperUtils.mapAllProperties(commentSubjectDocumentModel, CommentSubjectDocument.class);
         if (commentSubjectDocumentModel.getParentCommentId() != null) {
             CommentSubjectDocument tmp = commentSubjectDocumentRepository.findById(commentSubjectDocumentModel.getParentCommentId()).orElse(null);
@@ -545,37 +591,21 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public boolean updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel) {
-        if (commentSubjectDocumentModel.getId() == null) return false;
-        CommentSubjectDocument comment = commentSubjectDocumentRepository.findById(commentSubjectDocumentModel.getId()).orElse(null);
-        if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
+    public CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId, Long commentId) {
+        CommentSubjectDocument comment = commentSubjectDocumentRepository.findByIdAndSubjectDocumentIdAndOwnerEmail(commentId, subjectDocumentId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (comment == null)
+            return null;
         comment.setComment(commentSubjectDocumentModel.getComment());
-        commentSubjectDocumentRepository.save(comment);
-        publisher.publishEvent(new NotifyEvent(NotificationType.EDIT_COMMENT_SUBJECT_DOCUMENT, comment));
-        return true;
+        return commentSubjectDocumentRepository.save(comment);
     }
 
 
     @Override
-    public boolean hiddenCommentForSubjectDocument(Long id) {
-        CommentSubjectDocument comment = commentSubjectDocumentRepository.findById(id).orElse(null);
-        if (comment == null || !comment.getSubjectDocument().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
-        comment.setHidden(true);
-        commentSubjectDocumentRepository.save(comment);
-        publisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_COMMENT_SUBJECT_DOCUMENT, comment));
-        return true;
-    }
-
-    @Override
-    public boolean activeCommentForSubjectDocument(Long id) {
-        CommentSubjectDocument comment = commentSubjectDocumentRepository.findById(id).orElse(null);
-        if (comment == null || !comment.getSubjectDocument().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
-            return false;
-        comment.setHidden(false);
-        commentSubjectDocumentRepository.save(comment);
-        publisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_COMMENT_SUBJECT_DOCUMENT, comment));
+    public boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId) {
+        CommentSubjectDocument commentSubjectDocument = commentSubjectDocumentRepository.findByIdAndSubjectDocumentIdAndSubjectDocumentOwnerEmailAndIsHidden(commentId, subjectDocumentId, SecurityContextHolder.getContext().getAuthentication().getName(), false);
+        if (commentSubjectDocument == null) return false;
+        commentSubjectDocument.setHidden(true);
+        commentSubjectDocumentRepository.save(commentSubjectDocument);
         return true;
     }
 

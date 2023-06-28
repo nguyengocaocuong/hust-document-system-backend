@@ -160,7 +160,7 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
     private String getOutputTranslatePath(String path){
         String paths[] = path.split("/");
 
-        return "gs://" + System.getenv("BUCKET_NAME") + "/" + paths[paths.length - 2]  + "/";
+        return "gs://" + System.getenv("BUCKET_NAME") + "/" + UUID.randomUUID()  + "/";
     }
 }
 

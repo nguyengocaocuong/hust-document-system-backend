@@ -8,6 +8,7 @@ import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import jakarta.validation.constraints.Max;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -55,4 +56,5 @@ public class UserController {
         List<SubjectDocument> subjectDocuments = userService.getAllSubjectDocumentTrash();
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
     }
+
 }

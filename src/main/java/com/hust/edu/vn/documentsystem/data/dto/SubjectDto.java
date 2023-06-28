@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.modelmapper.ModelMapper;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class SubjectDto implements Serializable {
     private Long totalDocument = 0L;
     private Long totalFavorite = 0L;
     private Long totalAnswer = 0L;
-    private List<SubjectDocumentDto> subjectDocuments;
+    private List<SubjectDocumentDto> subjectDocuments = new ArrayList<>();
 
     public SubjectDto(Long id, String name) {
         this.id = id;
@@ -36,7 +37,6 @@ public class SubjectDto implements Serializable {
     }
 
     public SubjectDto(Subject subject, Long totalDocument, Long totalComment, Long totalFavorite, Long totalAnswer) {
-        ModelMapper modelMapper = new ModelMapper();
         this.id = subject.getId();
         this.name = subject.getName();
         this.description = subject.getDescription();

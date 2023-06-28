@@ -4,9 +4,11 @@ import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,12 +26,12 @@ public class SubjectDocumentDto implements Serializable {
     private String description;
     private UserDto owner;
     private String semester;
-    private List<CommentSubjectDocumentDto> commentSubjectDocumentList;
-    private List<AnswerSubjectDocumentDto> answerSubjectDocumentList;
-    private List<FavoriteSubjectDocumentDto> favoriteSubjectDocumentList;
+    private List<CommentSubjectDocumentDto> comments = new ArrayList<>();
+    private List<AnswerSubjectDocumentDto> answers = new ArrayList<>();
+    private List<FavoriteSubjectDocumentDto> favorites = new ArrayList<>();
     private List<SharePrivateDto> shared;
     private Date createdAt;
     private Date lastEditedAt;
-    private Date deletedAt ;
+    private Date deletedAt;
     private boolean isPublic;
 }

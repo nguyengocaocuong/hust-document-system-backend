@@ -14,42 +14,29 @@ import java.util.Date;
 import java.util.List;
 
 public interface ReviewSubjectService {
-    boolean deleteReviewSubjectById(Long reviewId);
-
     CommentReviewSubject createCommentForReviewSubject(Long reviewSubjectId,CommentReviewSubjectModel commentReviewSubjectModel);
 
-    boolean updateCommentForCommentReviewSubject(CommentReviewSubjectModel commentReviewSubjectModel);
-
-    boolean deleteCommentForReviewSubject(Long id);
-
-    boolean hiddenCommentForReviewSubject(Long id);
-
-    boolean activeCommentForReviewSubject(Long id);
-
-    boolean hiddenReviewSubject(Long id);
-
-    boolean activeReviewSubject(Long id);
 
     List<ReviewSubject> getAllReviewSubjects();
 
-    List<ReviewSubject> getAllReviewSubjectCreatedByUser();
-
-    ReviewSubject getReviewSubjectById(Long reviewId);
-
-    ReviewSubject createNewReview(ReviewSubjectModel reviewSubjectModel);
-
-    boolean updateReview(ReviewSubjectModel reviewSubjectModel);
-
-    boolean approvedReviewSubject(Long id);
-
-    boolean unApprovedReviewSubject(Long id);
 
     boolean toggleFavoriteReviewSubject(Long reviewSubjectId);
 
     List<FavoriteReviewSubject> getAllFavoriteForReviewSubject(Long reviewSubjectId);
 
-    List<ReviewSubject> getAllReviewSubjectsCreateByUser();
 
     List<ReviewSubject> getAllNewReviewSubject();
     List<Object[]> getReviewForDashboard(Date startDate);
+
+    List<CommentReviewSubject> getAllCommentForReviewSubject(Long reviewSubjectId);
+
+    CommentReviewSubject updateCommentForReviewSubject(Long commentId, Long reviewSubjectId, CommentReviewSubjectModel commentReviewSubjectModel);
+
+    boolean deleteCommentForReviewSubject(Long commentId, Long reviewSubjectId, CommentReviewSubjectModel commentReviewSubjectModel);
+
+    boolean hideCommentForReviewSubject(Long commentId, Long reviewSubjectId);
+
+    ReviewSubject createReviewSubject(Long subjectId, ReviewSubjectModel reviewSubjectModel);
+
+    boolean deleteReviewSubject(Long reviewSubjectId, Long subjectId);
 }

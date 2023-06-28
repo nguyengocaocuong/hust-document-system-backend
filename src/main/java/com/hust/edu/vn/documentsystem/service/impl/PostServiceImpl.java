@@ -1,10 +1,11 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import co.elastic.thumbnails4j.core.ThumbnailingException;
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.data.dto.PageDto;
+import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.AnswerPostModel;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
@@ -16,11 +17,14 @@ import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import com.itextpdf.text.DocumentException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -77,8 +81,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Object[]> getAllPosts() {
-        return postRepository.getPostForHomePage();
+    public PageDto<PostDto> getAllPostForHomePage(int page, int size) {
+        Sort sort = Sort.by("id").descending();
+        PageRequest pageRequest = PageRequest.of(page,size,sort);
+        Page<Post> pages = postRepository.findAll(pageRequest);
+        List<Post> posts = postRepository.getPostForHomePage(pageRequest);
+        PageDto<PostDto> pageResult = new PageDto<>();
+        pageResult.setTotalPages( pages.getTotalPages());
+        pageResult.setTotalItems(pages.getTotalElements());
+        pageResult.setItems(posts.stream().map(post -> (PostDto)modelMapperUtils.mapAllProperties(post, PostDto.class)).toList());
+        return pageResult;
     }
 
 
@@ -127,8 +139,8 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public boolean deleteCommentForPost(@NotNull Long id) {
-        CommentPost comment = commentPostRepository.findById(id).orElse(null);
+    public boolean deleteCommentForPost(@NotNull Long commentId, Long postId) {
+        CommentPost comment = commentPostRepository.findByIdAndPostId(commentId, postId);
         if (comment == null || !comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
             return false;
         commentPostRepository.delete(comment);
@@ -136,9 +148,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public boolean hiddenCommentForPost(Long id) {
-        CommentPost comment = commentPostRepository.findByIdAndIsHidden(id, true);
-        if (comment == null || comment.getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()))
+    public boolean hiddenCommentForPost(Long commentId, Long postId) {
+        CommentPost comment = commentPostRepository.findByIdAndPostIdAndIsHidden(commentId, postId, SecurityContextHolder.getContext().getAuthentication().getName(),true);
+        if (comment == null)
             return false;
         comment.setHidden(true);
         commentPostRepository.save(comment);
@@ -168,16 +180,7 @@ public class PostServiceImpl implements PostService {
         return true;
     }
 
-    @Override
-    public boolean activeCommentForPost(Long id) {
-        CommentPost comment = commentPostRepository.findByIdAndIsHidden(id, true);
-        if (comment == null || !comment.getPost().getOwner().getEmail().equals(SecurityContextHolder.getContext().getAuthentication().getName()) || !comment.isHidden())
-            return false;
-        comment.setHidden(false);
-        commentPostRepository.save(comment);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_COMMENT_PORT, comment));
-        return true;
-    }
+
 
     @Override
     public boolean activePost(Long id) {
@@ -203,12 +206,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<CommentPost> getAllCommentForPost(Long postId) {
-        return commentPostRepository.findAllComment(postId, SecurityContextHolder.getContext().getAuthentication().getName());
+        log.info("{}", postId);
+        return commentPostRepository.findAllComment(postId);
     }
 
     @Override
-    public CommentPost updateCommentForPost(Long commentId, CommentPostModel commentPostModel) {
-        CommentPost commentPost = commentPostRepository.findByIdAndUserEmail(commentId, SecurityContextHolder.getContext().getAuthentication().getName());
+    public CommentPost updateCommentForPost(Long commentId,Long postId, CommentPostModel commentPostModel) {
+        CommentPost commentPost = commentPostRepository.findByIdAndPostIdAndUserEmail(commentId,postId, SecurityContextHolder.getContext().getAuthentication().getName());
         if (commentPost == null) return null;
         commentPost.setComment(commentPostModel.getComment());
         return commentPostRepository.save(commentPost);

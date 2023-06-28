@@ -9,35 +9,36 @@ import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/subjects")
 @Slf4j
-public class UserSubjectController {
+public class SubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
     private final ReviewSubjectService reviewSubjectService;
 
     @Autowired
-    public UserSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils, ReviewSubjectService reviewSubjectService
-                                 ) {
+    public SubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils, ReviewSubjectService reviewSubjectService
+    ) {
         this.modelMapperUtils = modelMapperUtils;
         this.subjectService = subjectService;
         this.reviewSubjectService = reviewSubjectService;
     }
 
+    //TODO: giữ lại các api ở đây
+    @GetMapping("{subjectId}")
+    public ResponseEntity<CustomResponse> getSubjectDetail(@PathVariable Long subjectId) {
+        Subject subject = subjectService.getSubjectById(subjectId);
+        return CustomResponse.generateResponse(HttpStatus.OK, "Thông tin chi tiết môn học", modelMapperUtils.mapAllProperties(subject, SubjectDto.class));
+    }
 
     @GetMapping("owner")
     public ResponseEntity<CustomResponse> getAllSubjectsCreateByUser() {
@@ -120,7 +121,7 @@ public class UserSubjectController {
     public ResponseEntity<CustomResponse> getSubjectDocumentDetail(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(subjectDocumentId);
         subjectDocument.getSubject().setSubjectDocuments(null);
-        return CustomResponse.generateResponse(subjectDocument != null ? HttpStatus.OK : HttpStatus.NOT_FOUND, subjectDocument != null ? modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentAllDto.class) : null);
+        return CustomResponse.generateResponse(subjectDocument != null ? HttpStatus.OK : HttpStatus.NOT_FOUND, subjectDocument != null ? modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class) : null);
     }
 
 
@@ -152,28 +153,10 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(status);
     }
 
-    @PostMapping("subjectDocument/comment")
-    public ResponseEntity<CustomResponse> createComment(@ModelAttribute CommentSubjectDocumentModel commentSubjectDocumentModel) {
-        CommentSubjectDocument comment = subjectService.createCommentForSubjectDocument(commentSubjectDocumentModel);
-        return CustomResponse.generateResponse(comment != null ? HttpStatus.OK : HttpStatus.BAD_REQUEST, comment != null ? modelMapperUtils.mapAllProperties(comment, CommentSubjectDocumentDto.class) : null);
-    }
-
-    @GetMapping("subjectDocument/{subjectDocumentId}/comment")
-    public ResponseEntity<CustomResponse> getSubjectDocumentComment(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        List<CommentSubjectDocument> subjectDocuments = subjectService.getSubjectDocumentCommentBySubjectDocumentId(subjectDocumentId);
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, CommentSubjectDocumentDto.class)));
-    }
-
 
     @PostMapping("subjectDocument/{subjectDocumentId}/favorite")
     public ResponseEntity<CustomResponse> favoriteSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         return CustomResponse.generateResponse(subjectService.favoriteSubjectDocument(subjectDocumentId));
-    }
-
-    @PatchMapping("document/comment")
-    public ResponseEntity<CustomResponse> updateComment(@ModelAttribute CommentSubjectDocumentModel commentSubjectDocumentModel) {
-        boolean status = subjectService.updateCommentForSubjectDocument(commentSubjectDocumentModel);
-        return CustomResponse.generateResponse(status);
     }
 
 
@@ -188,11 +171,6 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjects());
     }
 
-    @GetMapping("{subjectId}")
-    public ResponseEntity<CustomResponse> getSubjectDetail(@PathVariable Long subjectId) {
-        Subject subject = subjectService.getSubjectById(subjectId);
-        return CustomResponse.generateResponse(HttpStatus.OK, "Thông tin chi tiết môn học", modelMapperUtils.mapAllProperties(subject, SubjectDto.class));
-    }
 
     @GetMapping("allSubjectForFilter")
     public ResponseEntity<CustomResponse> getAllSubjectForFilter() {
@@ -209,24 +187,6 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.findAllSubjectDocumentType());
     }
 
-//    @GetMapping("subjectDocuments/{subjectDocumentId}/readFile")
-//    public ResponseEntity<Resource> readSubjectDocument(@PathVariable("subjectDocumentId") Long id) {
-//        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(id);
-//        try {
-//            File file = new File(subjectDocument.getDocument().getPath());
-//            FileInputStream fileInputStream = new FileInputStream(file);
-//            Resource resource = new InputStreamResource(fileInputStream);
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.valueOf(subjectDocument.getDocument().getContentType()));
-//            headers.setContentDisposition(ContentDisposition.attachment().filename(subjectDocument.getDocument().getName()).build());
-//            return ResponseEntity.ok()
-//                    .headers(headers)
-//                    .body(resource);
-//        } catch (IOException e) {
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//    }
-
     @PostMapping()
     public ResponseEntity<CustomResponse> createSubject(@ModelAttribute SubjectModel subjectModel) {
         Subject subject = subjectService.createSubject(subjectModel);
@@ -237,21 +197,7 @@ public class UserSubjectController {
     public ResponseEntity<CustomResponse> allReviewSubject() {
         return CustomResponse.generateResponse(HttpStatus.OK, reviewSubjectService.getAllReviewSubjects().stream().map(review -> modelMapperUtils.mapAllProperties(review, ReviewSubjectDto.class)));
     }
-    @DeleteMapping("reviewSubject/{reviewSubjectId}")
-    public ResponseEntity<CustomResponse> deleteReviewSubject(@PathVariable("reviewSubjectId") Long reviewSubjectId){
-        boolean status = subjectService.deleteReviewSubject(reviewSubjectId);
-        return CustomResponse.generateResponse(status);
-    }
-    @PostMapping("reviewSubject/{reviewSubjectId}/comment")
-    public ResponseEntity<CustomResponse> commentReviewSubject(@PathVariable("reviewSubjectId") Long reviewSubjectId, @ModelAttribute CommentReviewSubjectModel commentReviewSubjectModel) {
-        CommentReviewSubject commentReviewSubject = reviewSubjectService.createCommentForReviewSubject(reviewSubjectId, commentReviewSubjectModel);
-        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(commentReviewSubject, CommentReviewSubjectDto.class));
-    }
 
-    @GetMapping("reviewSubject/{reviewSubjectId}/comment")
-    public ResponseEntity<CustomResponse> getAllCommentForReviewSubject(@PathVariable("reviewSubjectId") Long reviewSubjectId) {
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllCommentForReviewSubject(reviewSubjectId).stream().map(comment -> modelMapperUtils.mapAllProperties(comment, CommentReviewSubjectDto.class)));
-    }
 
     @PostMapping("reviewSubject/{reviewSubjectId}/favorite")
     public ResponseEntity<CustomResponse> favoriteReviewSubject(@PathVariable("reviewSubjectId") Long reviewSubjectId) {
@@ -269,11 +215,11 @@ public class UserSubjectController {
     public ResponseEntity<CustomResponse> getAllSubjectDocumentCreateByUser() {
         List<SubjectDocument> subjectDocuments = subjectService.getAllSubjectDocumentCreateByUser();
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(document -> {
-            document.setAnswerSubjectDocumentList(null);
-            document.setCommentSubjectDocumentList(null);
+            document.setAnswers(null);
+            document.setComments(null);
+            document.setFavorites(null);
             document.setSubject(null);
-            document.setFavoriteSubjectDocumentList(null);
-            return modelMapperUtils.mapAllProperties(document, SubjectDocumentAllDto.class);
+            return modelMapperUtils.mapAllProperties(document, SubjectDocumentDto.class);
         }));
     }
 
@@ -281,9 +227,9 @@ public class UserSubjectController {
     public ResponseEntity<CustomResponse> getAllSubjectDocumentShared() {
         List<SharePrivate> subjectDocuments = subjectService.getAllSubjectDocumentShared();
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(share -> {
-            share.getSubjectDocument().setFavoriteSubjectDocumentList(null);
-            share.getSubjectDocument().setCommentSubjectDocumentList(null);
-            share.getSubjectDocument().setAnswerSubjectDocumentList(null);
+            share.getSubjectDocument().setFavorites(null);
+            share.getSubjectDocument().setComments(null);
+            share.getSubjectDocument().setAnswers(null);
             share.getSubjectDocument().setShared(null);
             share.getSubjectDocument().getSubject().setSubjectDocuments(null);
             share.getSubjectDocument().getSubject().setTeachers(null);
@@ -294,10 +240,11 @@ public class UserSubjectController {
     }
 
     @DeleteMapping("subjectDocument/shared/{sharedId}")
-    public ResponseEntity<CustomResponse> clearSharedSubjectDocument(@PathVariable("sharedId") Long sharedId){
+    public ResponseEntity<CustomResponse> clearSharedSubjectDocument(@PathVariable("sharedId") Long sharedId) {
         boolean status = subjectService.clearSharedPrivateSubjectDocument(sharedId);
         return CustomResponse.generateResponse(status);
     }
+
     @GetMapping("subjectDocument/{subjectDocumentId}/generatePublicOnInternetUrl")
     public ResponseEntity<CustomResponse> generatePublicOnInternetUrlForSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         String url = subjectService.generatePublicOnInternetUrlForSubjectDocument(subjectDocumentId);
@@ -311,33 +258,39 @@ public class UserSubjectController {
         if (url == null) return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
         return CustomResponse.generateResponse(HttpStatus.OK, url);
     }
+
     @DeleteMapping("subjectDocument/{subjectDocumentId}/forever")
-    public ResponseEntity<CustomResponse> deleteSubjectDocumentForever(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+    public ResponseEntity<CustomResponse> deleteSubjectDocumentForever(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.deleteSubjectDocumentForever(subjectDocumentId);
         return CustomResponse.generateResponse(status);
     }
+
     @DeleteMapping("subjectDocument/{subjectDocumentId}")
-    public ResponseEntity<CustomResponse> moveSubjectDocumentToTrash(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+    public ResponseEntity<CustomResponse> moveSubjectDocumentToTrash(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.moveSubjectDocumentToTrash(subjectDocumentId);
         return CustomResponse.generateResponse(status);
     }
+
     @PatchMapping("subjectDocument/{subjectDocumentId}/restore")
-    public ResponseEntity<CustomResponse> restoreSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+    public ResponseEntity<CustomResponse> restoreSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.restoreSubjectDocument(subjectDocumentId);
         return CustomResponse.generateResponse(status);
     }
+
     @PatchMapping("subjectDocument/{subjectDocumentId}/public")
-    public ResponseEntity<CustomResponse> makeSubjectDocumentPublic(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+    public ResponseEntity<CustomResponse> makeSubjectDocumentPublic(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.makeSubjectDocumentPublic(subjectDocumentId);
         return CustomResponse.generateResponse(status);
     }
+
     @PatchMapping("subjectDocument/{subjectDocumentId}/private")
-    public ResponseEntity<CustomResponse> makeSubjectDocumentPrivate(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+    public ResponseEntity<CustomResponse> makeSubjectDocumentPrivate(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.makeSubjectDocumentPrivate(subjectDocumentId);
         return CustomResponse.generateResponse(status);
     }
+
     @GetMapping("subjectDocument/{subjectDocumentId}/translate")
-    public ResponseEntity<Resource> translateDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId, @RequestParam("targetLanguage")TargetLanguageType targetLanguageType){
+    public ResponseEntity<Resource> translateDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId, @RequestParam("targetLanguage") TargetLanguageType targetLanguageType) {
         List<Object> data = subjectService.translateSubjectDocument(subjectDocumentId, targetLanguageType);
         if (data == null || ((byte[]) data.get(1)).length == 0) return ResponseEntity.notFound().build();
         Document document = (Document) data.get(0);
@@ -350,7 +303,7 @@ public class UserSubjectController {
     }
 
     @GetMapping("reviewSubject/owner")
-    public ResponseEntity<CustomResponse> getAllReviewSubjectCreatedByUser(){
+    public ResponseEntity<CustomResponse> getAllReviewSubjectCreatedByUser() {
         List<ReviewSubject> reviewSubjects = subjectService.getAllReviewSubjectCreatedByUser();
         return CustomResponse.generateResponse(HttpStatus.OK, reviewSubjects.stream().map(review -> modelMapperUtils.mapAllProperties(review, ReviewSubjectDto.class)));
     }

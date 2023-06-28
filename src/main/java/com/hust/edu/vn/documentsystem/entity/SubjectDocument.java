@@ -56,11 +56,11 @@ public class SubjectDocument {
     private Date lastEditedAt = new Date();
 
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
-    private List<CommentSubjectDocument> commentSubjectDocumentList = new ArrayList<>();
+    private List<CommentSubjectDocument> comments = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
-    private List<AnswerSubjectDocument> answerSubjectDocumentList = new ArrayList<>();
+    private List<AnswerSubjectDocument> answers = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
-    private List<FavoriteSubjectDocument> favoriteSubjectDocumentList = new ArrayList<>();
+    private List<FavoriteSubjectDocument> favorites = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     List<SharePrivate> shared = new ArrayList<>();
 

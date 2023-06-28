@@ -11,8 +11,29 @@ import java.util.List;
 
 @Repository
 public interface CommentReviewSubjectRepository extends JpaRepository<CommentReviewSubject, Long> {
-    CommentReviewSubject findByIdAndIsHidden(Long id, boolean hidden);
-
-    @Query(value = "SELECT c FROM CommentReviewSubject  c WHERE c.reviewSubject.id = :reviewSubjectId")
+    @Query(value = "" +
+            "SELECT c " +
+            "FROM CommentReviewSubject  c " +
+            "WHERE c.reviewSubject.id = :reviewSubjectId " +
+            "AND c.parentComment.id = null"
+    )
     List<CommentReviewSubject> findAllByReviewSubjectId(Long reviewSubjectId);
+
+    @Query(value = "" +
+            "SELECT c " +
+            "FROM CommentReviewSubject c " +
+            "WHERE c.reviewSubject.id = :reviewSubjectId " +
+            "AND c.id = :commentId " +
+            "AND c.owner.email = :email"
+    )
+    CommentReviewSubject findByIdAndReviewSubjectIdAndHiddenAndOwnerReviewSubjectEmail(Long commentId, Long reviewSubjectId, String email);
+
+    @Query(value = "" +
+            "SELECT c " +
+            "FROM CommentReviewSubject c " +
+            "WHERE c.reviewSubject.id = :reviewSubjectId " +
+            "AND c.id = :commentId " +
+            "AND c.reviewSubject.owner.email = :email"
+    )
+    CommentReviewSubject findByIdAndReviewSubjectIdAndOwnerEmail(Long commentId, Long reviewSubjectId, String email);
 }

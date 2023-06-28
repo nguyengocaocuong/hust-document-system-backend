@@ -13,18 +13,8 @@ import java.util.List;
 @Repository
 public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Long> {
 
-    List<ReviewSubject> findByOwner(User user);
-
-    ReviewSubject findByIdAndIsHidden(Long id, boolean hidden);
-
-    ReviewSubject findByIdAndIsDoneOrOwner(Long reviewId, boolean b, User user);
-
     List<ReviewSubject> findAllByIsDone(boolean isDone);
 
-    List<ReviewSubject> findAllByOwner(User user);
-
-    @Query(value = "SELECT rs FROM ReviewSubject rs WHERE rs.id = :reviewSubjectId AND rs.owner.email = :email")
-    ReviewSubject findByIdAndUserEmail(Long reviewSubjectId, String email);
 
     @Query(value = "SELECT rs FROM ReviewSubject rs WHERE rs.owner.email = :email")
     List<ReviewSubject> findAllReviewSubjectCreatedByUser(String email);
@@ -38,4 +28,7 @@ public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Lo
             "GROUP BY date " +
             "ORDER BY DATE(u.createdAt) DESC")
     List<Object[]> getReviewForDashboard(Date startDate);
+
+    @Query(value = "SELECT rs FROM ReviewSubject rs WHERE rs.id = :reviewSubjectId AND rs.subject.id = :subjectId AND rs.owner.email = :email ")
+    ReviewSubject findByIdAndSubjectIdAndUserEmail(Long reviewSubjectId, Long subjectId, String email);
 }

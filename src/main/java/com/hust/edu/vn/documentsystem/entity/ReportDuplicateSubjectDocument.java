@@ -32,8 +32,6 @@ public class ReportDuplicateSubjectDocument {
     @Enumerated(EnumType.STRING)
     private ReportStatus status = ReportStatus.NEW_REPORT;
 
-    private String message;
-
     private String processMessage;
 
     @ManyToOne

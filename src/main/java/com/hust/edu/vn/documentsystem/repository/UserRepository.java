@@ -1,6 +1,9 @@
 package com.hust.edu.vn.documentsystem.repository;
 
+import com.hust.edu.vn.documentsystem.entity.AnswerSubjectDocument;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -46,4 +49,30 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.id = :userId " +
             "GROUP BY sd.subjectDocumentType")
     Object[] getSubjectDocumentForProfile(Long userId);
+
+    @Query(value = "" +
+            "SELECT sd " +
+            "FROM SubjectDocument sd " +
+            "LEFT JOIN Subject s " +
+            "ON sd.subject.id = s.id " +
+            "LEFT JOIN FavoriteSubject fs " +
+            "ON fs.subject.id = s.id " +
+            "AND fs.user.id = :userId " +
+            "WHERE sd.owner.id != :userId " +
+            "ORDER BY fs.id, sd.id DESC "
+    )
+    List<SubjectDocument> getSubjectDocumentForRecommend(Long userId, PageRequest pageRequest);
+
+    @Query(value = "" +
+            "SELECT asd " +
+            "FROM AnswerSubjectDocument asd " +
+            "LEFT JOIN SubjectDocument sd " +
+            "ON sd.id = asd.subjectDocument.id " +
+            "LEFT JOIN FavoriteSubjectDocument fsd " +
+            "ON fsd.subjectDocument.id = sd.id " +
+            "AND fsd.user.id = :userId " +
+            "WHERE asd.owner.id != :userId " +
+            "ORDER BY fsd.id, asd.id DESC "
+    )
+    List<AnswerSubjectDocument> getAnswerSubjectDocumentForRecommend(Long userId, PageRequest pageRequest);
 }

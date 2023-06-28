@@ -10,6 +10,7 @@ import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.FirebaseService;
+import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.service.impl.CustomUserDetailsService;
 import com.hust.edu.vn.documentsystem.utils.JwtUtils;
@@ -17,14 +18,14 @@ import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 @RestController

@@ -48,4 +48,6 @@ public interface UserService {
     Object[] getSubjectDocumentForProfile(Long userId);
 
     boolean createUser(UserModel userModel);
+
+    Object[] getObjectForRecommend(int page, int size);
 }

@@ -1,8 +1,12 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
 import com.google.cloud.storage.Acl;
+import com.hust.edu.vn.documentsystem.common.type.ApproveType;
+import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
+import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel;
+import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;
@@ -20,7 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class TeacherServiceImpl implements TeacherService {
-    private final CommentReviewTeacherRepository commentReviewTeacherRepository;
+    private final ReportContentReviewTeacherRepository reportContentReviewTeacherRepository;
     private final FavoriteReviewTeacherRepository favoriteReviewTeacherRepository;
     private final ReviewTeacherRepository reviewTeacherRepository;
     private final TeacherRepository teacherRepository;
@@ -31,7 +35,6 @@ public class TeacherServiceImpl implements TeacherService {
     private final GoogleCloudStorageService googleCloudStorageService;
     private final SubjectRepository subjectRepository;
 
-    @Autowired
     public TeacherServiceImpl(
             TeacherRepository teacherRepository,
             ModelMapperUtils modelMapperUtils,
@@ -40,7 +43,7 @@ public class TeacherServiceImpl implements TeacherService {
             SubjectRepository subjectRepository,
             ReviewTeacherRepository reviewTeacherRepository,
             FavoriteReviewTeacherRepository favoriteReviewTeacherRepository,
-            CommentReviewTeacherRepository commentReviewTeacherRepository) {
+            ReportContentReviewTeacherRepository reportContentReviewTeacherRepository) {
         this.teacherRepository = teacherRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.userRepository = userRepository;
@@ -48,17 +51,7 @@ public class TeacherServiceImpl implements TeacherService {
         this.subjectRepository = subjectRepository;
         this.reviewTeacherRepository = reviewTeacherRepository;
         this.favoriteReviewTeacherRepository = favoriteReviewTeacherRepository;
-        this.commentReviewTeacherRepository = commentReviewTeacherRepository;
-    }
-
-    @Override
-    public List<Teacher> getAllTeachers() {
-        return teacherRepository.findAll();
-    }
-
-    @Override
-    public Teacher getTeacherById(Long id) {
-        return teacherRepository.findById(id).orElse(null);
+        this.reportContentReviewTeacherRepository = reportContentReviewTeacherRepository;
     }
 
     @Override
@@ -69,22 +62,6 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherRepository.save(teacher);
     }
 
-
-
-
-
-
-    @Override
-    public boolean addSubjects(TeacherModel teacherModel) {
-        Teacher teacher = teacherRepository.findById(teacherModel.getId()).orElse(null);
-        if (teacher == null)
-            return false;
-        Subject subject = subjectRepository.findById(teacherModel.getSubjects().get(0)).orElse(null);
-        if (subject == null || !teacher.getSubjects().contains(subject)) return false;
-        teacher.getSubjects().add(subject);
-        teacherRepository.save(teacher);
-        return true;
-    }
 
     @Override
     public List<TeacherDto> getAllTeachersForFilter() {
@@ -99,10 +76,10 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public boolean toggleFavoriteReviewTeacher(Long reviewTeacherId) {
         ReviewTeacher reviewTeacher = reviewTeacherRepository.findById(reviewTeacherId).orElse(null);
-        if(reviewTeacher == null) return false;
+        if (reviewTeacher == null) return false;
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         FavoriteReviewTeacher favoriteReviewTeacher = favoriteReviewTeacherRepository.findByReviewTeacherAndUser(reviewTeacher, user);
-        if(favoriteReviewTeacher != null){
+        if (favoriteReviewTeacher != null) {
             favoriteReviewTeacherRepository.delete(favoriteReviewTeacher);
             return true;
         }
@@ -113,44 +90,6 @@ public class TeacherServiceImpl implements TeacherService {
         return true;
     }
 
-    @Override
-    public CommentReviewTeacher createCommentForReviewTeacher(Long reviewTeacherId, CommentReviewTeacherModel commentReviewTeacherModel) {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        ReviewTeacher reviewTeacher = reviewTeacherRepository.findById(reviewTeacherId).orElse(null);
-        if(reviewTeacher == null) return null;
-        CommentReviewTeacher commentReviewTeacher = new CommentReviewTeacher();
-        commentReviewTeacher.setReviewTeacher(reviewTeacher);
-        commentReviewTeacher.setComment(commentReviewTeacherModel.getComment());
-        commentReviewTeacher.setOwner(user);
-        if(commentReviewTeacherModel.getParentCommentId() != null){
-            CommentReviewTeacher parent = commentReviewTeacherRepository.findById(commentReviewTeacherModel.getParentCommentId()).orElse(null);
-            if(parent== null) return null;
-            commentReviewTeacher.setParentComment(parent);
-        }
-        return commentReviewTeacherRepository.save(commentReviewTeacher);
-    }
-
-    @Override
-    public List<CommentReviewTeacher> getAllCommentForReviewTeacher(Long reviewTeacherId) {
-        return commentReviewTeacherRepository.findAllByIdAndHidden(reviewTeacherId,false);
-    }
-
-    @Override
-    public boolean deleteCommentReview(Long commentId) {
-        CommentReviewTeacher commentReviewTeacher = commentReviewTeacherRepository.findByIdAndUserEmail(commentId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(commentReviewTeacher == null) return false;
-        commentReviewTeacherRepository.delete(commentReviewTeacher);
-        return true;
-    }
-
-    @Override
-    public boolean updateCommentReview(Long commentId, CommentReviewTeacherModel commentReviewTeacherModel) {
-        CommentReviewTeacher commentReviewTeacher = commentReviewTeacherRepository.findByIdAndUserEmail(commentId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(commentReviewTeacher == null) return false;
-        commentReviewTeacher.setComment(commentReviewTeacherModel.getComment());
-        commentReviewTeacherRepository.save(commentReviewTeacher);
-        return true;
-    }
 
     @Override
     public List<FavoriteReviewTeacher> getAllFavoriteReviewTeacher(Long reviewTeacherId) {
@@ -160,7 +99,7 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public boolean deleteReviewTeacher(Long reviewTeacherId) {
         ReviewTeacher reviewTeacher = reviewTeacherRepository.findByIdAndUserEmail(reviewTeacherId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(reviewTeacher == null) return false;
+        if (reviewTeacher == null) return false;
         reviewTeacherRepository.delete(reviewTeacher);
         return true;
     }
@@ -178,9 +117,9 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public boolean updateTeacher(TeacherModel teacherModel) {
         Teacher teacher = teacherRepository.findById(teacherModel.getId()).orElse(null);
-        if(teacher == null) return false;
+        if (teacher == null) return false;
         teacher.setAvatar(teacherModel.getAvatar());
-        if(teacherModel.getAvatarFile() != null ){
+        if (teacherModel.getAvatarFile() != null) {
             try {
                 List<String> urls = googleCloudStorageService.createThumbnailAndUploadDocumentToGCP(teacherModel.getAvatarFile(), List.of(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER)));
                 teacherModel.setAvatar(urls.get(0));
@@ -200,8 +139,34 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public boolean deleteTeacher(Long teacherId) {
-        if(!teacherRepository.existsById(teacherId)) return false;
+        if (!teacherRepository.existsById(teacherId)) return false;
         teacherRepository.deleteById(teacherId);
         return true;
+    }
+
+    @Override
+    public ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel) {
+        Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
+        if (teacher == null) return null;
+        ReviewTeacher reviewTeacher = new ReviewTeacher();
+        reviewTeacher.setTeacher(teacher);
+        reviewTeacher.setDone(reviewTeacherModel.getDone() == 1);
+        reviewTeacher.setApproved(ApproveType.NEW);
+        reviewTeacher.setReview(reviewTeacherModel.getReview());
+        reviewTeacher.setOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return reviewTeacherRepository.save(reviewTeacher);
+    }
+
+    @Override
+    public ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId, ReportContentReviewTeacherModel reportContentReviewTeacherModel) {
+        ReviewTeacher reviewTeacher = reviewTeacherRepository.findById(reviewTeacherId).orElse(null);
+        if (reviewTeacher == null) return null;
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportContentReviewTeacher reportContentReviewTeacher = new ReportContentReviewTeacher();
+        reportContentReviewTeacher.setReviewTeacher(reviewTeacher);
+        reportContentReviewTeacher.setOwner(user);
+        reportContentReviewTeacher.setMessage(reportContentReviewTeacherModel.getMessage());
+        reportContentReviewTeacher.setStatus(ReportStatus.NEW_REPORT);
+        return reportContentReviewTeacherRepository.save(reportContentReviewTeacher);
     }
 }

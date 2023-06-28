@@ -1,6 +1,8 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.data.dto.PageDto;
+import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.AnswerPostModel;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
@@ -13,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface PostService {
-    List<Object[]> getAllPosts();
+    PageDto<PostDto> getAllPostForHomePage(int page, int size);
 
     Post getPostById(Long id);
 
@@ -21,15 +23,14 @@ public interface PostService {
 
     CommentPost createComment(Long postId, CommentPostModel commentPostModel);
 
-    boolean deleteCommentForPost(Long id);
+    boolean deleteCommentForPost(Long commentId, Long postId);
 
-    boolean hiddenCommentForPost(Long id);
+    boolean hiddenCommentForPost(Long commentId, Long postId);
 
     boolean hiddenAnswerForPost(Long id);
 
     boolean hiddenPost(Long id);
 
-    boolean activeCommentForPost(Long id);
 
     boolean activePost(Long id);
 
@@ -37,7 +38,7 @@ public interface PostService {
 
     List<CommentPost> getAllCommentForPost(Long postId);
 
-    CommentPost updateCommentForPost(Long commentId, CommentPostModel commentPostModel);
+    CommentPost updateCommentForPost(Long commentId, Long postId,CommentPostModel commentPostModel);
 
     List<AnswerPost> findAllAnswerForPost(Long postId);
 

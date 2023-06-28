@@ -4,10 +4,7 @@ import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
-import com.hust.edu.vn.documentsystem.entity.PasswordResetToken;
-import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
-import com.hust.edu.vn.documentsystem.entity.User;
-import com.hust.edu.vn.documentsystem.entity.VerifyAccount;
+import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.event.RegistrationCompleteEvent;
 import com.hust.edu.vn.documentsystem.repository.PasswordResetTokenRepository;
 import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
@@ -20,6 +17,8 @@ import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -233,6 +232,19 @@ public class UserServiceImpl implements UserService {
 //        user.setDob(userModel.getDob());
         userRepository.save(user);
         return true;
+    }
+
+    @Override
+    public Object[] getObjectForRecommend(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Object[] objects = new Object[2];
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByEmail(email);
+        List<SubjectDocument> subjectDocuments = userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest);
+        List<AnswerSubjectDocument> answerSubjectDocuments = userRepository.getAnswerSubjectDocumentForRecommend(user.getId(), pageRequest);
+        objects[0] = subjectDocuments;
+        objects[1] = answerSubjectDocuments;
+        return objects;
     }
 
     private boolean resendVerificationAccountTokenMail(String applicationUrl, VerifyAccount verifyAccount) {
