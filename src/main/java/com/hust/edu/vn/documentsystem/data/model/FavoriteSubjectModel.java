@@ -4,10 +4,6 @@ import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import lombok.*;
 
 @Data
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class FavoriteSubjectModel {
     private Long id;
     private NotificationType notificationType = NotificationType.ALL;

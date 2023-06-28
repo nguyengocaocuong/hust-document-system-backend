@@ -2,10 +2,7 @@ package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.modelmapper.ModelMapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,8 +13,6 @@ import java.util.List;
  * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.Subject} entity
  */
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 public class SubjectDto implements Serializable {
     private Long id;

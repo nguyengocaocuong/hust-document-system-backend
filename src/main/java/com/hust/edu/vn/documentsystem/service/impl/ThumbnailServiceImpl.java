@@ -16,18 +16,13 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.poi.hslf.usermodel.HSLFSlide;
-import org.apache.poi.hslf.usermodel.HSLFSlideShow;
-import org.apache.poi.sl.usermodel.SlideShow;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,7 +32,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@Slf4j
 public class ThumbnailServiceImpl implements ThumbnailService {
     @Override
     public byte[] generateThumbnail(@NotNull  MultipartFile file) throws ThumbnailingException, IOException, DocumentException {

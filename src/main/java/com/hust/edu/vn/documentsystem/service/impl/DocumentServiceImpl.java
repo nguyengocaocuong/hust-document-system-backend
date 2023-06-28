@@ -3,13 +3,9 @@ package com.hust.edu.vn.documentsystem.service.impl;
 import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.repository.DocumentRepository;
-import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.DocumentService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
-import com.hust.edu.vn.documentsystem.service.SignTextOrLogoImageToDocumentService;
-import com.hust.edu.vn.documentsystem.service.ThumbnailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,21 +17,12 @@ import java.util.List;
 public class DocumentServiceImpl implements DocumentService {
     private final GoogleCloudStorageService googleCloudStorageService;
     private final DocumentRepository documentRepository;
-    private final UserRepository userRepository;
-    private final ThumbnailService thumbnailService;
-    private final SignTextOrLogoImageToDocumentService signTextOrLogoImageToDocumentService;
-    private final ResourceLoader resourceLoader;
 
     @Autowired
     public DocumentServiceImpl(GoogleCloudStorageService googleCloudStorageService,
-                               DocumentRepository documentRepository,
-                               UserRepository userRepository, ThumbnailService thumbnailService, SignTextOrLogoImageToDocumentService signTextOrLogoImageToDocumentService, ResourceLoader resourceLoader) {
+            DocumentRepository documentRepository) {
         this.googleCloudStorageService = googleCloudStorageService;
         this.documentRepository = documentRepository;
-        this.userRepository = userRepository;
-        this.thumbnailService = thumbnailService;
-        this.signTextOrLogoImageToDocumentService = signTextOrLogoImageToDocumentService;
-        this.resourceLoader = resourceLoader;
     }
 
     @Override

@@ -1,26 +1,21 @@
 package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.service.PostService;
-import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admins/posts")
 public class AdminPostController {
     private final PostService postService;
-    private final ModelMapperUtils modelMapperUtils;
 
     @Autowired
-    public AdminPostController(PostService postService, ModelMapperUtils modelMapperUtils) {
+    public AdminPostController(PostService postService) {
         this.postService = postService;
-        this.modelMapperUtils = modelMapperUtils;
     }
 
 

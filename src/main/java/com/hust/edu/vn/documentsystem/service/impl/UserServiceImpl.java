@@ -14,11 +14,9 @@ import com.hust.edu.vn.documentsystem.service.EmailService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +28,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Slf4j
 public class UserServiceImpl implements UserService {
     private final SubjectDocumentRepository subjectDocumentRepository;
     private final UserRepository userRepository;
@@ -207,7 +204,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean createUser(UserModel userModel) {
-        log.info(userModel.toString());
         if (userRepository.existsByEmail(userModel.getEmail()) || !userModel.getEmail().endsWith("@sis.hust.edu.vn") || userModel.getPassword().length() < 8 ) return false;
         User user = new User();
         if (userModel.getAvatarFile() != null) {

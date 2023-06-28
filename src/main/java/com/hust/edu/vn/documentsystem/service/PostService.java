@@ -3,10 +3,8 @@ package com.hust.edu.vn.documentsystem.service;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.data.dto.PageDto;
 import com.hust.edu.vn.documentsystem.data.dto.PostDto;
-import com.hust.edu.vn.documentsystem.data.model.AnswerPostModel;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
-import com.hust.edu.vn.documentsystem.entity.AnswerPost;
 import com.hust.edu.vn.documentsystem.entity.CommentPost;
 import com.hust.edu.vn.documentsystem.entity.Post;
 

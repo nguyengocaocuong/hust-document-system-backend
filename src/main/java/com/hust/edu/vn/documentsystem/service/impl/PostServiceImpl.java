@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;

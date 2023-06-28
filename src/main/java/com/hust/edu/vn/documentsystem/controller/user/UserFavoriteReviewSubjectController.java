@@ -4,7 +4,6 @@ import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.FavoriteReviewSubjectDto;
 import com.hust.edu.vn.documentsystem.entity.FavoriteReviewSubject;
 import com.hust.edu.vn.documentsystem.service.FavoriteReviewSubjectService;
-import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 
 import java.util.List;

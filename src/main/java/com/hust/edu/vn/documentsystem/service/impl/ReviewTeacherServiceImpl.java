@@ -1,15 +1,12 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.entity.*;
-import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.repository.CommentReviewTeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.ReviewTeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +18,15 @@ import java.util.List;
 public class ReviewTeacherServiceImpl implements ReviewTeacherService {
     private final ReviewTeacherRepository reviewTeacherRepository;
     private final CommentReviewTeacherRepository commentReviewTeacherRepository;
-    private final ApplicationEventPublisher publisher;
     private final UserRepository userRepository;
 
     @Autowired
     public ReviewTeacherServiceImpl(
             ReviewTeacherRepository reviewTeacherRepository,
-            CommentReviewTeacherRepository commentReviewTeacherRepository, ApplicationEventPublisher publisher,
+            CommentReviewTeacherRepository commentReviewTeacherRepository,
             UserRepository userRepository) {
         this.reviewTeacherRepository = reviewTeacherRepository;
         this.commentReviewTeacherRepository = commentReviewTeacherRepository;
-        this.publisher = publisher;
         this.userRepository = userRepository;
     }
 

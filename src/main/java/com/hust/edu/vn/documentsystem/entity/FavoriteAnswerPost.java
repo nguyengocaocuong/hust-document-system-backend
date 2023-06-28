@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.entity;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -5,10 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
 public class DocumentModel {
 
     private Long id;

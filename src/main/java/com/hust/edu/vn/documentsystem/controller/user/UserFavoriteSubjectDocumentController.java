@@ -2,8 +2,6 @@ package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.service.FavoriteSubjectDocumentService;
-import com.hust.edu.vn.documentsystem.service.SubjectDocumentService;
-import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

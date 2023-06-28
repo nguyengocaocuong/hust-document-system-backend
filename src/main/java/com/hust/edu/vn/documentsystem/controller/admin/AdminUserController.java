@@ -1,7 +1,6 @@
 package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import com.hust.edu.vn.documentsystem.data.dto.UserDto;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.User;

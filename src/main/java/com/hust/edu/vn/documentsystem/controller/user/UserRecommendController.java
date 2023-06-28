@@ -4,8 +4,6 @@ import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.AnswerSubjectDocumentDto;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDocumentDto;
 import com.hust.edu.vn.documentsystem.entity.AnswerSubjectDocument;
-import com.hust.edu.vn.documentsystem.entity.ReviewSubject;
-import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;

@@ -1,10 +1,8 @@
 package com.hust.edu.vn.documentsystem.repository;
 
-import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.entity.Post;
 import com.hust.edu.vn.documentsystem.entity.User;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

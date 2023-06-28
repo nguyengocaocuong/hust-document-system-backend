@@ -4,7 +4,6 @@ import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.entity.User;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

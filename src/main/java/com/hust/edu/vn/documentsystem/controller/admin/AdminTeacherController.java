@@ -1,15 +1,12 @@
 package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
-import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.spire.ms.System.Collections.ArrayList;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +19,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admins/teachers")
-@Slf4j
 public class AdminTeacherController {
     private final TeacherService teacherService;
     private final ModelMapperUtils modelMapperUtils;

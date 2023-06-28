@@ -3,7 +3,6 @@ package com.hust.edu.vn.documentsystem.service.impl;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +20,6 @@ import java.util.List;
 
 @Service
 @Transactional
-@Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 

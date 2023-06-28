@@ -1,8 +1,6 @@
 package com.hust.edu.vn.documentsystem.repository;
 
 import com.hust.edu.vn.documentsystem.entity.ReviewSubject;
-import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
-import com.hust.edu.vn.documentsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

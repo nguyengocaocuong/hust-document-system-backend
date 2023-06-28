@@ -6,10 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class ProcessReportContentModel {
     @NotNull
     private Long id;
