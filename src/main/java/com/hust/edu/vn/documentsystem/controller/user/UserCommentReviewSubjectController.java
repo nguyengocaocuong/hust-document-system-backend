@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users/subjects/reviewSubject/{reviewSubjectId}/comment")
-public class CommentReviewSubjectController {
+public class UserCommentReviewSubjectController {
     private final ReviewSubjectService reviewSubjectService;
     private final ModelMapperUtils modelMapperUtils;
 
-    public CommentReviewSubjectController(ReviewSubjectService reviewSubjectService, ModelMapperUtils modelMapperUtils) {
+    public UserCommentReviewSubjectController(ReviewSubjectService reviewSubjectService, ModelMapperUtils modelMapperUtils) {
         this.reviewSubjectService = reviewSubjectService;
         this.modelMapperUtils = modelMapperUtils;
     }

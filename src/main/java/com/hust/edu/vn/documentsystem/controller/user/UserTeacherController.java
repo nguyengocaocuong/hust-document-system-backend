@@ -1,19 +1,13 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.data.dto.CommentReviewTeacherDto;
-import com.hust.edu.vn.documentsystem.data.dto.FavoriteReviewTeacherDto;
 import com.hust.edu.vn.documentsystem.data.dto.ReviewTeacherDto;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
-import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
-import com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher;
-import com.hust.edu.vn.documentsystem.entity.FavoriteReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +15,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/v1/users/teachers")
-@Slf4j
-public class TeacherController {
+public class UserTeacherController {
     private final TeacherService teacherService;
     private final ModelMapperUtils modelMapperUtils;
 
     @Autowired
-    public TeacherController(TeacherService teacherService, ModelMapperUtils modelMapperUtils) {
+    public UserTeacherController(TeacherService teacherService, ModelMapperUtils modelMapperUtils) {
         this.modelMapperUtils = modelMapperUtils;
         this.teacherService = teacherService;
     }
-
 
     @GetMapping("allTeacherForFilter")
     public ResponseEntity<CustomResponse> getAllSubjectForFilter() {
@@ -43,10 +34,10 @@ public class TeacherController {
 
     @PostMapping()
     public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacherModel) {
-        log.info(teacherModel.toString());
         Teacher teacher = teacherService.createTeacher(teacherModel);
         teacher.setSubjects(null);
-        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(teacher, TeacherDto.class));
+        return CustomResponse.generateResponse(HttpStatus.OK,
+                modelMapperUtils.mapAllProperties(teacher, TeacherDto.class));
     }
 
     @GetMapping("/reviewTeacher")
@@ -58,20 +49,6 @@ public class TeacherController {
         }));
     }
 
-    @PostMapping("/reviewTeacher/{reviewTeacherId}/favorite")
-    public ResponseEntity<CustomResponse> toggleFavoriteReviewTeacher(@PathVariable("reviewTeacherId") Long reviewTeacherId) {
-        boolean status = teacherService.toggleFavoriteReviewTeacher(reviewTeacherId);
-        return CustomResponse.generateResponse(status);
-    }
-
-
-    @GetMapping("/reviewTeacher/{reviewTeacherId}/favorite")
-    public ResponseEntity<CustomResponse> getAllFavoriteReviewTeacher(@PathVariable("reviewTeacherId") Long reviewTeacherId) {
-        List<FavoriteReviewTeacher> favoriteReviewTeacher = teacherService.getAllFavoriteReviewTeacher(reviewTeacherId);
-        return CustomResponse.generateResponse(HttpStatus.OK, favoriteReviewTeacher.stream().map(favorite -> modelMapperUtils.mapAllProperties(favorite, FavoriteReviewTeacherDto.class)));
-    }
-
-
     @DeleteMapping("reviewTeacher/{reviewTeacherId}")
     public ResponseEntity<CustomResponse> deleteReviewSubject(@PathVariable("reviewTeacherId") Long reviewTeacherId) {
         boolean status = teacherService.deleteReviewTeacher(reviewTeacherId);
@@ -81,7 +58,8 @@ public class TeacherController {
     @GetMapping("reviewTeacher/owner")
     public ResponseEntity<CustomResponse> getAllReviewTeacherCreatedByUser() {
         List<ReviewTeacher> reviewTeachers = teacherService.getAllReviewTeacherCreatedByUser();
-        return CustomResponse.generateResponse(HttpStatus.OK, reviewTeachers.stream().map(review -> modelMapperUtils.mapAllProperties(review, ReviewTeacherDto.class)));
+        return CustomResponse.generateResponse(HttpStatus.OK, reviewTeachers.stream()
+                .map(review -> modelMapperUtils.mapAllProperties(review, ReviewTeacherDto.class)));
     }
 
 }

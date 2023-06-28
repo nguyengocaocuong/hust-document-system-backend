@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users/teachers/{teacherId}/reviewTeacher")
-public class ReviewTeacherController {
+public class UserReviewTeacherController {
     private final TeacherService teacherService;
     private final ModelMapperUtils modelMapperUtils;
 
-    public ReviewTeacherController(TeacherService teacherService, ModelMapperUtils modelMapperUtils) {
+    public UserReviewTeacherController(TeacherService teacherService, ModelMapperUtils modelMapperUtils) {
         this.teacherService = teacherService;
         this.modelMapperUtils = modelMapperUtils;
     }

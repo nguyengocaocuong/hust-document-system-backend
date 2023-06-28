@@ -1,7 +1,6 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
-import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
@@ -13,14 +12,9 @@ public interface TeacherService {
 
     Teacher createTeacher(TeacherModel teacherModel);
 
-
     List<TeacherDto> getAllTeachersForFilter();
 
     List<ReviewTeacher> findAllReviewTeacher();
-
-    boolean toggleFavoriteReviewTeacher(Long reviewTeacherId);
-
-    List<FavoriteReviewTeacher> getAllFavoriteReviewTeacher(Long reviewTeacherId);
 
     boolean deleteReviewTeacher(Long reviewTeacherId);
 
@@ -34,5 +28,6 @@ public interface TeacherService {
 
     ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel);
 
-    ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId, ReportContentReviewTeacherModel reportContentReviewTeacherModel);
+    ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId,
+            ReportContentReviewTeacherModel reportContentReviewTeacherModel);
 }

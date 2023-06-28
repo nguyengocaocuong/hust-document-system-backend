@@ -15,11 +15,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/teachers/reviewTeacher/{reviewTeacherId}/comment")
-public class CommentReviewTeacherController {
+public class UserCommentReviewTeacherController {
     private final ReviewTeacherService reviewTeacherService;
     private final ModelMapperUtils modelMapperUtils;
 
-    public CommentReviewTeacherController(ReviewTeacherService reviewTeacherService, ModelMapperUtils modelMapperUtils) {
+    public UserCommentReviewTeacherController(ReviewTeacherService reviewTeacherService, ModelMapperUtils modelMapperUtils) {
         this.reviewTeacherService = reviewTeacherService;
         this.modelMapperUtils = modelMapperUtils;
     }

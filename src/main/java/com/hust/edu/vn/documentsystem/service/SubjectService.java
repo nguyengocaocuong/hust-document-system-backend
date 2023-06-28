@@ -10,97 +10,85 @@ import java.util.List;
 
 public interface SubjectService {
 
-    List<SubjectDto> getAllSubjects();
+        List<SubjectDto> getAllSubjects();
 
-    Subject getSubjectById(Long id);
+        Subject getSubjectById(Long id);
 
-    Subject createSubject(SubjectModel subjectModel);
+        Subject createSubject(SubjectModel subjectModel);
 
-    boolean updateSubject(SubjectModel subjectModel);
+        boolean updateSubject(SubjectModel subjectModel);
 
-    boolean deleteSubject(Long subjectId);
+        boolean deleteSubject(Long subjectId);
 
-    List<Subject> getAllSubjectsCreateByUser();
+        List<Subject> getAllSubjectsCreateByUser();
 
+        SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
 
-    SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
+        Object shareDocument(Long subjectDocumentId, ShareSubjectDocumentModel shareSubjectDocumentModel);
 
-    Object shareDocument(Long subjectDocumentId, ShareSubjectDocumentModel shareSubjectDocumentModel);
+        CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
+                        Long subjectDocumentId);
 
-    boolean favoriteSubject(Long subjectId, FavoriteSubjectModel favoriteSubjectModel);
+        CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
+                        Long subjectDocumentId, Long commentId);
 
-    boolean unFavoriteSubject(Long subjectId);
+        boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId);
 
-    boolean updateFavoriteSubject(FavoriteSubjectModel favoriteSubjectModel);
+        List<User> getAllUserShareWithMe();
 
-    CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId);
+        List<SubjectDto> getAllSubjectsForFilter();
 
-    CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel, Long subjectDocumentId, Long commentId);
+        List<String> findAllSemesterForFilter();
 
-    boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId);
+        List<SubjectDocumentType> findAllSubjectDocumentType();
 
+        SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
 
-    List<FavoriteSubject> getFavoriteSubjects();
+        List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
 
-    List<User> getAllUserShareWithMe();
+        AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId,
+                        AnswerSubjectDocumentModel answerSubjectDocumentModel);
 
-    List<SubjectDto> getAllSubjectsForFilter();
+        List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
 
-    List<String> findAllSemesterForFilter();
+        List<AnswerSubjectDocument> getAllAnswerSubjectDocument(Long subjectDocumentId);
 
-    List<SubjectDocumentType> findAllSubjectDocumentType();
+        List<User> getAllUserShared(Long subjectDocumentId);
 
+        List<SubjectDocument> getAllSubjectDocumentCreateByUser();
 
-    SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
+        String generatePublicOnInternetUrlForSubjectDocument(Long subjectDocumentId);
 
-    List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
+        List<SharePrivate> getAllSubjectDocumentShared();
 
-    boolean favoriteSubjectDocument(Long subjectDocumentId);
+        String generatePublicOnWebsiteUrlForSubjectDocument(Long subjectDocumentId);
 
-    AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId, AnswerSubjectDocumentModel answerSubjectDocumentModel);
+        boolean deleteSubjectDocumentForever(Long subjectDocumentId);
 
-    List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
+        boolean moveSubjectDocumentToTrash(Long subjectDocumentId);
 
-    boolean favoriteAnswerSubjectDocument(Long answerSubjectDocumentID);
+        boolean restoreSubjectDocument(Long subjectDocumentId);
 
-    List<FavoriteAnswerSubjectDocument> getAllFavoriteAnswerSubjectDocument(Long answerSubjectDocumentId);
+        boolean makeSubjectDocumentPublic(Long subjectDocumentId);
 
-    List<AnswerSubjectDocument> getAllAnswerSubjectDocument(Long subjectDocumentId);
+        boolean makeSubjectDocumentPrivate(Long subjectDocumentId);
 
+        boolean clearSharedPrivateSubjectDocument(Long sharedId, Long subjectDocumentId);
 
-    List<User> getAllUserShared(Long subjectDocumentId);
+        List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
 
-    List<SubjectDocument> getAllSubjectDocumentCreateByUser();
+        List<ReviewSubject> getAllReviewSubjectCreatedByUser();
 
-    String generatePublicOnInternetUrlForSubjectDocument(Long subjectDocumentId);
+        List<Object[]> getAllSubjectForAdmin();
 
-    List<SharePrivate> getAllSubjectDocumentShared();
+        boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId);
 
-    String generatePublicOnWebsiteUrlForSubjectDocument(Long subjectDocumentId);
+        ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId,
+                        ReportContentReviewSubjectModel reportContentReviewSubjectModel);
 
-    boolean deleteSubjectDocumentForever(Long subjectDocumentId);
+        ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId,
+                        ReportContentSubjectDocumentModel reportContentSubjectDocumentModel);
 
-    boolean moveSubjectDocumentToTrash(Long subjectDocumentId);
-
-    boolean restoreSubjectDocument(Long subjectDocumentId);
-
-    boolean makeSubjectDocumentPublic(Long subjectDocumentId);
-
-    boolean makeSubjectDocumentPrivate(Long subjectDocumentId);
-
-    boolean clearSharedPrivateSubjectDocument(Long sharedId);
-
-    List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
-
-    List<ReviewSubject> getAllReviewSubjectCreatedByUser();
-
-    List<Object[]> getAllSubjectForAdmin();
-
-    boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId);
-
-    ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel);
-
-    ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId, ReportContentSubjectDocumentModel reportContentSubjectDocumentModel);
-
-    ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId, ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
+        ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId,
+                        ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
 }

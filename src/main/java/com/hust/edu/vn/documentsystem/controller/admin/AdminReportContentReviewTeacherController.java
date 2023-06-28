@@ -16,12 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admins/reportContentReviewTeacher")
-public class ReportContentReviewTeacherController {
+public class AdminReportContentReviewTeacherController {
     private final ReportContentReviewTeacherService reportContentReviewTeacherService;
     private final ModelMapperUtils modelMapperUtils;
 
     @Autowired
-    public ReportContentReviewTeacherController(ReportContentReviewTeacherService reportContentReviewTeacherService, ModelMapperUtils modelMapperUtils) {
+    public AdminReportContentReviewTeacherController(ReportContentReviewTeacherService reportContentReviewTeacherService, ModelMapperUtils modelMapperUtils) {
         this.reportContentReviewTeacherService = reportContentReviewTeacherService;
         this.modelMapperUtils = modelMapperUtils;
     }

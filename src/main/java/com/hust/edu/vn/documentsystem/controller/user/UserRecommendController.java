@@ -22,11 +22,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users/recommend")
-public class RecommendController {
+public class UserRecommendController {
     private final UserService userService;
     private final ModelMapperUtils modelMapperUtils;
 
-    public RecommendController(UserService userService, ModelMapperUtils modelMapperUtils) {
+    public UserRecommendController(UserService userService, ModelMapperUtils modelMapperUtils) {
         this.userService = userService;
         this.modelMapperUtils = modelMapperUtils;
     }

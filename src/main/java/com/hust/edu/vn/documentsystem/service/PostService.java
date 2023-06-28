@@ -8,7 +8,6 @@ import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
 import com.hust.edu.vn.documentsystem.entity.AnswerPost;
 import com.hust.edu.vn.documentsystem.entity.CommentPost;
-import com.hust.edu.vn.documentsystem.entity.FavoriteAnswerPost;
 import com.hust.edu.vn.documentsystem.entity.Post;
 
 import java.util.Date;
@@ -31,26 +30,15 @@ public interface PostService {
 
     boolean hiddenPost(Long id);
 
-
     boolean activePost(Long id);
 
     boolean activeAnswerForPost(Long id);
 
     List<CommentPost> getAllCommentForPost(Long postId);
 
-    CommentPost updateCommentForPost(Long commentId, Long postId,CommentPostModel commentPostModel);
-
-    List<AnswerPost> findAllAnswerForPost(Long postId);
-
-    AnswerPost createAnswerForPost(Long postId, AnswerPostModel answerPostModel);
-
-    boolean toggleFavoriteAnswerPost(Long answerId);
-
-    List<FavoriteAnswerPost> getAllFavoriteForAnswer(Long answerId);
+    CommentPost updateCommentForPost(Long commentId, Long postId, CommentPostModel commentPostModel);
 
     List<Object> translatePost(Long postId, TargetLanguageType targetLanguageType);
-
-    List<Object> readAnswerPost(Long answerId);
 
     List<Post> getAllPostCreatedByUser();
 

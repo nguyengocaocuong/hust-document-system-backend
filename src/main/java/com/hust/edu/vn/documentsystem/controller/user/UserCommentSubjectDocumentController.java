@@ -16,11 +16,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users/subjects/subjectDocument/{subjectDocumentId}/comment")
 @Slf4j
-public class CommentSubjectDocumentController {
+public class UserCommentSubjectDocumentController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
 
-    public CommentSubjectDocumentController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
+    public UserCommentSubjectDocumentController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
         this.subjectService = subjectService;
         this.modelMapperUtils = modelMapperUtils;
     }

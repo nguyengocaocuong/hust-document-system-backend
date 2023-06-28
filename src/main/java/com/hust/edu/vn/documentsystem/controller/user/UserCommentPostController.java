@@ -14,11 +14,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/posts/{postId}/comment")
-public class CommentPostController {
+public class UserCommentPostController {
     private final PostService postService;
 
     private final ModelMapperUtils modelMapperUtils;
-    public CommentPostController(PostService postService, ModelMapperUtils modelMapperUtils) {
+    public UserCommentPostController(PostService postService, ModelMapperUtils modelMapperUtils) {
         this.postService = postService;
         this.modelMapperUtils = modelMapperUtils;
     }

@@ -21,6 +21,6 @@ public interface SharePrivateRepository extends JpaRepository<SharePrivate, Long
     @Query(value = "SELECT sp FROM SharePrivate sp WHERE sp.user.email = :email")
     List<SharePrivate> findAllByUserEmail(String email);
 
-    @Query(value = "SELECT sp FROM SharePrivate  sp WHERE sp.id = :sharedId AND sp.user.email = :email")
-    SharePrivate findByIdAndUserEmail(Long sharedId, String email);
+    @Query(value = "SELECT sp FROM SharePrivate  sp WHERE sp.id = :sharedId AND sp.subjectDocument.id = :subjectDocumentId AND sp.user.email = :email")
+    SharePrivate findByIdAndSubjectDocumentIdAndUserEmail(Long sharedId, Long subjectDocumentId, String email);
 }

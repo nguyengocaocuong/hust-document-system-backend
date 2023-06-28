@@ -16,12 +16,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admins/reportDuplicateSubjectDocument")
-public class ReportDuplicateSubjectDocumentController {
+public class AdminReportDuplicateSubjectDocumentController {
     private final ReportDuplicateSubjectDocumentService reportDuplicateSubjectDocumentService;
     private final ModelMapperUtils modelMapperUtils;
 
     @Autowired
-    public ReportDuplicateSubjectDocumentController(ReportDuplicateSubjectDocumentService reportDuplicateSubjectDocumentService, ModelMapperUtils modelMapperUtils) {
+    public AdminReportDuplicateSubjectDocumentController(ReportDuplicateSubjectDocumentService reportDuplicateSubjectDocumentService, ModelMapperUtils modelMapperUtils) {
         this.reportDuplicateSubjectDocumentService = reportDuplicateSubjectDocumentService;
         this.modelMapperUtils = modelMapperUtils;
     }
