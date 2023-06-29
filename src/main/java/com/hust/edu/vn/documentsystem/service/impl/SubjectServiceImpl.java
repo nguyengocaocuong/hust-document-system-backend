@@ -6,13 +6,11 @@ import com.hust.edu.vn.documentsystem.common.type.*;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
-import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.*;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,7 +38,6 @@ public class SubjectServiceImpl implements SubjectService {
     private final TeacherRepository teacherRepository;
     private final ModelMapperUtils modelMapperUtils;
     private final GoogleCloudStorageService googleCloudStorageService;
-    private final ApplicationEventPublisher publisher;
     private final DocumentService documentService;
 
     private final GoogleCloudTranslateService googleCloudTranslateService;
@@ -56,7 +53,6 @@ public class SubjectServiceImpl implements SubjectService {
             SubjectDocumentRepository subjectDocumentRepository,
             SharePrivateRepository sharePrivateRepository,
             CommentSubjectDocumentRepository commentSubjectDocumentRepository,
-            ApplicationEventPublisher publisher,
             AnswerSubjectRepository answerSubjectRepository, DocumentService documentService,
             AnswerSubjectDocumentRepository answerSubjectDocumentRepository,
             ShareByLinkRepository shareByLinkRepository, GoogleCloudTranslateService googleCloudTranslateService,
@@ -73,7 +69,6 @@ public class SubjectServiceImpl implements SubjectService {
         this.subjectDocumentRepository = subjectDocumentRepository;
         this.sharePrivateRepository = sharePrivateRepository;
         this.commentSubjectDocumentRepository = commentSubjectDocumentRepository;
-        this.publisher = publisher;
         this.answerSubjectRepository = answerSubjectRepository;
         this.documentService = documentService;
         this.answerSubjectDocumentRepository = answerSubjectDocumentRepository;
@@ -481,7 +476,6 @@ public class SubjectServiceImpl implements SubjectService {
                         sharePrivate.setSubjectDocument(subjectDocument);
                         sharePrivate.setUser(user);
                         sharePrivateRepository.save(sharePrivate);
-                        publisher.publishEvent(new NotifyEvent(NotificationType.SHARE_DOCUMENT_PRIVATE, sharePrivate));
                     }
                 });
                 return "Ok";
@@ -523,7 +517,6 @@ public class SubjectServiceImpl implements SubjectService {
         comment.setSubjectDocument(subjectDocument);
         comment.setOwner(user);
         comment = commentSubjectDocumentRepository.save(comment);
-        publisher.publishEvent(new NotifyEvent(NotificationType.NEW_COMMENT_SUBJECT_DOCUMENT, comment));
         return comment;
     }
 

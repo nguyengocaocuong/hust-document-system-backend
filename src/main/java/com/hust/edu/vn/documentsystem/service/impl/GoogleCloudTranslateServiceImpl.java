@@ -4,10 +4,8 @@ import com.google.cloud.spring.vision.CloudVisionTemplate;
 import com.google.cloud.storage.Acl;
 import com.google.cloud.translate.v3.*;
 import com.google.protobuf.ByteString;
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.entity.Document;
-import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +89,6 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
                 .build();
         translationServiceClient.translateDocument(request);
         cloudStorageService.setAclForAccessBlob(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER),path);
-        publisher.publishEvent(new NotifyEvent(NotificationType.TRANSLATED, path));
         return path;
     }
 

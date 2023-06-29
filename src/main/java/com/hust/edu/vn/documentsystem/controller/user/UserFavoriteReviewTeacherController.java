@@ -28,14 +28,14 @@ public class UserFavoriteReviewTeacherController {
         this.modelMapperUtils = modelMapperUtils;
     }
 
-    @PostMapping("/reviewTeacher/{reviewTeacherId}/favorite")
+    @PostMapping()
     public ResponseEntity<CustomResponse> toggleFavoriteReviewTeacher(
             @PathVariable("reviewTeacherId") Long reviewTeacherId) {
         boolean status = favoriteReviewTeacherService.toggleFavoriteReviewTeacher(reviewTeacherId);
         return CustomResponse.generateResponse(status);
     }
 
-    @GetMapping("/reviewTeacher/{reviewTeacherId}/favorite")
+    @GetMapping()
     public ResponseEntity<CustomResponse> getAllFavoriteReviewTeacher(
             @PathVariable("reviewTeacherId") Long reviewTeacherId) {
         List<FavoriteReviewTeacher> favoriteReviewTeacher = favoriteReviewTeacherService
@@ -43,4 +43,5 @@ public class UserFavoriteReviewTeacherController {
         return CustomResponse.generateResponse(HttpStatus.OK, favoriteReviewTeacher.stream()
                 .map(favorite -> modelMapperUtils.mapAllProperties(favorite, FavoriteReviewTeacherDto.class)));
     }
+
 }

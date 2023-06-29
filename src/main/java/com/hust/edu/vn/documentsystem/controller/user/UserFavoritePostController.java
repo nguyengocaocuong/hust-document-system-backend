@@ -17,10 +17,9 @@ public class UserFavoritePostController {
         this.favoritePostService = favoritePostService;
     }
 
-    @GetMapping("{postId}/favorite")
+    @GetMapping()
     public ResponseEntity<CustomResponse> toggleFavoritePost(@PathVariable("postId") Long postId) {
         boolean status = favoritePostService.toggleFavoritePost(postId);
         return CustomResponse.generateResponse(status);
     }
-
 }

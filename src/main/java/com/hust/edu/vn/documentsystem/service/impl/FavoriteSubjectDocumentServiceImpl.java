@@ -10,7 +10,9 @@ import com.hust.edu.vn.documentsystem.repository.FavoriteSubjectDocumentReposito
 import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.FavoriteSubjectDocumentService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class FavoriteSubjectDocumentServiceImpl implements FavoriteSubjectDocumentService {
     private final UserRepository userRepository;
     private final SubjectDocumentRepository subjectDocumentRepository;

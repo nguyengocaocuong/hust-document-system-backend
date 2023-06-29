@@ -17,7 +17,7 @@ import com.hust.edu.vn.documentsystem.service.FavoriteAnswerSubjectDocumentServi
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 
 @RestController
-@RequestMapping("/api/v1/users/subjects/subjectDocument/answerSubjectDocument/{answerSubjectDocumentId}/favorite")
+@RequestMapping("/api/v1/users/subjects/answerSubjectDocument/{answerSubjectDocumentId}/favorite")
 public class UserFavoriteAnswerSubjectDocumentController {
     private final FavoriteAnswerSubjectDocumentService favoriteAnswerSubjectDocumentService;
     private final ModelMapperUtils modelMapperUtils;

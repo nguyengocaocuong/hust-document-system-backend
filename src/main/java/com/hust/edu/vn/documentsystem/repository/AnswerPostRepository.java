@@ -17,7 +17,7 @@ public interface AnswerPostRepository extends JpaRepository<AnswerPost, Long> {
     @Query(value = "SELECT ap FROM AnswerPost ap WHERE ap.post.id = :postId AND ap.id = :answerId")
     AnswerPost findByIdAndPostId(Long answerId, Long postId);
 
-    @Query(value = "SELECT ap FROM AnserPost ap WHERE ap.id = :answerId AND ap.post.id = :postId AND ap.owner.email = :email")
+    @Query(value = "SELECT ap FROM AnswerPost ap WHERE ap.id = :answerId AND ap.post.id = :postId AND ap.owner.email = :email")
     AnswerPost findByIdAndPostIdAndOnwerEmail(Long answerId, Long postId, String email);
 
 }

@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.data.dto.PageDto;
@@ -8,7 +7,6 @@ import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
 import com.hust.edu.vn.documentsystem.entity.*;
-import com.hust.edu.vn.documentsystem.event.NotifyEvent;
 import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.DocumentService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
@@ -140,7 +138,6 @@ public class PostServiceImpl implements PostService {
             return false;
         comment.setHidden(true);
         commentPostRepository.save(comment);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_COMMENT_PORT, comment));
         return true;
     }
 
@@ -152,7 +149,6 @@ public class PostServiceImpl implements PostService {
             return false;
         answerPost.setHidden(true);
         answerPostRepository.save(answerPost);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_ANSWER_PORT, answerPost));
         return true;
     }
 
@@ -164,7 +160,6 @@ public class PostServiceImpl implements PostService {
             return false;
         post.setHidden(true);
         postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_PORT, post));
         return true;
     }
 
@@ -176,7 +171,6 @@ public class PostServiceImpl implements PostService {
             return false;
         post.setHidden(false);
         postRepository.save(post);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.ACTIVE_PORT, post));
         return true;
     }
 
@@ -188,7 +182,6 @@ public class PostServiceImpl implements PostService {
             return false;
         answerPost.setHidden(false);
         answerPostRepository.save(answerPost);
-        applicationEventPublisher.publishEvent(new NotifyEvent(NotificationType.HIDDEN_ANSWER_PORT, answerPost));
         return true;
     }
 
