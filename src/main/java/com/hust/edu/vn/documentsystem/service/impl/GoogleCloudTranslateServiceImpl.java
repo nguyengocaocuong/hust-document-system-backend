@@ -9,7 +9,6 @@ import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,17 +24,15 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
     private final TranslationServiceClient translationServiceClient;
     private final CloudVisionTemplate cloudVisionTemplate;
     private final GoogleCloudStorageService cloudStorageService;
-    private final ApplicationEventPublisher publisher;
 
     @Autowired
     public GoogleCloudTranslateServiceImpl(
             TranslationServiceClient translationServiceClient,
             CloudVisionTemplate cloudVisionTemplate,
-            GoogleCloudStorageService cloudStorageService, ApplicationEventPublisher publisher) {
+            GoogleCloudStorageService cloudStorageService) {
         this.translationServiceClient = translationServiceClient;
         this.cloudVisionTemplate = cloudVisionTemplate;
         this.cloudStorageService = cloudStorageService;
-        this.publisher = publisher;
     }
 
 
@@ -155,8 +152,6 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
     }
 
     private String getOutputTranslatePath(String path){
-        String paths[] = path.split("/");
-
         return "gs://" + System.getenv("BUCKET_NAME") + "/" + UUID.randomUUID()  + "/";
     }
 }

@@ -29,7 +29,6 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     private final Storage storage;
     private final ThumbnailService thumbnailService;
 
-
     @Autowired
     public GoogleCloudStorageServiceImpl(Storage storage, ThumbnailService thumbnailService) {
         this.storage = storage;
@@ -48,7 +47,8 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws IOException, ThumbnailingException, DocumentException {
+    public boolean uploadDocumentToGCP(MultipartFile document, String rootPath)
+            throws IOException, ThumbnailingException, DocumentException {
         String name = document.getOriginalFilename();
         String filename = document.getOriginalFilename();
         if (filename == null)
@@ -61,15 +61,13 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
                 thumbnailBytes,
                 "image/jpeg",
                 thumbnailPath,
-                owner
-        );
+                owner);
         String documentPath = rootPath + name;
         uploadToGCP(
                 document.getBytes(),
                 document.getContentType(),
                 documentPath,
-                null
-        );
+                null);
         return true;
 
     }
@@ -81,7 +79,8 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
         BlobType blobRootType = checkPathType(rootPath);
         BlobType blobDocumentType = checkPathType(documentRootPath);
         BlobType blobPublicType = checkPathType(publicRootPath);
-        if (blobRootType != BlobType.UN_KNOW || blobDocumentType != BlobType.UN_KNOW || blobPublicType != BlobType.UN_KNOW)
+        if (blobRootType != BlobType.UN_KNOW || blobDocumentType != BlobType.UN_KNOW
+                || blobPublicType != BlobType.UN_KNOW)
             return true;
         BlobInfo bucketRootInfo = BlobInfo
                 .newBuilder(BUCKET_NAME, rootPath)
@@ -102,7 +101,8 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath) throws IOException, ThumbnailingException, DocumentException {
+    public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath)
+            throws IOException, ThumbnailingException, DocumentException {
         String path = UUID.randomUUID() + "/";
         String childPath = rootPath + "documents/" + path;
         for (MultipartFile document : documents) {
@@ -140,12 +140,12 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
                 durationSeconds,
                 TimeUnit.SECONDS,
                 Storage.SignUrlOption.httpMethod(HttpMethod.GET),
-                Storage.SignUrlOption.withV4Signature()
-        );
+                Storage.SignUrlOption.withV4Signature());
     }
 
     @Override
-    public URL generatePublicUriForAnyoneHasTokenCanAccessPath(String path, long durationSeconds, Map<String, String> accessHeaders) {
+    public URL generatePublicUriForAnyoneHasTokenCanAccessPath(String path, long durationSeconds,
+            Map<String, String> accessHeaders) {
         BlobInfo blobInfo = BlobInfo.newBuilder(BUCKET_NAME, path).build();
         return storage.signUrl(
                 blobInfo,
@@ -153,8 +153,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
                 TimeUnit.SECONDS,
                 Storage.SignUrlOption.httpMethod(HttpMethod.GET),
                 Storage.SignUrlOption.withV4Signature(),
-                Storage.SignUrlOption.withExtHeaders(accessHeaders)
-        );
+                Storage.SignUrlOption.withExtHeaders(accessHeaders));
     }
 
     @Override
@@ -182,8 +181,11 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public boolean updateDocumentByRootPath(String path, MultipartFile document) throws IOException, ThumbnailingException, DocumentException {
-        var list = storage.list(BUCKET_NAME, Storage.BlobListOption.prefix(path), Storage.BlobListOption.currentDirectory(), Storage.BlobListOption.fields(Storage.BlobField.NAME)).getValues();
+    public boolean updateDocumentByRootPath(String path, MultipartFile document)
+            throws IOException, ThumbnailingException, DocumentException {
+        var list = storage.list(BUCKET_NAME, Storage.BlobListOption.prefix(path),
+                Storage.BlobListOption.currentDirectory(), Storage.BlobListOption.fields(Storage.BlobField.NAME))
+                .getValues();
         list.forEach(value -> deleteDocumentByRootPath(value.getName()));
         uploadDocumentToGCP(document, path);
         return true;
@@ -200,7 +202,9 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     @Override
     public Iterable<Blob> getBlobListByPath(String rootPath) {
-        return storage.list(BUCKET_NAME, Storage.BlobListOption.fields(Storage.BlobField.NAME, Storage.BlobField.CONTENT_TYPE), Storage.BlobListOption.prefix(rootPath)).getValues();
+        return storage.list(BUCKET_NAME,
+                Storage.BlobListOption.fields(Storage.BlobField.NAME, Storage.BlobField.CONTENT_TYPE),
+                Storage.BlobListOption.prefix(rootPath)).getValues();
     }
 
     @Override
@@ -209,7 +213,8 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public List<String> createThumbnailAndUploadDocumentToGCP(MultipartFile multipartFile, List<Acl> owner) throws IOException {
+    public List<String> createThumbnailAndUploadDocumentToGCP(MultipartFile multipartFile, List<Acl> owner)
+            throws IOException {
         String documentPath = UUID.randomUUID() + "/";
         String thumbnailPath = documentPath + THUMBNAIL + ".png";
         String filePath = documentPath + multipartFile.getOriginalFilename();
@@ -223,27 +228,28 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
                 .setContentType(multipartFile.getContentType());
         BlobInfo.Builder blobThumbnailInfoBuilder = BlobInfo.newBuilder(blobThumbnailId)
                 .setContentType("image/png");
-        if (owner!= null && !owner.isEmpty())
+        if (owner != null && !owner.isEmpty())
             blobInfoBuilder.setAcl(owner);
         blobThumbnailInfoBuilder.setAcl(ownerForThumbnail);
 
         BlobInfo blobThumbnailInfo = blobThumbnailInfoBuilder.build();
         BlobInfo blobInfo = blobInfoBuilder.build();
-        storage.create(blobInfo, multipartFile.getInputStream());
+        storage.create(blobInfo, multipartFile.getInputStream().readAllBytes());
         try {
             byte[] thumbnail = thumbnailService.generateThumbnail(multipartFile);
             if (thumbnail != null && thumbnail.length > 0) {
                 storage.create(blobThumbnailInfo, thumbnail);
                 log.info(thumbnailPath);
                 log.info(generateUriFromPath(thumbnailPath));
-                return List.of((owner == null || owner.isEmpty()) ? filePath : generateUriFromPath(filePath), generateUriFromPath(thumbnailPath));
+                return List.of((owner == null || owner.isEmpty()) ? filePath : generateUriFromPath(filePath),
+                        generateUriFromPath(thumbnailPath));
             }
         } catch (ThumbnailingException e) {
             throw new RuntimeException(e);
         } catch (DocumentException e) {
             throw new RuntimeException(e);
         }
-        return List.of(owner.isEmpty() ? filePath : generateUriFromPath(filePath));
+        return List.of((owner == null || owner.isEmpty()) ? filePath : generateUriFromPath(filePath));
     }
 
     @Override

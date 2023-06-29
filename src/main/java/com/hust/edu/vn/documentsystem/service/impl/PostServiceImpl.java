@@ -14,7 +14,6 @@ import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,7 +33,6 @@ public class PostServiceImpl implements PostService {
     private final SubjectRepository subjectRepository;
     private final AnswerPostRepository answerPostRepository;
     private final CommentPostRepository commentPostRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final DocumentService documentService;
 
     @Autowired
@@ -46,7 +44,6 @@ public class PostServiceImpl implements PostService {
             SubjectRepository subjectRepository,
             AnswerPostRepository answerPostRepository,
             CommentPostRepository commentPostRepository,
-            ApplicationEventPublisher applicationEventPublisher,
             DocumentService documentService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
@@ -56,7 +53,6 @@ public class PostServiceImpl implements PostService {
         this.subjectRepository = subjectRepository;
         this.answerPostRepository = answerPostRepository;
         this.commentPostRepository = commentPostRepository;
-        this.applicationEventPublisher = applicationEventPublisher;
         this.documentService = documentService;
     }
 

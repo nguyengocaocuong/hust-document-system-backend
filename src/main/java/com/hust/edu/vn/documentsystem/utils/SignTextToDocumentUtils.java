@@ -46,7 +46,7 @@ public class SignTextToDocumentUtils {
         this.resourceLoader = resourceLoader;
     }
 
-    public byte[] sign(InputStream inputStream, String type) throws IOException{
+    public byte[] sign(InputStream inputStream, String type) throws IOException {
         switch (type) {
             case MediaType.APPLICATION_PDF_VALUE -> {
                 return signToPDF(inputStream);
@@ -57,10 +57,10 @@ public class SignTextToDocumentUtils {
             case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> {
                 return signToDocx(inputStream);
             }
-            case  "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> {
+            case "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> {
                 return signToPPTX(inputStream);
             }
-            case "application/vnd.ms-powerpoint" ->{
+            case "application/vnd.ms-powerpoint" -> {
                 return signToPPT(inputStream);
             }
             case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> {
@@ -82,7 +82,8 @@ public class SignTextToDocumentUtils {
         for (int i = 0; i < pageCount; i++) {
             PDPage page = document.getPage(i);
             PDRectangle pageSize = page.getMediaBox();
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page,
+                    PDPageContentStream.AppendMode.APPEND, true, true)) {
                 contentStream.beginText();
                 contentStream.setFont(PDType1Font.TIMES_ROMAN, 12);
                 contentStream.setNonStrokingColor(Color.RED);
@@ -118,23 +119,24 @@ public class SignTextToDocumentUtils {
     }
 
     private byte[] signToDocx(InputStream inputStream) throws IOException {
-        XWPFDocument document = new XWPFDocument(inputStream);
-        XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
+        try (XWPFDocument document = new XWPFDocument(inputStream)) {
+            XWPFFooter footer = document.createFooter(HeaderFooterType.DEFAULT);
 
-        XWPFParagraph paragraph = footer.getParagraphArray(0);
-        if (paragraph == null) {
-            paragraph = footer.createParagraph();
+            XWPFParagraph paragraph = footer.getParagraphArray(0);
+            if (paragraph == null) {
+                paragraph = footer.createParagraph();
+            }
+
+            XWPFRun run = paragraph.createRun();
+            run.setText(SIGN_TEXT);
+
+            run.setBold(true);
+            run.setFontSize(12);
+            run.setColor("FF0000");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.write(outputStream);
+            return outputStream.toByteArray();
         }
-
-        XWPFRun run = paragraph.createRun();
-        run.setText(SIGN_TEXT);
-
-        run.setBold(true);
-        run.setFontSize(12);
-        run.setColor("FF0000");
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        document.write(outputStream);
-        return outputStream.toByteArray();
     }
 
     private byte[] signToXls(InputStream inputStream) throws IOException {
@@ -144,64 +146,70 @@ public class SignTextToDocumentUtils {
         BufferedImage backgroundImage = ImageIO.read(resourceLoader.getResource(PDF_LOGO).getFile());
         sheet.getPageSetup().setBackgoundImage(backgroundImage);
 
-
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.saveToStream(outputStream);
         return outputStream.toByteArray();
     }
 
     private byte[] signToPPTX(InputStream inputStream) throws IOException {
-        SlideShow ppt = new XMLSlideShow(inputStream);
-        List<XSLFSlide> slides = ppt.getSlides();
-        Dimension slideSize = ppt.getPageSize();
-        for (XSLFSlide slide : slides) {
-            XSLFPictureData logoData = (XSLFPictureData) ppt.addPicture(resourceLoader.getResource(PPT_LOGO).getContentAsByteArray(), PictureData.PictureType.PNG);
-            XSLFPictureShape logoShape = slide.createPicture(logoData);
-            int logoWidth = 200;
-            int logoHeight = 62;
-            int margin = 10;
-            int logoX = slideSize.width - logoWidth - margin;
-            int logoY = slideSize.height - logoHeight - margin;
-            logoShape.setAnchor(new Rectangle2D.Double(logoX, logoY, logoWidth, logoHeight));
+        try (SlideShow ppt = new XMLSlideShow(inputStream)) {
+            @SuppressWarnings("unchecked")
+            List<XSLFSlide> slides = ppt.getSlides();
+            Dimension slideSize = ppt.getPageSize();
+            for (XSLFSlide slide : slides) {
+                XSLFPictureData logoData = (XSLFPictureData) ppt.addPicture(
+                        resourceLoader.getResource(PPT_LOGO).getContentAsByteArray(), PictureData.PictureType.PNG);
+                XSLFPictureShape logoShape = slide.createPicture(logoData);
+                int logoWidth = 200;
+                int logoHeight = 62;
+                int margin = 10;
+                int logoX = slideSize.width - logoWidth - margin;
+                int logoY = slideSize.height - logoHeight - margin;
+                logoShape.setAnchor(new Rectangle2D.Double(logoX, logoY, logoWidth, logoHeight));
+            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ppt.write(outputStream);
+            return outputStream.toByteArray();
         }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ppt.write(outputStream);
-        return outputStream.toByteArray();
     }
+
     private byte[] signToPPT(InputStream inputStream) throws IOException {
-        HSLFSlideShow ppt = new HSLFSlideShow(inputStream);
-        List<HSLFSlide> slides = ppt.getSlides();
-        Dimension slideSize = ppt.getPageSize();
-        byte[] logoBytes = resourceLoader.getResource(PPT_LOGO).getContentAsByteArray();
+        try (HSLFSlideShow ppt = new HSLFSlideShow(inputStream)) {
+            List<HSLFSlide> slides = ppt.getSlides();
+            Dimension slideSize = ppt.getPageSize();
+            byte[] logoBytes = resourceLoader.getResource(PPT_LOGO).getContentAsByteArray();
 
-        for (HSLFSlide slide : slides) {
-            HSLFPictureData logoData = ppt.addPicture(logoBytes, PictureData.PictureType.PNG);
-            HSLFPictureShape logoShape = slide.createPicture(logoData);
-            int logoWidth = 200;
-            int logoHeight = 62;
-            int margin = 10;
-            int logoX = slideSize.width - logoWidth - margin;
-            int logoY = slideSize.height - logoHeight - margin;
-            logoShape.setAnchor(new java.awt.Rectangle(logoX, logoY, logoWidth, logoHeight));
+            for (HSLFSlide slide : slides) {
+                HSLFPictureData logoData = ppt.addPicture(logoBytes, PictureData.PictureType.PNG);
+                HSLFPictureShape logoShape = slide.createPicture(logoData);
+                int logoWidth = 200;
+                int logoHeight = 62;
+                int margin = 10;
+                int logoX = slideSize.width - logoWidth - margin;
+                int logoY = slideSize.height - logoHeight - margin;
+                logoShape.setAnchor(new java.awt.Rectangle(logoX, logoY, logoWidth, logoHeight));
+            }
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ppt.write(outputStream);
+            return outputStream.toByteArray();
         }
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ppt.write(outputStream);
-        return outputStream.toByteArray();
     }
+
     private byte[] signImageToXlsx(InputStream inputStream) throws IOException {
-        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-        byte[] imgBytes = resourceLoader.getResource(PDF_LOGO).getContentAsByteArray();
-        int numberOfSheets = workbook.getNumberOfSheets();
-        for (int i = 0; i < numberOfSheets; i++) {
-            XSSFSheet sheet = workbook.getSheetAt(i);
-            int pictureIdx = workbook.addPicture(imgBytes, org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_PNG);
-            String rID = sheet.addRelation(null, XSSFRelation.IMAGES, workbook.getAllPictures().get(pictureIdx))
-                    .getRelationship().getId();
-            sheet.getCTWorksheet().addNewPicture().setId(rID);
+        try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+            byte[] imgBytes = resourceLoader.getResource(PDF_LOGO).getContentAsByteArray();
+            int numberOfSheets = workbook.getNumberOfSheets();
+            for (int i = 0; i < numberOfSheets; i++) {
+                XSSFSheet sheet = workbook.getSheetAt(i);
+                int pictureIdx = workbook.addPicture(imgBytes, org.apache.poi.ss.usermodel.Workbook.PICTURE_TYPE_PNG);
+                String rID = sheet.addRelation(null, XSSFRelation.IMAGES, workbook.getAllPictures().get(pictureIdx))
+                        .getRelationship().getId();
+                sheet.getCTWorksheet().addNewPicture().setId(rID);
+            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
         }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
-        return outputStream.toByteArray();
     }
 }

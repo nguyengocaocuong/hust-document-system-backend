@@ -48,7 +48,6 @@ public class TeacherServiceImpl implements TeacherService {
     public Teacher createTeacher(TeacherModel teacherModel) {
         if (teacherRepository.findByEmailHust(teacherModel.getEmailHust()) != null)
             return null;
-        // TODO: kiểm tra và lưu avatar giáo viên
         Teacher teacher = modelMapperUtils.mapAllProperties(teacherModel, Teacher.class);
         return teacherRepository.save(teacher);
     }

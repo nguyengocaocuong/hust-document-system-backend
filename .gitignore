@@ -35,3 +35,4 @@ build/
 secure
 Dockerfile.dev
 docker-compose.dev.yml
+.gitpod.yml

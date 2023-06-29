@@ -30,13 +30,20 @@ public class UserRecommendController {
     }
 
     @GetMapping()
-    public ResponseEntity<CustomResponse> getRecommendFavorite(@RequestParam(value = "page", required = false, defaultValue = "0")int page,@RequestParam(value = "size", required = false, defaultValue = "5") int size){
-       Object[] recommend = userService.getObjectForRecommend(page, size);
-       List<SubjectDocument> subjectDocuments = (List<SubjectDocument>) recommend[0];
-       List<AnswerSubjectDocument> answerSubjectDocuments = (List<AnswerSubjectDocument>) recommend[1];
+    public ResponseEntity<CustomResponse> getRecommendFavorite(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
+        Object[] recommend = userService.getObjectForRecommend(page, size);
+        @SuppressWarnings("unchecked")
+        List<SubjectDocument> subjectDocuments = (List<SubjectDocument>) recommend[0];
+        @SuppressWarnings("unchecked")
+        List<AnswerSubjectDocument> answerSubjectDocuments = (List<AnswerSubjectDocument>) recommend[1];
         Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("subjectDocuments", subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
-        resultMap.put("answerSubjectDocuments", answerSubjectDocuments.stream().map(answerSubjectDocument -> modelMapperUtils.mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class)));
+        resultMap.put("subjectDocuments", subjectDocuments.stream()
+                .map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
+        resultMap.put("answerSubjectDocuments",
+                answerSubjectDocuments.stream().map(answerSubjectDocument -> modelMapperUtils
+                        .mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class)));
         return CustomResponse.generateResponse(HttpStatus.OK, resultMap);
     }
 }

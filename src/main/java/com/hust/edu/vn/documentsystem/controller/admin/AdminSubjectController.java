@@ -33,6 +33,7 @@ public class AdminSubjectController {
     @GetMapping()
     public ResponseEntity<CustomResponse> getAllSubject() {
         List<Object[]> results = subjectService.getAllSubjectForAdmin();
+        @SuppressWarnings("unchecked")
         List<Map<String, Object>> resultMap = new ArrayList();
         results.forEach(result ->{
             Map<String, Object> map = new HashMap<>();
