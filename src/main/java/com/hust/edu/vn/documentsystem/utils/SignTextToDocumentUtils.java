@@ -22,7 +22,7 @@ import org.apache.poi.xssf.usermodel.XSSFRelation;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -41,7 +41,7 @@ public class SignTextToDocumentUtils {
     private static final String PDF_LOGO = "classpath:sign.png";
     private final ResourceLoader resourceLoader;
 
-    @Autowired
+    
     public SignTextToDocumentUtils(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }

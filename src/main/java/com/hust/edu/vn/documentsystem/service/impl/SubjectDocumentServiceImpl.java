@@ -3,7 +3,7 @@ package com.hust.edu.vn.documentsystem.service.impl;
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
 import com.hust.edu.vn.documentsystem.service.SubjectDocumentService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class SubjectDocumentServiceImpl implements SubjectDocumentService {
     private final SubjectDocumentRepository subjectDocumentRepository;
 
-    @Autowired
+    
     public SubjectDocumentServiceImpl(SubjectDocumentRepository subjectDocumentRepository) {
         this.subjectDocumentRepository = subjectDocumentRepository;
     }

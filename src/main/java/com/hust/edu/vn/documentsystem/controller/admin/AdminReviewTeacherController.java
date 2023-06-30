@@ -5,7 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.ReviewTeacherDto;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ public class AdminReviewTeacherController {
     private final ReviewTeacherService reviewTeacherService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
+    
     public AdminReviewTeacherController(
             ReviewTeacherService reviewTeacherService,
             ModelMapperUtils modelMapperUtils

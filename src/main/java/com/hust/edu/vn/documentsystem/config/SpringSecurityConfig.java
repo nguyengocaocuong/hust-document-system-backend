@@ -1,7 +1,7 @@
 package com.hust.edu.vn.documentsystem.config;
 
 import com.hust.edu.vn.documentsystem.service.impl.CustomAuthenticationProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -82,7 +82,7 @@ public class SpringSecurityConfig {
 
     }
 
-    @Autowired
+    
     public void bindAuthenticationProvider(AuthenticationManagerBuilder authenticationManagerBuilder) {
         authenticationManagerBuilder
                 .authenticationProvider(customAuthenticationProvider);

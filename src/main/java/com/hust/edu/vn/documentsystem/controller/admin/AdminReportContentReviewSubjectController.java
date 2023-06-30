@@ -5,7 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.ReportContentReviewSubjectDto;
 import com.hust.edu.vn.documentsystem.entity.ReportContentReviewSubject;
 import com.hust.edu.vn.documentsystem.service.ReportContentReviewSubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ import java.util.List;
 public class AdminReportContentReviewSubjectController {
     private final ReportContentReviewSubjectService reportContentReviewSubjectService;
 private final ModelMapperUtils mapperUtils;
-    @Autowired
+    
     public AdminReportContentReviewSubjectController(ReportContentReviewSubjectService reportContentReviewSubjectService, ModelMapperUtils mapperUtils) {
         this.reportContentReviewSubjectService = reportContentReviewSubjectService;
         this.mapperUtils = mapperUtils;

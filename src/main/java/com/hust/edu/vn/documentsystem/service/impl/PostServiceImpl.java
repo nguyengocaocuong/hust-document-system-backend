@@ -13,7 +13,7 @@ import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,7 +35,7 @@ public class PostServiceImpl implements PostService {
     private final CommentPostRepository commentPostRepository;
     private final DocumentService documentService;
 
-    @Autowired
+    
     public PostServiceImpl(
             PostRepository postRepository,
             UserRepository userRepository,

@@ -3,7 +3,7 @@ package com.hust.edu.vn.documentsystem.service.impl;
 import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new BCryptPasswordEncoder(11);
     }
 
-    @Autowired
+    
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

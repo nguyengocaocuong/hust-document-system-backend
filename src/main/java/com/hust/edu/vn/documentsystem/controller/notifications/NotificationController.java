@@ -2,7 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.notifications;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.service.NotificationTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class NotificationController {
     private final NotificationTokenService notificationTokenService;
 
-    @Autowired
+    
     public NotificationController(NotificationTokenService notificationTokenService) {
         this.notificationTokenService = notificationTokenService;
     }

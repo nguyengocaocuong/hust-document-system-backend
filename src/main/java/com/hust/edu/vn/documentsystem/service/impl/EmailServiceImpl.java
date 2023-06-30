@@ -7,7 +7,7 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender emailMailSender;
 
-    @Autowired
+    
     public EmailServiceImpl(JavaMailSender emailMailSender) {
         this.emailMailSender = emailMailSender;
     }

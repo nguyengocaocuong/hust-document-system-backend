@@ -8,7 +8,7 @@ import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudTranslateService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +25,7 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
     private final CloudVisionTemplate cloudVisionTemplate;
     private final GoogleCloudStorageService cloudStorageService;
 
-    @Autowired
+    
     public GoogleCloudTranslateServiceImpl(
             TranslationServiceClient translationServiceClient,
             CloudVisionTemplate cloudVisionTemplate,

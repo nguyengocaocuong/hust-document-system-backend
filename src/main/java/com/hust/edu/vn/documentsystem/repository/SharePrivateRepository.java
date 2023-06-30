@@ -5,11 +5,11 @@ import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
-@Repository
+
 public interface SharePrivateRepository extends JpaRepository<SharePrivate, Long> {
     SharePrivate findBySubjectDocumentAndUser(SubjectDocument subjectDocument, User user);
 

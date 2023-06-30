@@ -3,11 +3,10 @@ package com.hust.edu.vn.documentsystem.repository;
 import com.hust.edu.vn.documentsystem.entity.CommentPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
-@Repository
 public interface CommentPostRepository extends JpaRepository<CommentPost, Long> {
 
     @Query(value = "SELECT cp FROM CommentPost cp WHERE cp.post.id = :postId AND cp.post.owner.email = :email AND cp.id = :commentId AND cp.isHidden = :b")

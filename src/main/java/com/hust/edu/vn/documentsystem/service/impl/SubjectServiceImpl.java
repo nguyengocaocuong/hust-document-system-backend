@@ -10,7 +10,7 @@ import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.*;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.itextpdf.text.DocumentException;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final GoogleCloudTranslateService googleCloudTranslateService;
 
-    @Autowired
+    
     public SubjectServiceImpl(
             SubjectRepository subjectRepository,
             UserRepository userRepository,

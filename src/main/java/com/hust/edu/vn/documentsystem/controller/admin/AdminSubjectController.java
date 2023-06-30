@@ -8,7 +8,7 @@ import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.spire.ms.System.Collections.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -24,7 +24,7 @@ public class AdminSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
+    
     public AdminSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
         this.modelMapperUtils = modelMapperUtils;
         this.subjectService = subjectService;

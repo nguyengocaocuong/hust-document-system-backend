@@ -3,12 +3,11 @@ package com.hust.edu.vn.documentsystem.repository;
 import com.hust.edu.vn.documentsystem.entity.ReviewSubject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.Date;
 import java.util.List;
 
-@Repository
 public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Long> {
 
     List<ReviewSubject> findAllByIsDone(boolean isDone);

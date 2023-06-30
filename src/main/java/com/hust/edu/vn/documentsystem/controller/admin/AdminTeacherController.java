@@ -7,7 +7,7 @@ import com.hust.edu.vn.documentsystem.entity.Teacher;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.spire.ms.System.Collections.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class AdminTeacherController {
     private final TeacherService teacherService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
+    
     public AdminTeacherController(TeacherService teacherService, ModelMapperUtils modelMapperUtils) {
         this.modelMapperUtils = modelMapperUtils;
         this.teacherService = teacherService;

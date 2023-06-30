@@ -9,7 +9,7 @@ import com.hust.edu.vn.documentsystem.repository.ReviewTeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.TeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
     private final UserRepository userRepository;
     private final TeacherRepository teacherRepository;
 
-    @Autowired
+    
     public ReviewTeacherServiceImpl(
             ReviewTeacherRepository reviewTeacherRepository,
             CommentReviewTeacherRepository commentReviewTeacherRepository,

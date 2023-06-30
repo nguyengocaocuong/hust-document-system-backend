@@ -4,11 +4,10 @@ import com.hust.edu.vn.documentsystem.entity.FavoriteAnswerPost;
 import com.hust.edu.vn.documentsystem.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
-@Repository
 public interface FavoriteAnswerPostRepository extends JpaRepository<FavoriteAnswerPost, Long> {
     @Query(value = "SELECT fap FROM FavoriteAnswerPost fap WHERE fap.answerPost.id = :answerId AND fap.user = :user")
     FavoriteAnswerPost findByIdAndUser(Long answerId, User user);

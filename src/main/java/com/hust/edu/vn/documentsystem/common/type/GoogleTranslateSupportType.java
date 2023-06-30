@@ -1,7 +1,7 @@
 package com.hust.edu.vn.documentsystem.common.type;
 
 public enum GoogleTranslateSupportType {
-    FOLDER("application/x-www-form-urlencoded;charset=UTF-8","UN_KNOW"),
+    FOLDER("application/x-www-form-urlencoded;charset=UTF-8", "UN_KNOW"),
     DOC("application/msword", "DOC,DOCX"),
     DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "DOCX"),
     PDF("application/pdf", "PDF,DOCX"),

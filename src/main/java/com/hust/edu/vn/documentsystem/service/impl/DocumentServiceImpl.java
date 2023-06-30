@@ -5,7 +5,7 @@ import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.repository.DocumentRepository;
 import com.hust.edu.vn.documentsystem.service.DocumentService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +18,7 @@ public class DocumentServiceImpl implements DocumentService {
     private final GoogleCloudStorageService googleCloudStorageService;
     private final DocumentRepository documentRepository;
 
-    @Autowired
+    
     public DocumentServiceImpl(GoogleCloudStorageService googleCloudStorageService,
             DocumentRepository documentRepository) {
         this.googleCloudStorageService = googleCloudStorageService;

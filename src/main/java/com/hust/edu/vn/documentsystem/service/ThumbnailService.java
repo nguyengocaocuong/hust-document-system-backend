@@ -21,7 +21,6 @@ public interface ThumbnailService {
 
     byte[] generateThumbnailForXlsx(MultipartFile xlsx) throws ThumbnailingException, IOException;
 
-
     byte[] generateThumbnailForPptx(MultipartFile pptx) throws ThumbnailingException, IOException;
 
     byte[] generateThumbnailForTxt(MultipartFile txt) throws DocumentException, IOException, ThumbnailingException;

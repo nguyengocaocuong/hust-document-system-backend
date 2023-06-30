@@ -27,7 +27,6 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -49,7 +48,6 @@ public class SignTextOrLogoImageToDocumentServiceImpl implements SignTextOrLogoI
     private static final String PDF_LOGO = "classpath:sign.png";
     private final ResourceLoader resourceLoader;
 
-    @Autowired
     public SignTextOrLogoImageToDocumentServiceImpl(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
     }

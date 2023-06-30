@@ -8,7 +8,7 @@ import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -23,7 +23,7 @@ public class UserSubjectController {
     private final ModelMapperUtils modelMapperUtils;
     private final ReviewSubjectService reviewSubjectService;
 
-    @Autowired
+    
     public UserSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils,
             ReviewSubjectService reviewSubjectService) {
         this.modelMapperUtils = modelMapperUtils;

@@ -4,5 +4,4 @@ public enum ReportStatus {
     NEW_REPORT,
     ACCESS,
     REJECTED,
-
 }

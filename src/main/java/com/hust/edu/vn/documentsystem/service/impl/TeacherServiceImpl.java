@@ -1,11 +1,9 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
 import com.google.cloud.storage.Acl;
-import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel;
-import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;

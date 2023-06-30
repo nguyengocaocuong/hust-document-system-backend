@@ -4,7 +4,7 @@ import com.hust.edu.vn.documentsystem.entity.User;
 import com.hust.edu.vn.documentsystem.event.RegistrationCompleteEvent;
 import com.hust.edu.vn.documentsystem.service.EmailService;
 import com.hust.edu.vn.documentsystem.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     private final EmailService emailService;
 
 
-    @Autowired
+    
     public RegistrationCompleteEventListener(
             UserService userService,
             EmailService emailService

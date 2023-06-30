@@ -9,7 +9,7 @@ import com.hust.edu.vn.documentsystem.service.ThumbnailService;
 import com.itextpdf.text.DocumentException;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +29,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     private final Storage storage;
     private final ThumbnailService thumbnailService;
 
-    @Autowired
+    
     public GoogleCloudStorageServiceImpl(Storage storage, ThumbnailService thumbnailService) {
         this.storage = storage;
         this.thumbnailService = thumbnailService;

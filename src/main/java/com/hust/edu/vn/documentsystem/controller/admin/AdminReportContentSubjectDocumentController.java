@@ -5,7 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.ReportContentSubjectDocumentDto;
 import com.hust.edu.vn.documentsystem.entity.ReportContentSubjectDocument;
 import com.hust.edu.vn.documentsystem.service.ReportContentSubjectDocumentService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ public class AdminReportContentSubjectDocumentController {
     private final ReportContentSubjectDocumentService reportContentSubjectDocumentService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
+    
     public AdminReportContentSubjectDocumentController(ReportContentSubjectDocumentService reportContentSubjectDocumentService, ModelMapperUtils modelMapperUtils) {
         this.reportContentSubjectDocumentService = reportContentSubjectDocumentService;
         this.modelMapperUtils = modelMapperUtils;

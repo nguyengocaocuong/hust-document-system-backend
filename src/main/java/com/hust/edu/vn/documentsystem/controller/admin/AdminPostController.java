@@ -2,7 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminPostController {
     private final PostService postService;
 
-    @Autowired
+    
     public AdminPostController(PostService postService) {
         this.postService = postService;
     }

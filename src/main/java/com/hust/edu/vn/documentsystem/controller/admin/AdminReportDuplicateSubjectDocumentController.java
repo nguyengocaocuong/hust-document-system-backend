@@ -5,7 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.ReportDuplicateSubjectDocumentDto
 import com.hust.edu.vn.documentsystem.entity.ReportDuplicateSubjectDocument;
 import com.hust.edu.vn.documentsystem.service.ReportDuplicateSubjectDocumentService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,7 @@ public class AdminReportDuplicateSubjectDocumentController {
     private final ReportDuplicateSubjectDocumentService reportDuplicateSubjectDocumentService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
+    
     public AdminReportDuplicateSubjectDocumentController(ReportDuplicateSubjectDocumentService reportDuplicateSubjectDocumentService, ModelMapperUtils modelMapperUtils) {
         this.reportDuplicateSubjectDocumentService = reportDuplicateSubjectDocumentService;
         this.modelMapperUtils = modelMapperUtils;

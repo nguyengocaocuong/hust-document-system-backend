@@ -2,7 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.admin;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class AdminController {
     private final ReviewTeacherService reviewTeacherService;
     private final ReviewSubjectService reviewSubjectService;
 
-    @Autowired
+    
     public AdminController(UserService userService, PostService postService, ReviewTeacherService reviewTeacherService,
             ReviewSubjectService reviewSubjectService) {
         this.userService = userService;

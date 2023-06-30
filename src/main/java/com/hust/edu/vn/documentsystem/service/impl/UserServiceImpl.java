@@ -14,7 +14,7 @@ import com.hust.edu.vn.documentsystem.service.EmailService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
 
-    @Autowired
+    
     public UserServiceImpl(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
