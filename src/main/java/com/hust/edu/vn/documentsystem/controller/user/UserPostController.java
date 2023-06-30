@@ -6,7 +6,6 @@ import com.hust.edu.vn.documentsystem.data.model.PostModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +17,6 @@ public class UserPostController {
     private final PostService postService;
     private final ModelMapperUtils modelMapperUtils;
 
-    @Autowired
     public UserPostController(PostService postService, ModelMapperUtils modelMapperUtils) {
         this.postService = postService;
         this.modelMapperUtils = modelMapperUtils;

@@ -20,43 +20,57 @@ public class UserCommentPostController {
     private final PusherService pusherService;
 
     private final ModelMapperUtils modelMapperUtils;
-    public UserCommentPostController(PostService postService, PusherService pusherService, ModelMapperUtils modelMapperUtils) {
+
+    public UserCommentPostController(PostService postService, PusherService pusherService,
+            ModelMapperUtils modelMapperUtils) {
         this.postService = postService;
         this.pusherService = pusherService;
         this.modelMapperUtils = modelMapperUtils;
     }
 
     @GetMapping()
-    public ResponseEntity<CustomResponse> getAllCommentForPost(@PathVariable("postId") Long postId){
+    public ResponseEntity<CustomResponse> getAllCommentForPost(@PathVariable("postId") Long postId) {
         List<CommentPost> commentPosts = postService.getAllCommentForPost(postId);
-        return CustomResponse.generateResponse(HttpStatus.OK, commentPosts.stream().map(comment -> modelMapperUtils.mapAllProperties(comment, CommentPostDto.class)));
+        return CustomResponse.generateResponse(HttpStatus.OK,
+                commentPosts.stream().map(comment -> modelMapperUtils.mapAllProperties(comment, CommentPostDto.class)));
     }
+
     @PostMapping()
-    public ResponseEntity<CustomResponse> commentForPost(@PathVariable("postId") Long postId, @ModelAttribute CommentPostModel commentPostModel){
+    public ResponseEntity<CustomResponse> commentForPost(@PathVariable("postId") Long postId,
+            @ModelAttribute CommentPostModel commentPostModel) {
         CommentPost commentPost = postService.createComment(postId, commentPostModel);
 
-        CommentPostDto commentDto =  modelMapperUtils.mapAllProperties(commentPost, CommentPostDto.class);
-        pusherService.triggerChanel("comment-post-" + postId, "new-comment",commentDto );
+        CommentPostDto commentDto = modelMapperUtils.mapAllProperties(commentPost, CommentPostDto.class);
+        pusherService.triggerChanel("comment-post-" + postId, "new-comment", commentDto);
         return CustomResponse.generateResponse(HttpStatus.OK, commentDto);
     }
+
     @DeleteMapping("{commentId}")
-    public ResponseEntity<CustomResponse> deleteCommentForPost(@PathVariable("commentId") Long commentId, @PathVariable("postId") Long postId){
+    public ResponseEntity<CustomResponse> deleteCommentForPost(@PathVariable("commentId") Long commentId,
+            @PathVariable("postId") Long postId) {
         boolean status = postService.deleteCommentForPost(commentId, postId);
-        if(status)
-        pusherService.triggerChanel("comment-post-" + postId, "delete-comment",commentId );
-        return  CustomResponse.generateResponse(status);
+        if (status)
+            pusherService.triggerChanel("comment-post-" + postId, "delete-comment", commentId);
+        return CustomResponse.generateResponse(status);
     }
+
     @PatchMapping("{commentId}")
-    public ResponseEntity<CustomResponse> updateCommentForPost(@PathVariable("commentId") Long commentId, @PathVariable("postId") Long postId, @ModelAttribute CommentPostModel commentPostModel){
+    public ResponseEntity<CustomResponse> updateCommentForPost(@PathVariable("commentId") Long commentId,
+            @PathVariable("postId") Long postId, @ModelAttribute CommentPostModel commentPostModel) {
         CommentPost commentPost = postService.updateCommentForPost(commentId, postId, commentPostModel);
-        if(commentPost == null) CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
-        CommentPostDto commentDto =  modelMapperUtils.mapAllProperties(commentPost, CommentPostDto.class);
-        pusherService.triggerChanel("comment-post-" + postId, "edit-comment",commentDto );
-        return CustomResponse.generateResponse(HttpStatus.OK,commentDto);
+        if (commentPost == null)
+            CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
+        CommentPostDto commentDto = modelMapperUtils.mapAllProperties(commentPost, CommentPostDto.class);
+        pusherService.triggerChanel("comment-post-" + postId, "edit-comment", commentDto);
+        return CustomResponse.generateResponse(HttpStatus.OK, commentDto);
     }
+
     @PatchMapping("{commentId}/hidden")
-    public ResponseEntity<CustomResponse> hiddenCommentForPost(@PathVariable("commentId") Long commentId, @PathVariable("postId") Long postId){
+    public ResponseEntity<CustomResponse> hiddenCommentForPost(@PathVariable("commentId") Long commentId,
+            @PathVariable("postId") Long postId) {
         boolean status = postService.hiddenCommentForPost(commentId, postId);
+        if (status)
+            pusherService.triggerChanel("comment-post-" + postId, "hidden-comment", commentId);
         return CustomResponse.generateResponse(status);
     }
 }

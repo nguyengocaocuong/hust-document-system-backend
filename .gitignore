@@ -33,6 +33,7 @@ build/
 .vscode/
 .env
 secure
+security
 Dockerfile.dev
 docker-compose.dev.yml
 .gitpod.yml
