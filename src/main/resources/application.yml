@@ -2,15 +2,10 @@ server:
   port: ${SERVER_PORT}
 spring:
   datasource:
-    # url: ${DB_URL}
-    # username: ${DB_USERNAME}
-    # password: ${DB_PASSWORD}
-    url: jdbc:h2:mem:mydb
-    username: sa
-    password: password
-    driverClassName: org.h2.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
-    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
