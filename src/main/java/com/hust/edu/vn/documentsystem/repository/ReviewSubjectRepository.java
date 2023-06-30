@@ -20,13 +20,21 @@ public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Lo
     @Query(value = "SELECT rs FROM ReviewSubject  rs WHERE rs.isDone = true AND rs.approved = 'NEW'")
     List<ReviewSubject> findAllNewReviewSubject();
 
-    @Query("SELECT DATE(u.createdAt) AS date, COUNT(u.id) " +
-            "FROM ReviewSubject u " +
-            "WHERE u.createdAt >= :startDate " +
-            "GROUP BY date " +
-            "ORDER BY DATE(u.createdAt) DESC")
+    @Query("""
+            SELECT DATE(u.createdAt) AS date, COUNT(u.id)
+            FROM ReviewSubject u
+            WHERE u.createdAt >= :startDate
+            GROUP BY date
+            ORDER BY DATE(u.createdAt) DESC
+            """)
     List<Object[]> getReviewForDashboard(Date startDate);
 
-    @Query(value = "SELECT rs FROM ReviewSubject rs WHERE rs.id = :reviewSubjectId AND rs.subject.id = :subjectId AND rs.owner.email = :email ")
+    @Query(value = """
+            SELECT rs
+            FROM ReviewSubject rs
+            WHERE rs.id = :reviewSubjectId
+            AND rs.subject.id = :subjectId
+            AND rs.owner.email = :email 
+            """)
     ReviewSubject findByIdAndSubjectIdAndUserEmail(Long reviewSubjectId, Long subjectId, String email);
 }

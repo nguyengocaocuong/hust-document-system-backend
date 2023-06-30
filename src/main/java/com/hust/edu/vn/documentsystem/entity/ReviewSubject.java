@@ -49,5 +49,8 @@ public class ReviewSubject {
     @OneToMany(mappedBy = "reviewSubject", cascade = CascadeType.REMOVE)
     private List<FavoriteReviewSubject> favorites;
 
+    @OneToMany(mappedBy = "reviewSubject", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ReportContentReviewSubject> reportContents;
+
     private boolean isDelete = false;
 }

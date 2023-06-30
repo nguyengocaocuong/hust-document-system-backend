@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.data.model.ReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.entity.*;
@@ -131,6 +132,17 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
         if (reviewSubject == null)
             return false;
         reviewSubjectRepository.deleteById(reviewSubject.getId());
+        return true;
+    }
+
+    @Override
+    public boolean updateReviewSubject(Long reviewSubjectId, Long subjectId, ReviewSubjectModel reviewSubjectModel) {
+        ReviewSubject reviewSubject  = reviewSubjectRepository.findByIdAndSubjectIdAndUserEmail(reviewSubjectId, subjectId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reviewSubject == null) return false;
+        reviewSubject.setDone(reviewSubjectModel.getDone() == 1);
+        reviewSubject.setReview(reviewSubjectModel.getReview());
+        reviewSubject.setApproved(ApproveType.NEW);
+        reviewSubjectRepository.save(reviewSubject);
         return true;
     }
 }

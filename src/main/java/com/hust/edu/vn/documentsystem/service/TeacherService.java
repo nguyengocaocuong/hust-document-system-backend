@@ -26,8 +26,6 @@ public interface TeacherService {
 
     boolean deleteTeacher(Long teacherId);
 
-    ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel);
-
     ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId,
-            ReportContentReviewTeacherModel reportContentReviewTeacherModel);
+                                                                ReportContentReviewTeacherModel reportContentReviewTeacherModel);
 }

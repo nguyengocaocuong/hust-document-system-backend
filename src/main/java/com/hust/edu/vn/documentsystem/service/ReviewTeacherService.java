@@ -1,6 +1,7 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
+import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 
@@ -22,4 +23,10 @@ public interface ReviewTeacherService {
     boolean updateCommentReviewTeacher(Long commentId, Long reviewTeacherId, CommentReviewTeacherModel commentReviewTeacherModel);
 
     boolean hiddenCommentReviewTeacher(Long commentId, Long reviewTeacherId);
+
+    ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel);
+
+    boolean deleteReviewTeacher(Long reviewTeacherId, Long teacherId);
+
+    boolean updateReviewTeacher(Long reviewTeacherId, Long teacherId, ReviewTeacherModel reviewTeacherModel);
 }

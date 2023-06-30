@@ -31,4 +31,6 @@ public interface ReviewSubjectService {
     ReviewSubject createReviewSubject(Long subjectId, ReviewSubjectModel reviewSubjectModel);
 
     boolean deleteReviewSubject(Long reviewSubjectId, Long subjectId);
+
+    boolean updateReviewSubject(Long reviewSubjectId, Long subjectId, ReviewSubjectModel reviewSubjectModel);
 }

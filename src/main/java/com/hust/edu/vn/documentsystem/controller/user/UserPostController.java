@@ -60,4 +60,10 @@ public class UserPostController {
         return CustomResponse.generateResponse(status);
     }
 
+    @PatchMapping("{postId}")
+    public ResponseEntity<CustomResponse> updatePost(@PathVariable("postId") Long postId, @ModelAttribute PostModel postModel){
+        boolean status = postService.updatePost(postId, postModel);
+        return CustomResponse.generateResponse(status);
+    }
+
 }

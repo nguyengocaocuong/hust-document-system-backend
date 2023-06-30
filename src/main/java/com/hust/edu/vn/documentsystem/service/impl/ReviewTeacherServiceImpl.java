@@ -1,9 +1,12 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
+import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.CommentReviewTeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.ReviewTeacherRepository;
+import com.hust.edu.vn.documentsystem.repository.TeacherRepository;
 import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +22,18 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
     private final ReviewTeacherRepository reviewTeacherRepository;
     private final CommentReviewTeacherRepository commentReviewTeacherRepository;
     private final UserRepository userRepository;
+    private final TeacherRepository teacherRepository;
 
     @Autowired
     public ReviewTeacherServiceImpl(
             ReviewTeacherRepository reviewTeacherRepository,
             CommentReviewTeacherRepository commentReviewTeacherRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            TeacherRepository teacherRepository) {
         this.reviewTeacherRepository = reviewTeacherRepository;
         this.commentReviewTeacherRepository = commentReviewTeacherRepository;
         this.userRepository = userRepository;
+        this.teacherRepository = teacherRepository;
     }
 
 
@@ -88,5 +94,37 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
         return false;
     }
 
+    @Override
+    public ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel) {
+        Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
+        if (teacher == null)
+            return null;
+        ReviewTeacher reviewTeacher = new ReviewTeacher();
+        reviewTeacher.setTeacher(teacher);
+        reviewTeacher.setDone(reviewTeacherModel.getDone() == 1);
+        reviewTeacher.setApproved(ApproveType.NEW);
+        reviewTeacher.setReview(reviewTeacherModel.getReview());
+        reviewTeacher
+                .setOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
+        return reviewTeacherRepository.save(reviewTeacher);
+    }
+
+    @Override
+    public boolean deleteReviewTeacher(Long reviewTeacherId, Long teacherId) {
+        ReviewTeacher reviewTeacher = reviewTeacherRepository.findByIdAndTeacherIdAndOwnerEmail(reviewTeacherId, teacherId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (reviewTeacher == null) return false;
+        reviewTeacherRepository.delete(reviewTeacher);
+        return true;
+    }
+
+    @Override
+    public boolean updateReviewTeacher(Long reviewTeacherId, Long teacherId, ReviewTeacherModel reviewTeacherModel) {
+        ReviewTeacher reviewTeacher = reviewTeacherRepository.findByIdAndTeacherIdAndOwnerEmail(reviewTeacherId, teacherId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reviewTeacher == null) return false;
+        reviewTeacher.setDone(reviewTeacherModel.getDone() == 1);
+        reviewTeacher.setReview(reviewTeacher.getReview());
+        reviewTeacherRepository.save(reviewTeacher);
+        return true;
+    }
 
 }

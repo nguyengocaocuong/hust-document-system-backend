@@ -41,7 +41,7 @@ public class CommentReviewTeacher {
     @JsonIgnore
     private CommentReviewTeacher parentComment = null;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.REMOVE)
     private List<CommentReviewTeacher> childComment = new ArrayList<>();
 
     private boolean isHidden = false;

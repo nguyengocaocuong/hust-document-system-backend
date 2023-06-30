@@ -49,11 +49,6 @@ public class UserTeacherController {
         }));
     }
 
-    @DeleteMapping("reviewTeacher/{reviewTeacherId}")
-    public ResponseEntity<CustomResponse> deleteReviewSubject(@PathVariable("reviewTeacherId") Long reviewTeacherId) {
-        boolean status = teacherService.deleteReviewTeacher(reviewTeacherId);
-        return CustomResponse.generateResponse(status);
-    }
 
     @GetMapping("reviewTeacher/owner")
     public ResponseEntity<CustomResponse> getAllReviewTeacherCreatedByUser() {

@@ -1,4 +1,5 @@
 package com.hust.edu.vn.documentsystem.entity;
+
 import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,8 +45,12 @@ public class ReviewTeacher {
 
     @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE)
     private List<FavoriteReviewTeacher> favorites;
+
     @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE)
     private List<CommentReviewTeacher> comments;
+
+    @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ReportContentReviewTeacher> reportContents;
 
     private boolean isDelete = false;
 

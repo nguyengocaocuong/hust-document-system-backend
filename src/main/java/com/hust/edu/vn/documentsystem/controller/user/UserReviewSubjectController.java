@@ -32,4 +32,9 @@ public class UserReviewSubjectController {
         boolean status = reviewSubjectService.deleteReviewSubject(reviewSubjectId, subjectId);
         return CustomResponse.generateResponse(status);
     }
+    @PatchMapping("{reviewSubjectId}")
+    public ResponseEntity<CustomResponse> updateReviewSubject(@PathVariable("reviewSubjectId") Long reviewSubjectId, @PathVariable("subjectId") Long subjectId, @ModelAttribute ReviewSubjectModel reviewSubjectModel){
+        boolean status = reviewSubjectService.updateReviewSubject(reviewSubjectId,subjectId , reviewSubjectModel);
+        return CustomResponse.generateResponse(status);
+    }
 }

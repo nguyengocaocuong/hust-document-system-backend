@@ -12,10 +12,10 @@ public class PusherConfig {
     private final String appCluster = System.getenv("PUSHER_CLUSTER");
 
     @Bean
-    public Pusher pusherConfig(){
-        Pusher pusherConfig = new Pusher(appId, appKey, appSecret);
-        pusherConfig.setCluster(appCluster);
-        pusherConfig.setEncrypted(true);
-        return pusherConfig;
+    public Pusher pusher(){
+        Pusher pusher = new Pusher(appId, appKey, appSecret);
+        pusher.setCluster(appCluster);
+        pusher.setEncrypted(true);
+        return pusher;
     }
 }

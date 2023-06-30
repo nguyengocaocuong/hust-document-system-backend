@@ -67,6 +67,15 @@ public class SubjectDocument {
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     List<ShareByLink> shareByLinks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
+    private List<ReportContentSubjectDocument> reportContents;
+
+    @OneToMany(mappedBy = "subjectDocumentFirst", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ReportDuplicateSubjectDocument> reportDuplicatesFirst;
+
+    @OneToMany(mappedBy = "subjectDocumentSecond", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ReportDuplicateSubjectDocument> reportDuplicatesSecond;
+
     private Date deletedAt = new Date();
 
     private boolean isDelete = false;

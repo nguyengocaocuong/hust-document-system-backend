@@ -21,7 +21,7 @@ public class ReportContentReviewSubject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReportContentReviewSubject_ReviewSubject"))
     private ReviewSubject reviewSubject;
 

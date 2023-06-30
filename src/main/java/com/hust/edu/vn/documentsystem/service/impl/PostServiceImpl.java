@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
         this.userRepository = userRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.googleCloudTranslateService = googleCloudTranslateService;
-    
+
         this.subjectRepository = subjectRepository;
         this.answerPostRepository = answerPostRepository;
         this.commentPostRepository = commentPostRepository;
@@ -224,5 +224,24 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Object[]> getPostForDashboard(Date sevenDaysAgo) {
         return postRepository.getPostForDashboard(sevenDaysAgo);
+    }
+
+    @Override
+    public boolean updatePost(Long postId, PostModel postModel) {
+        Post post = postRepository.findByIdAndUserEmail(postId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (post == null) return false;
+        post.setDescription(postModel.getDescription());
+        post.setDone(postModel.getDone() == 1);
+        if (postModel.getDocuments().length > 0) {
+            Document documentEntity;
+            try {
+                documentEntity = documentService.savePublicDocumentToGoogleCloud(postModel.getDocuments());
+                post.setDocument(documentEntity);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        postRepository.save(post);
+        return true;
     }
 }

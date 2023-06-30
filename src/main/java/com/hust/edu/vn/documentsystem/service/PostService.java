@@ -43,4 +43,6 @@ public interface PostService {
     boolean deletePost(Long postId);
 
     List<Object[]> getPostForDashboard(Date sevenDaysAgo);
+
+    boolean updatePost(Long postId, PostModel postModel);
 }

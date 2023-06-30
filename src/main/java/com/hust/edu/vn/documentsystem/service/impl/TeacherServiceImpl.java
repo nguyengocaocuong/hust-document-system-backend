@@ -116,24 +116,10 @@ public class TeacherServiceImpl implements TeacherService {
         return true;
     }
 
-    @Override
-    public ReviewTeacher createReviewTeacher(Long teacherId, ReviewTeacherModel reviewTeacherModel) {
-        Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
-        if (teacher == null)
-            return null;
-        ReviewTeacher reviewTeacher = new ReviewTeacher();
-        reviewTeacher.setTeacher(teacher);
-        reviewTeacher.setDone(reviewTeacherModel.getDone() == 1);
-        reviewTeacher.setApproved(ApproveType.NEW);
-        reviewTeacher.setReview(reviewTeacherModel.getReview());
-        reviewTeacher
-                .setOwner(userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()));
-        return reviewTeacherRepository.save(reviewTeacher);
-    }
 
     @Override
     public ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId,
-            ReportContentReviewTeacherModel reportContentReviewTeacherModel) {
+                                                                       ReportContentReviewTeacherModel reportContentReviewTeacherModel) {
         ReviewTeacher reviewTeacher = reviewTeacherRepository.findById(reviewTeacherId).orElse(null);
         if (reviewTeacher == null)
             return null;
