@@ -148,6 +148,4 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllInstitute());
     }
 
-
-
 }
