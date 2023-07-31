@@ -25,6 +25,11 @@
             <name>e-iceblue</name>
             <url>https://repo.e-iceblue.com/nexus/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>AsposeJavaAPI</id>
+            <name>Aspose Java API</name>
+            <url>http://repository.aspose.com/repo/</url>
+        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -111,6 +116,31 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-slides</artifactId>
+            <version>21.8</version>
+            <classifier>jdk16</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-cells</artifactId>
+            <version>23.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-words</artifactId>
+            <version>22.11</version>
+            <classifier>jdk17</classifier>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-words</artifactId>
+            <version>22.11</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
 
         <!--     DEPENDENCY FOR TRANSLATE   -->
         <dependency>

@@ -21,9 +21,7 @@ public class TeacherModel {
     private String emailHust;
     private String emailPrivate;
     private String phoneNumber;
-    private Date dob;
     private String description;
-    private List<Long> subjects;
     private String avatar;
     private MultipartFile avatarFile;
 }

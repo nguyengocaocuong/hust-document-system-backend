@@ -129,7 +129,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public boolean hiddenCommentForPost(Long commentId, Long postId) {
         CommentPost comment = commentPostRepository.findByIdAndPostIdAndIsHidden(commentId, postId,
-                SecurityContextHolder.getContext().getAuthentication().getName(), true);
+                SecurityContextHolder.getContext().getAuthentication().getName(), false);
         if (comment == null)
             return false;
         comment.setHidden(true);

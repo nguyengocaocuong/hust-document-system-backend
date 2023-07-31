@@ -18,25 +18,19 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReportContentSubjectDocument {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private Date createdAt = new Date();
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReportStatus status = ReportStatus.NEW_REPORT;
-
     private String message;
     private String processMessage;
-
     @ManyToOne
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_User"))
     private User owner;
-
     @ManyToOne
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_ReportContent_SubjectDocument"))
     private SubjectDocument subjectDocument;

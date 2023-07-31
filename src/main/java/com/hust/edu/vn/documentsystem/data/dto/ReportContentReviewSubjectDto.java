@@ -28,7 +28,7 @@ public class ReportContentReviewSubjectDto implements Serializable {
     public static class ReviewSubjectDto implements Serializable {
         private  Long id;
         private  String review;
-        private  boolean isDone;
+        private  boolean done;
         private  Date createdAt;
         private  boolean isHidden;
         private  ApproveType approved;

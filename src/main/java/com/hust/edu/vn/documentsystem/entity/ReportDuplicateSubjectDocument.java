@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "ReportDuplicateSubjectDocuments", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "first", "second" })
+        @UniqueConstraint(columnNames = { "first", "second", "owner_id" })
 })
 @Getter
 @Setter
@@ -20,20 +21,14 @@ public class ReportDuplicateSubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
-
+    private Date createdAt;
     @ManyToOne
     @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_User"))
     private User owner;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReportStatus status = ReportStatus.NEW_REPORT;
-
     private String processMessage;
-
     @ManyToOne
     @JoinColumn(name = "first", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_ReportDuplicateDocument_SubjectDocumentFirst"))
     private SubjectDocument subjectDocumentFirst;

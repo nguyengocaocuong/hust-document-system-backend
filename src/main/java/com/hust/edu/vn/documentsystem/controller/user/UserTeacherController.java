@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,9 +34,8 @@ public class UserTeacherController {
     }
 
     @PostMapping()
-    public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacherModel) {
+    public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacherModel) throws IOException {
         Teacher teacher = teacherService.createTeacher(teacherModel);
-        teacher.setSubjects(null);
         return CustomResponse.generateResponse(HttpStatus.OK,
                 modelMapperUtils.mapAllProperties(teacher, TeacherDto.class));
     }
@@ -44,7 +44,6 @@ public class UserTeacherController {
     public ResponseEntity<CustomResponse> getAllReviewTeacher() {
         List<ReviewTeacher> reviewTeacherList = teacherService.findAllReviewTeacher();
         return CustomResponse.generateResponse(HttpStatus.OK, reviewTeacherList.stream().map(review -> {
-            review.getTeacher().setSubjects(null);
             return modelMapperUtils.mapAllProperties(review, ReviewTeacherDto.class);
         }));
     }

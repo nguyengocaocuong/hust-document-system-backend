@@ -1,7 +1,6 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.data.dto.*;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
@@ -9,8 +8,6 @@ import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,14 +18,10 @@ import java.util.List;
 public class UserSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
-    private final ReviewSubjectService reviewSubjectService;
 
-    
-    public UserSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils,
-            ReviewSubjectService reviewSubjectService) {
+    public UserSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
         this.modelMapperUtils = modelMapperUtils;
         this.subjectService = subjectService;
-        this.reviewSubjectService = reviewSubjectService;
     }
 
     @GetMapping("{subjectId}")
@@ -66,53 +59,6 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocument);
     }
 
-    @PostMapping("subjectDocument/{subjectDocumentId}/answerSubjectDocument")
-    public ResponseEntity<CustomResponse> uploadAnswerForSubjectDocument(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId,
-            @ModelAttribute AnswerSubjectDocumentModel answerSubjectDocumentModel) {
-        AnswerSubjectDocument answerSubjectDocument = subjectService.saveAnswerForSubjectDocument(subjectDocumentId,
-                answerSubjectDocumentModel);
-        answerSubjectDocument.setSubjectDocument(null);
-        return CustomResponse.generateResponse(HttpStatus.OK,
-                modelMapperUtils.mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class));
-    }
-
-    @GetMapping("subjectDocument/{subjectDocumentId}/answerSubjectDocument")
-    public ResponseEntity<CustomResponse> getAllAnswerSubjectDocument(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        List<AnswerSubjectDocument> answerSubjectDocuments = subjectService
-                .getAllAnswerSubjectDocument(subjectDocumentId);
-        return CustomResponse.generateResponse(HttpStatus.OK, answerSubjectDocuments.stream()
-                .map(answer -> modelMapperUtils.mapAllProperties(answer, AnswerSubjectDocumentDto.class)));
-    }
-
-    @GetMapping("subjectDocument/{subjectDocumentId}/readFile")
-    public ResponseEntity<Resource> readSubjectDocumentFile(@PathVariable("subjectDocumentId") Long subjectDocumentId,
-            @RequestParam(required = false) String token) {
-        List<Object> data = subjectService.readSubjectDocumentFile(subjectDocumentId, token);
-        if (data == null || ((byte[]) data.get(1)).length == 0)
-            return ResponseEntity.notFound().build();
-        Document document = (Document) data.get(0);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(document.getContentType()));
-        headers.setContentDisposition(ContentDisposition.attachment().filename(document.getName()).build());
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(new ByteArrayResource((byte[]) data.get(1)));
-    }
-
-
-
-
-    @GetMapping("subjectDocument/{subjectDocumentId}")
-    public ResponseEntity<CustomResponse> getSubjectDocumentDetail(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        SubjectDocument subjectDocument = subjectService.getSubjectDocumentDetailById(subjectDocumentId);
-        subjectDocument.getSubject().setSubjectDocuments(null);
-        return CustomResponse.generateResponse(subjectDocument != null ? HttpStatus.OK : HttpStatus.NOT_FOUND,
-                subjectDocument != null ? modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)
-                        : null);
-    }
 
     @GetMapping("allUserShareWithMe")
     public ResponseEntity<CustomResponse> getAllUserShareWithMe() {
@@ -122,8 +68,11 @@ public class UserSubjectController {
     }
 
     @GetMapping()
-    public ResponseEntity<CustomResponse> getAllSubjects() {
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjects());
+    public ResponseEntity<CustomResponse> getAllSubjects(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") int size
+    ) {
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjects(page, size));
     }
 
     @GetMapping("allSubjectForFilter")
@@ -131,10 +80,6 @@ public class UserSubjectController {
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjectsForFilter());
     }
 
-    @GetMapping("allSemesterForFilter")
-    public ResponseEntity<CustomResponse> getAllSemesterForFilter() {
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.findAllSemesterForFilter());
-    }
 
     @GetMapping("subjectDocumentTypeForFilter")
     public ResponseEntity<CustomResponse> getAllSubjectDocumentType() {
@@ -150,7 +95,7 @@ public class UserSubjectController {
 
     @GetMapping("reviewSubject")
     public ResponseEntity<CustomResponse> allReviewSubject() {
-        return CustomResponse.generateResponse(HttpStatus.OK, reviewSubjectService.getAllReviewSubjects().stream()
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllReviewSubjects().stream()
                 .map(review -> modelMapperUtils.mapAllProperties(review, ReviewSubjectDto.class)));
     }
 
@@ -175,7 +120,6 @@ public class UserSubjectController {
             share.getSubjectDocument().setAnswers(null);
             share.getSubjectDocument().setShared(null);
             share.getSubjectDocument().getSubject().setSubjectDocuments(null);
-            share.getSubjectDocument().getSubject().setTeachers(null);
             share.getSubjectDocument().getSubject().setOwner(null);
 
             return modelMapperUtils.mapAllProperties(share, SharePrivateAllDto.class);
@@ -183,78 +127,27 @@ public class UserSubjectController {
     }
 
 
-    @GetMapping("subjectDocument/{subjectDocumentId}/generatePublicOnInternetUrl")
-    public ResponseEntity<CustomResponse> generatePublicOnInternetUrlForSubjectDocument(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        String url = subjectService.generatePublicOnInternetUrlForSubjectDocument(subjectDocumentId);
-        if (url == null)
-            return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
-        return CustomResponse.generateResponse(HttpStatus.OK, url);
-    }
-
-    @GetMapping("subjectDocument/{subjectDocumentId}/generatePublicOnWebsiteUrl")
-    public ResponseEntity<CustomResponse> generatePublicOnWebsiteUrlForSubjectDocument(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        String url = subjectService.generatePublicOnWebsiteUrlForSubjectDocument(subjectDocumentId);
-        if (url == null)
-            return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
-        return CustomResponse.generateResponse(HttpStatus.OK, url);
-    }
-
-    @DeleteMapping("subjectDocument/{subjectDocumentId}/forever")
-    public ResponseEntity<CustomResponse> deleteSubjectDocumentForever(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        boolean status = subjectService.deleteSubjectDocumentForever(subjectDocumentId);
-        return CustomResponse.generateResponse(status);
-    }
-
-    @DeleteMapping("subjectDocument/{subjectDocumentId}")
-    public ResponseEntity<CustomResponse> moveSubjectDocumentToTrash(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        boolean status = subjectService.moveSubjectDocumentToTrash(subjectDocumentId);
-        return CustomResponse.generateResponse(status);
-    }
-
-    @PatchMapping("subjectDocument/{subjectDocumentId}/restore")
-    public ResponseEntity<CustomResponse> restoreSubjectDocument(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        boolean status = subjectService.restoreSubjectDocument(subjectDocumentId);
-        return CustomResponse.generateResponse(status);
-    }
-
-    @PatchMapping("subjectDocument/{subjectDocumentId}/public")
-    public ResponseEntity<CustomResponse> makeSubjectDocumentPublic(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        boolean status = subjectService.makeSubjectDocumentPublic(subjectDocumentId);
-        return CustomResponse.generateResponse(status);
-    }
-
-    @PatchMapping("subjectDocument/{subjectDocumentId}/private")
-    public ResponseEntity<CustomResponse> makeSubjectDocumentPrivate(
-            @PathVariable("subjectDocumentId") Long subjectDocumentId) {
-        boolean status = subjectService.makeSubjectDocumentPrivate(subjectDocumentId);
-        return CustomResponse.generateResponse(status);
-    }
-
-    @GetMapping("subjectDocument/{subjectDocumentId}/translate")
-    public ResponseEntity<Resource> translateDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId,
-            @RequestParam("targetLanguage") TargetLanguageType targetLanguageType) {
-        List<Object> data = subjectService.translateSubjectDocument(subjectDocumentId, targetLanguageType);
-        if (data == null || ((byte[]) data.get(1)).length == 0)
-            return ResponseEntity.notFound().build();
-        Document document = (Document) data.get(0);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(document.getContentType()));
-        headers.setContentDisposition(ContentDisposition.attachment().filename(document.getName()).build());
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(new ByteArrayResource((byte[]) data.get(1)));
-    }
-
     @GetMapping("reviewSubject/owner")
     public ResponseEntity<CustomResponse> getAllReviewSubjectCreatedByUser() {
         List<ReviewSubject> reviewSubjects = subjectService.getAllReviewSubjectCreatedByUser();
         return CustomResponse.generateResponse(HttpStatus.OK, reviewSubjects.stream()
                 .map(review -> modelMapperUtils.mapAllProperties(review, ReviewSubjectDto.class)));
     }
+
+    @GetMapping("search")
+    public ResponseEntity<CustomResponse> getAllSubjectByInstitute(@RequestParam("institute") String institute){
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjectByInstitute(institute).stream().map(subject -> {
+           subject.setSubjectDocuments(null);
+           subject.setFavorites(null);
+           subject.setReviews(null);
+            return  modelMapperUtils.mapAllProperties(subject, SubjectDto.class);
+        }));
+    }
+    @GetMapping("institute")
+    public ResponseEntity<CustomResponse> getAllSubjectByInstitute(){
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllInstitute());
+    }
+
+
+
 }

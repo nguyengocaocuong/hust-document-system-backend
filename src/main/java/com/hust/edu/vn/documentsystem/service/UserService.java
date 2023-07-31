@@ -49,5 +49,5 @@ public interface UserService {
 
     boolean createUser(UserModel userModel);
 
-    Object[] getObjectForRecommend(int page, int size);
+    List<SubjectDocument> getObjectForRecommend(int page, int size);
 }

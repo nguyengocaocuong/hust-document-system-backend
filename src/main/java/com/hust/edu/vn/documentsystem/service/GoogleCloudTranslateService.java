@@ -15,4 +15,6 @@ public interface GoogleCloudTranslateService {
     byte[] translateSubjectDocument(Document document, TargetLanguageType targetLanguageType);
 
     String translatePost(Document document, TargetLanguageType targetLanguage);
+
+    byte[] translateSubjectDocumentByFile(MultipartFile file, TargetLanguageType targetLanguageType) throws IOException;
 }

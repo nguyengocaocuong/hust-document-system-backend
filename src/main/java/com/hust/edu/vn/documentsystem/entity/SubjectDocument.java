@@ -18,43 +18,27 @@ import java.util.List;
 @Setter
 @ToString
 public class SubjectDocument {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column( nullable = false)
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SubjectDocumentType subjectDocumentType;
-
     private DocumentType type;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Document"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_SubjectDocument_Document"))
     private Document document;
-
-    @Column(nullable = false)
-    private String description = "";
-
-    @Column(nullable = false)
-    private String descriptionEn = "";
+    private String description;
+    private String descriptionEn;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User owner;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false,foreignKey = @ForeignKey(name = "fk_SubjectDocument_Subject"))
+    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_SubjectDocument_Subject"))
     @JsonIgnore
     private Subject subject;
-
-    @Column()
     private boolean isPublic = false;
-
-    @Column()
-    private String semester;
     private Date createdAt = new Date();
-    private Date lastEditedAt = new Date();
-
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<CommentSubjectDocument> comments = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
@@ -63,20 +47,14 @@ public class SubjectDocument {
     private List<FavoriteSubjectDocument> favorites = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     List<SharePrivate> shared = new ArrayList<>();
-
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     List<ShareByLink> shareByLinks = new ArrayList<>();
-
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<ReportContentSubjectDocument> reportContents;
-
     @OneToMany(mappedBy = "subjectDocumentFirst", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ReportDuplicateSubjectDocument> reportDuplicatesFirst;
-
     @OneToMany(mappedBy = "subjectDocumentSecond", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ReportDuplicateSubjectDocument> reportDuplicatesSecond;
-
     private Date deletedAt = new Date();
-
     private boolean isDelete = false;
 }

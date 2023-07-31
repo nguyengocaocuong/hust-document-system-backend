@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface GoogleCloudStorageService {
-    String uploadAvatarToGCP(MultipartFile avatar, String rootPath) throws IOException;
-    boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws IOException, ThumbnailingException, DocumentException;
+    String uploadAvatarToGCP(MultipartFile avatar) throws IOException;
+    boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws Exception;
 
     boolean createFolderForUser(String email);
-    String uploadDocumentsToGCP(MultipartFile[] document, String rootPath) throws IOException, ThumbnailingException, DocumentException;
+    String uploadDocumentsToGCP(MultipartFile[] document, String rootPath) throws Exception;
     boolean setAclForAccessBlob(Acl owner, String path);
 
     URL generatePublicUriForAccess(String filename, long durationSeconds);
@@ -33,7 +33,7 @@ public interface GoogleCloudStorageService {
 
     String getUrlDownload(String path, Long timeout);
 
-    boolean updateDocumentByRootPath(String path, MultipartFile document) throws IOException, ThumbnailingException, DocumentException;
+    boolean updateDocumentByRootPath(String path, MultipartFile document) throws Exception;
 
     boolean deleteAllDocumentByRootPath(String substring);
 

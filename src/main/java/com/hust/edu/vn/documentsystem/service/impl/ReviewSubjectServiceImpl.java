@@ -5,6 +5,7 @@ import com.hust.edu.vn.documentsystem.data.model.CommentReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.data.model.ReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;
+import com.hust.edu.vn.documentsystem.service.PusherService;
 import com.hust.edu.vn.documentsystem.service.ReviewSubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,18 +21,20 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
     private final ModelMapperUtils modelMapperUtils;
     private final CommentReviewSubjectRepository commentReviewSubjectRepository;
     private final SubjectRepository subjectRepository;
+    private final PusherService pusherService;
 
     public ReviewSubjectServiceImpl(
             ReviewSubjectRepository reviewSubjectRepository,
             UserRepository userRepository,
             ModelMapperUtils modelMapperUtils,
             CommentReviewSubjectRepository commentReviewSubjectRepository,
-            SubjectRepository subjectRepository) {
+            SubjectRepository subjectRepository, PusherService pusherService) {
         this.reviewSubjectRepository = reviewSubjectRepository;
         this.userRepository = userRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.commentReviewSubjectRepository = commentReviewSubjectRepository;
         this.subjectRepository = subjectRepository;
+        this.pusherService = pusherService;
     }
 
     @Override
@@ -57,7 +60,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
 
     @Override
     public List<ReviewSubject> getAllReviewSubjects() {
-        return reviewSubjectRepository.findAllByIsDone(true);
+        return reviewSubjectRepository.findAllByDone(true);
     }
 
     @Override
@@ -144,5 +147,46 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
         reviewSubject.setApproved(ApproveType.NEW);
         reviewSubjectRepository.save(reviewSubject);
         return true;
+    }
+
+    @Override
+    public ReviewSubject approveReviewSubject(Long reviewSubjectId) {
+        ReviewSubject reviewSubject = reviewSubjectRepository.findByIdAndApproved(reviewSubjectId, ApproveType.NEW);
+        if(reviewSubject == null) {return null;}
+        reviewSubject.setApproved(ApproveType.APPROVED);
+        return reviewSubjectRepository.save(reviewSubject);
+    }
+
+    @Override
+    public ReviewSubject rejectReviewSubject(Long reviewSubjectId) {
+        ReviewSubject reviewSubject = reviewSubjectRepository.findByIdAndApproved(reviewSubjectId, ApproveType.NEW);
+        if(reviewSubject == null) {return null;}
+        reviewSubject.setApproved(ApproveType.REJECT);
+        return reviewSubjectRepository.save(reviewSubject);
+    }
+
+    @Override
+    public boolean hiddenCommentReviewSubject(Long commentId) {
+        CommentReviewSubject commentReviewSubject = commentReviewSubjectRepository.findByIdAndIsHidden(commentId, false);
+        if(commentReviewSubject == null) return false;
+        commentReviewSubject.setHidden(true);
+        commentReviewSubjectRepository.save(commentReviewSubject);
+        pusherService.triggerChanel("comment-review-subject-" + commentReviewSubject.getReviewSubject().getId(), "hidden-comment",
+                commentId);
+        return true;
+    }
+
+    @Override
+    public boolean approveCommentReviewSubject(Long commentId) {
+        CommentReviewSubject commentReviewSubject = commentReviewSubjectRepository.findByIdAndIsHidden(commentId, false);
+        if(commentReviewSubject == null) return false;
+        commentReviewSubject.setScore(1F);
+        commentReviewSubjectRepository.save(commentReviewSubject);
+        return true;
+    }
+
+    @Override
+    public List<CommentReviewSubject> getAllBabComments() {
+        return commentReviewSubjectRepository.findAllBadComments();
     }
 }

@@ -1,7 +1,5 @@
 package com.hust.edu.vn.documentsystem.data.model;
 
-import com.hust.edu.vn.documentsystem.common.type.ShareType;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -12,10 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ShareSubjectDocumentModel {
-    @NotNull
-    private ShareType shareType;
-
-    private List<Long> userIds;
-
-    private long durationSecond;
+    private List<Long> shareUserId;
+    private List<Long> deleteUserId;
 }

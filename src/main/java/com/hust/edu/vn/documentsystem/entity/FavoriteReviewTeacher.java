@@ -18,17 +18,13 @@ public class FavoriteReviewTeacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteReviewTeacher_ReviewTeacher"))
     private ReviewTeacher reviewTeacher;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn( nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteReviewTeacher_User"))
     private User user;
-
     private Date createAt = new Date();
-
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType = NotificationType.ALL;
 }

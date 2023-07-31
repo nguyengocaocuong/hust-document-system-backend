@@ -26,16 +26,17 @@ public class UserShareSubjectDocumentController {
     private final ModelMapperUtils modelMapperUtils;
 
     public UserShareSubjectDocumentController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
-		this.subjectService = subjectService;
-		this.modelMapperUtils = modelMapperUtils;
-	}
+        this.subjectService = subjectService;
+        this.modelMapperUtils = modelMapperUtils;
+    }
 
-	@GetMapping("shared")
+    @GetMapping("shared")
     public ResponseEntity<CustomResponse> getSharedUser(@PathVariable("subjectDocumentId") Long subjectDocumentId) {
         List<User> users = subjectService.getAllUserShared(subjectDocumentId);
         return CustomResponse.generateResponse(HttpStatus.OK,
                 users.stream().map(user -> modelMapperUtils.mapAllProperties(user, UserDto.class)));
     }
+
     @PostMapping("share")
     public ResponseEntity<CustomResponse> shareSubjectDocument(
             @PathVariable("subjectDocumentId") Long subjectDocumentId,
@@ -45,7 +46,8 @@ public class UserShareSubjectDocumentController {
             return CustomResponse.generateResponse(HttpStatus.CONFLICT);
         return CustomResponse.generateResponse(HttpStatus.OK, object);
     }
-        @DeleteMapping("shared/{sharedId}")
+
+    @DeleteMapping("shared/{sharedId}")
     public ResponseEntity<CustomResponse> clearSharedSubjectDocument(@PathVariable("sharedId") Long sharedId, @PathVariable("subjectDocumentId") Long subjectDocumentId) {
         boolean status = subjectService.clearSharedPrivateSubjectDocument(sharedId, subjectDocumentId);
         return CustomResponse.generateResponse(status);

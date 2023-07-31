@@ -41,7 +41,7 @@ public class SpringSecurityConfig {
                 .cors()
                 .configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(Arrays.asList(System.getenv("FRONTEND_URL"),"https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000"));
+                    corsConfiguration.setAllowedOrigins(Arrays.asList(System.getenv("FRONTEND_URL"),"https://view.officeapps.live.com/op/embed.aspx", "http://localhost:3000","http://192.168.43.37:3000"));
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                     corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
                     corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
@@ -67,18 +67,11 @@ public class SpringSecurityConfig {
 
         http.authorizeHttpRequests()
                 .requestMatchers("/api/v1/users/**","/api/v1/socket/users/**")
-                .hasAuthority("USER");
-
-        http.authorizeHttpRequests()
-                .requestMatchers("/api/v1/generals/**")
                 .hasAnyAuthority("USER", "ADMIN");
-
 
         http.addFilterBefore(jwtAthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.httpBasic();
-
-        return http.build();
+         return http.build();
 
     }
 

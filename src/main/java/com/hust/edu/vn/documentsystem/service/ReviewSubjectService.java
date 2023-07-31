@@ -33,4 +33,14 @@ public interface ReviewSubjectService {
     boolean deleteReviewSubject(Long reviewSubjectId, Long subjectId);
 
     boolean updateReviewSubject(Long reviewSubjectId, Long subjectId, ReviewSubjectModel reviewSubjectModel);
+
+    ReviewSubject approveReviewSubject(Long reviewSubjectId);
+
+    ReviewSubject rejectReviewSubject(Long reviewSubjectId);
+
+    boolean hiddenCommentReviewSubject(Long commentId);
+
+    boolean approveCommentReviewSubject(Long commentId);
+
+    List<CommentReviewSubject> getAllBabComments();
 }

@@ -18,15 +18,12 @@ public class FavoritePost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoritePost_Post"))
     private Post post;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn( nullable = false)
     private User user;
-
     private Date createAt = new Date();
 
 }

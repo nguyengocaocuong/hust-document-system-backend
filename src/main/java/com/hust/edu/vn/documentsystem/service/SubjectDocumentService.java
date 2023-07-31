@@ -1,11 +1,34 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
+import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface SubjectDocumentService {
-    List<SubjectDocumentType> findAllSubjectDocumentType();
 
-    List<String> findAllSemester();
+    List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
+
+    SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
+
+    String generatePublicOnInternetUrlForSubjectDocument(Long subjectDocumentId);
+
+    String generatePublicOnWebsiteUrlForSubjectDocument(Long subjectDocumentId);
+
+    boolean deleteSubjectDocumentForever(Long subjectDocumentId);
+
+    boolean moveSubjectDocumentToTrash(Long subjectDocumentId);
+
+    boolean restoreSubjectDocument(Long subjectDocumentId);
+
+    boolean makeSubjectDocumentPrivate(Long subjectDocumentId);
+
+    List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
+
+    boolean makeSubjectDocumentPublic(Long subjectDocumentId);
+
+    byte[] translateSubjectDocumentByFile(MultipartFile document, TargetLanguageType targetLanguageType) throws IOException;
 }

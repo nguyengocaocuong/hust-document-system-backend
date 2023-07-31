@@ -5,11 +5,12 @@ import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel
 import com.hust.edu.vn.documentsystem.data.model.TeacherModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface TeacherService {
 
-    Teacher createTeacher(TeacherModel teacherModel);
+    Teacher createTeacher(TeacherModel teacherModel) throws IOException;
 
     List<TeacherDto> getAllTeachersForFilter();
 

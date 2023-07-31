@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
-import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel;
@@ -43,10 +42,14 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Teacher createTeacher(TeacherModel teacherModel) {
+    public Teacher createTeacher(TeacherModel teacherModel) throws IOException {
         if (teacherRepository.findByEmailHust(teacherModel.getEmailHust()) != null)
             return null;
         Teacher teacher = modelMapperUtils.mapAllProperties(teacherModel, Teacher.class);
+        if(teacherModel.getAvatarFile() != null){
+            String url = googleCloudStorageService.uploadAvatarToGCP(teacherModel.getAvatarFile());
+            teacher.setAvatar(url);
+        }
         return teacherRepository.save(teacher);
     }
 
@@ -89,16 +92,15 @@ public class TeacherServiceImpl implements TeacherService {
         teacher.setAvatar(teacherModel.getAvatar());
         if (teacherModel.getAvatarFile() != null) {
             try {
-                List<String> urls = googleCloudStorageService.createThumbnailAndUploadDocumentToGCP(
-                        teacherModel.getAvatarFile(), List.of(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER)));
-                teacherModel.setAvatar(urls.get(0));
+                String url = googleCloudStorageService.uploadAvatarToGCP(teacherModel.getAvatarFile());
+                teacher.setAvatar(url);
+                teacherModel.setAvatar(url);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         teacher.setName(teacherModel.getName());
         teacher.setDescription(teacherModel.getDescription());
-        teacher.setDob(teacherModel.getDob());
         teacher.setEmailHust(teacherModel.getEmailHust());
         teacher.setPhoneNumber(teacherModel.getPhoneNumber());
         teacher.setEmailPrivate(teacherModel.getEmailPrivate());

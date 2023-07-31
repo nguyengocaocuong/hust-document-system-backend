@@ -231,16 +231,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Object[] getObjectForRecommend(int page, int size) {
+    public List<SubjectDocument> getObjectForRecommend(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Object[] objects = new Object[2];
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
-        List<SubjectDocument> subjectDocuments = userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest);
-        List<AnswerSubjectDocument> answerSubjectDocuments = userRepository.getAnswerSubjectDocumentForRecommend(user.getId(), pageRequest);
-        objects[0] = subjectDocuments;
-        objects[1] = answerSubjectDocuments;
-        return objects;
+        return userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest);
     }
 
     private boolean resendVerificationAccountTokenMail(String applicationUrl, VerifyAccount verifyAccount) {

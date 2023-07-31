@@ -4,9 +4,12 @@ import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.CommentReviewTeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher;
+import com.hust.edu.vn.documentsystem.event.CommentReviewTeacherEvent;
+import com.hust.edu.vn.documentsystem.event.listener.CommentReviewTeacherEventListener;
 import com.hust.edu.vn.documentsystem.service.PusherService;
 import com.hust.edu.vn.documentsystem.service.ReviewTeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +23,14 @@ public class UserCommentReviewTeacherController {
     private final ModelMapperUtils modelMapperUtils;
     private final PusherService pusherService;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     public UserCommentReviewTeacherController(ReviewTeacherService reviewTeacherService,
-            ModelMapperUtils modelMapperUtils, PusherService pusherService) {
+                                              ModelMapperUtils modelMapperUtils, PusherService pusherService, ApplicationEventPublisher applicationEventPublisher) {
         this.reviewTeacherService = reviewTeacherService;
         this.modelMapperUtils = modelMapperUtils;
         this.pusherService = pusherService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @GetMapping()
@@ -50,6 +56,7 @@ public class UserCommentReviewTeacherController {
                 CommentReviewTeacherDto.class);
         pusherService.triggerChanel("comment-review-teacher-" + reviewTeacherId, "new-comment",
                 commentReviewTeacherDto);
+        applicationEventPublisher.publishEvent(new CommentReviewTeacherEvent(commentReviewTeacher));
         return CustomResponse.generateResponse(HttpStatus.OK, commentReviewTeacherDto);
     }
 
@@ -67,12 +74,13 @@ public class UserCommentReviewTeacherController {
     public ResponseEntity<CustomResponse> updateCommentForReviewTeacher(@PathVariable("commentId") Long commentId,
             @PathVariable("reviewTeacherId") Long reviewTeacherId,
             @ModelAttribute CommentReviewTeacherModel commentReviewTeacherModel) {
-        boolean status = reviewTeacherService.updateCommentReviewTeacher(commentId, reviewTeacherId,
+        CommentReviewTeacher commentReviewTeacher = reviewTeacherService.updateCommentReviewTeacher(commentId, reviewTeacherId,
                 commentReviewTeacherModel);
-        if (status)
+        if (commentReviewTeacher == null) CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
+        CommentReviewTeacherDto commentReviewTeacherDto = modelMapperUtils.mapAllProperties(commentReviewTeacher, CommentReviewTeacherDto.class);
             pusherService.triggerChanel("comment-review-teacher-" + reviewTeacherId, "edit-comment",
-                    commentReviewTeacherModel);
-        return CustomResponse.generateResponse(status);
+                    commentReviewTeacherDto);
+        return CustomResponse.generateResponse(HttpStatus.OK,commentReviewTeacherDto);
     }
 
     @PatchMapping("{commentId}/hidden")

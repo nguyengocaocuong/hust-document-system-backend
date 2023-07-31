@@ -15,39 +15,27 @@ import java.util.List;
 @Setter
 @ToString
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
+    private String descriptionEn;
+    @Column(name = "created_at")
+    private Date createdAt = new Date();
+    private boolean isDone = false;
+    private boolean isHidden = false;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_Post_User"))
     private User owner;
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String description;
-
-    private String descriptionEn;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    private Document document;
-
-    @Column(name = "created_at")
-    private Date createdAt = new Date();
-
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Subject subject;
-
-    private boolean isDone = false;
-
-    private boolean isHidden = false;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Document document;
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<FavoritePost> favorites = new ArrayList<>();
-
     @OneToMany(mappedBy = "post" , cascade = CascadeType.REMOVE)
     private List<AnswerPost> answers = new ArrayList<>();
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<CommentPost> comments = new ArrayList<>();
     private boolean isDelete = false;

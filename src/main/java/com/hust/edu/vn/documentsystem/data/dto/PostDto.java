@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
-import com.hust.edu.vn.documentsystem.entity.FavoritePostDto;
 import lombok.Data;
 
 import java.io.Serializable;

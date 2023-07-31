@@ -1,16 +1,18 @@
 package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
-import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
+import com.hust.edu.vn.documentsystem.data.dto.PageDto;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.*;
 import com.hust.edu.vn.documentsystem.entity.*;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.DoubleStream;
 
 public interface SubjectService {
 
-        List<SubjectDto> getAllSubjects();
+        PageDto<SubjectDto> getAllSubjects(int page, int size);
 
         Subject getSubjectById(Long id);
 
@@ -38,44 +40,18 @@ public interface SubjectService {
 
         List<SubjectDto> getAllSubjectsForFilter();
 
-        List<String> findAllSemesterForFilter();
-
         List<SubjectDocumentType> findAllSubjectDocumentType();
 
-        SubjectDocument getSubjectDocumentDetailById(Long subjectDocumentId);
-
         List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
-
-        AnswerSubjectDocument saveAnswerForSubjectDocument(Long subjectDocumentId,
-                        AnswerSubjectDocumentModel answerSubjectDocumentModel);
-
-        List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token);
-
-        List<AnswerSubjectDocument> getAllAnswerSubjectDocument(Long subjectDocumentId);
 
         List<User> getAllUserShared(Long subjectDocumentId);
 
         List<SubjectDocument> getAllSubjectDocumentCreateByUser();
 
-        String generatePublicOnInternetUrlForSubjectDocument(Long subjectDocumentId);
-
         List<SharePrivate> getAllSubjectDocumentShared();
-
-        String generatePublicOnWebsiteUrlForSubjectDocument(Long subjectDocumentId);
-
-        boolean deleteSubjectDocumentForever(Long subjectDocumentId);
-
-        boolean moveSubjectDocumentToTrash(Long subjectDocumentId);
-
-        boolean restoreSubjectDocument(Long subjectDocumentId);
-
-        boolean makeSubjectDocumentPublic(Long subjectDocumentId);
-
-        boolean makeSubjectDocumentPrivate(Long subjectDocumentId);
 
         boolean clearSharedPrivateSubjectDocument(Long sharedId, Long subjectDocumentId);
 
-        List<Object> translateSubjectDocument(Long subjectDocumentId, TargetLanguageType targetLanguageType);
 
         List<ReviewSubject> getAllReviewSubjectCreatedByUser();
 
@@ -91,4 +67,10 @@ public interface SubjectService {
 
         ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId,
                         ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
+
+        List<ReviewSubject> getAllReviewSubjects();
+
+    List<Subject> getAllSubjectByInstitute(String institute);
+
+        List<String> getAllInstitute();
 }

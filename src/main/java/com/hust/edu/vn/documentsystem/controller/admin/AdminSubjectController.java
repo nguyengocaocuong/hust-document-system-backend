@@ -5,6 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.SubjectDto;
 import com.hust.edu.vn.documentsystem.data.model.SubjectModel;
 import com.hust.edu.vn.documentsystem.entity.Document;
 import com.hust.edu.vn.documentsystem.entity.Subject;
+import com.hust.edu.vn.documentsystem.service.SubjectDocumentService;
 import com.hust.edu.vn.documentsystem.service.SubjectService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import com.spire.ms.System.Collections.ArrayList;
@@ -24,10 +25,12 @@ public class AdminSubjectController {
     private final SubjectService subjectService;
     private final ModelMapperUtils modelMapperUtils;
 
+    private final SubjectDocumentService subjectDocumentService;
     
-    public AdminSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils) {
+    public AdminSubjectController(SubjectService subjectService, ModelMapperUtils modelMapperUtils, SubjectDocumentService subjectDocumentService) {
         this.modelMapperUtils = modelMapperUtils;
         this.subjectService = subjectService;
+        this.subjectDocumentService = subjectDocumentService;
     }
 
     @GetMapping()
@@ -60,7 +63,7 @@ public class AdminSubjectController {
 
     @GetMapping("subjectDocuments/{subjectDocumentId}/readFile")
     public ResponseEntity<Resource> readSubjectDocument(@PathVariable("subjectDocumentId") Long id) {
-        List<Object> data = subjectService.readSubjectDocumentFile(id, null);
+        List<Object> data = subjectDocumentService.readSubjectDocumentFile(id, null);
         if (data == null || ((byte[]) data.get(1)).length == 0) return ResponseEntity.notFound().build();
         Document document = (Document) data.get(0);
         HttpHeaders headers = new HttpHeaders();

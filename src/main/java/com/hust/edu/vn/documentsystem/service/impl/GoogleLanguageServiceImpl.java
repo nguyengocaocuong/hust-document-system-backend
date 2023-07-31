@@ -12,10 +12,10 @@ import java.io.IOException;
 @Service
 public class GoogleLanguageServiceImpl implements GoogleLanguageService {
     @Override
-    public boolean detectBabComment(String comment) throws IOException {
+    public float detectBabComment(String comment) throws IOException {
         LanguageServiceClient language = LanguageServiceClient.create();
         Document doc = Document.newBuilder().setContent(comment).setType(Type.PLAIN_TEXT).build();
         Sentiment sentiment = language.analyzeSentiment(doc).getDocumentSentiment();
-        return sentiment.getScore() < 0;
+        return sentiment.getScore();
     }
 }

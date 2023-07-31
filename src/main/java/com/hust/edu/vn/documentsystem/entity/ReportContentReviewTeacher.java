@@ -20,21 +20,15 @@ public class ReportContentReviewTeacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne()
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReportContentReviewTeacher_ReviewTeacher"))
     private ReviewTeacher reviewTeacher;
-
     private Date createdAt = new Date();
-
     @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_ReportContentReviewTeacher_User"))
     private User owner;
-
     private String message;
-
     private String processMessage;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReportStatus status = ReportStatus.NEW_REPORT;

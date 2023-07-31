@@ -151,6 +151,35 @@ public class GoogleCloudTranslateServiceImpl implements GoogleCloudTranslateServ
         return  cloudStorageService.generateUriFromPath(path);
     }
 
+    @Override
+    public byte[] translateSubjectDocumentByFile(MultipartFile file, TargetLanguageType targetLanguageType) throws IOException {
+        String output = getOutputTranslatePath(null);
+        LocationName parent = LocationName.of(System.getenv("PROJECT_ID"), "global");
+        byte[] inputs = file.getBytes();
+        DocumentOutputConfig documentOutputConfig = DocumentOutputConfig.newBuilder()
+                .setGcsDestination(
+                        GcsDestination.newBuilder()
+                                .setOutputUriPrefix(output)
+                                .build()
+                )
+                .setMimeType(Objects.requireNonNull(file.getContentType()))
+                .build();
+        DocumentInputConfig documentInputConfig =  DocumentInputConfig
+                .newBuilder()
+                .setMimeType(file.getContentType())
+                .setContent(ByteString.copyFrom(inputs))
+                .build();
+        TranslateDocumentRequest request = TranslateDocumentRequest
+                .newBuilder()
+                .setParent(parent.toString())
+                .setDocumentInputConfig(documentInputConfig)
+                .setDocumentOutputConfig(documentOutputConfig)
+                .setTargetLanguageCode(targetLanguageType.getCode())
+                .build();
+        TranslateDocumentResponse translateDocumentResponse = translationServiceClient.translateDocument(request);
+        return  translateDocumentResponse.getDocumentTranslation().getByteStreamOutputs(0).toByteArray();
+    }
+
     private String getOutputTranslatePath(String path){
         return "gs://" + System.getenv("BUCKET_NAME") + "/" + UUID.randomUUID()  + "/";
     }

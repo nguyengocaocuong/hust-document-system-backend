@@ -33,17 +33,8 @@ public class UserRecommendController {
     public ResponseEntity<CustomResponse> getRecommendFavorite(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
-        Object[] recommend = userService.getObjectForRecommend(page, size);
-        @SuppressWarnings("unchecked")
-        List<SubjectDocument> subjectDocuments = (List<SubjectDocument>) recommend[0];
-        @SuppressWarnings("unchecked")
-        List<AnswerSubjectDocument> answerSubjectDocuments = (List<AnswerSubjectDocument>) recommend[1];
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("subjectDocuments", subjectDocuments.stream()
+        List<SubjectDocument> recommend = userService.getObjectForRecommend(page, size);
+        return CustomResponse.generateResponse(HttpStatus.OK, recommend.stream()
                 .map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
-        resultMap.put("answerSubjectDocuments",
-                answerSubjectDocuments.stream().map(answerSubjectDocument -> modelMapperUtils
-                        .mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class)));
-        return CustomResponse.generateResponse(HttpStatus.OK, resultMap);
     }
 }

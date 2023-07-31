@@ -2,6 +2,7 @@ package com.hust.edu.vn.documentsystem.service;
 
 import com.hust.edu.vn.documentsystem.data.model.CommentReviewTeacherModel;
 import com.hust.edu.vn.documentsystem.data.model.ReviewTeacherModel;
+import com.hust.edu.vn.documentsystem.entity.CommentReviewSubject;
 import com.hust.edu.vn.documentsystem.entity.CommentReviewTeacher;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 
@@ -20,7 +21,7 @@ public interface ReviewTeacherService {
 
     boolean deleteCommentReviewTeacher(Long commentId, Long reviewTeacherId);
 
-    boolean updateCommentReviewTeacher(Long commentId, Long reviewTeacherId, CommentReviewTeacherModel commentReviewTeacherModel);
+    CommentReviewTeacher updateCommentReviewTeacher(Long commentId, Long reviewTeacherId, CommentReviewTeacherModel commentReviewTeacherModel);
 
     boolean hiddenCommentReviewTeacher(Long commentId, Long reviewTeacherId);
 
@@ -29,4 +30,14 @@ public interface ReviewTeacherService {
     boolean deleteReviewTeacher(Long reviewTeacherId, Long teacherId);
 
     boolean updateReviewTeacher(Long reviewTeacherId, Long teacherId, ReviewTeacherModel reviewTeacherModel);
+
+    ReviewTeacher approveReviewTeacher(Long reviewTeacherId);
+
+    ReviewTeacher rejectReviewTeacher(Long reviewTeacherId);
+
+    boolean hiddenCommentReviewTeacher(Long commentId);
+
+    boolean approveCommentReviewTeacher(Long commentId);
+
+    List<CommentReviewTeacher> getAllBabComments();
 }

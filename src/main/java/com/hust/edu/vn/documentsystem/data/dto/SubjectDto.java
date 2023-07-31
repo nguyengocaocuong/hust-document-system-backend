@@ -17,6 +17,8 @@ import java.util.List;
 public class SubjectDto implements Serializable {
     private Long id;
     private String name;
+    private String enName;
+    private String institute;
     private String description;
     private Date createdAt;
     private String subjectCode;
@@ -24,6 +26,7 @@ public class SubjectDto implements Serializable {
     private Long totalDocument = 0L;
     private Long totalFavorite = 0L;
     private Long totalAnswer = 0L;
+    private List<UserDto> enrollment = new ArrayList<>();
     private List<SubjectDocumentDto> subjectDocuments = new ArrayList<>();
 
     public SubjectDto(Long id, String name) {

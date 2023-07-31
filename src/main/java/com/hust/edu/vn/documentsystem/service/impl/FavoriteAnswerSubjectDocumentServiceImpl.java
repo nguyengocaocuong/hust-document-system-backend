@@ -20,8 +20,8 @@ public class FavoriteAnswerSubjectDocumentServiceImpl implements FavoriteAnswerS
     private final UserRepository userRepository;
 
     public FavoriteAnswerSubjectDocumentServiceImpl(AnswerSubjectDocumentRepository answerSubjectDocumentRepository,
-            FavoriteAnswerSubjectDocumentRepository favoriteAnswerSubjectDocumentRepository,
-            UserRepository userRepository) {
+                                                    FavoriteAnswerSubjectDocumentRepository favoriteAnswerSubjectDocumentRepository,
+                                                    UserRepository userRepository) {
         this.answerSubjectDocumentRepository = answerSubjectDocumentRepository;
         this.favoriteAnswerSubjectDocumentRepository = favoriteAnswerSubjectDocumentRepository;
         this.userRepository = userRepository;

@@ -22,29 +22,22 @@ public class AnswerSubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(columnDefinition = "TEXT")
     private String description;
-
     @Column(nullable = false)
     private DocumentType type;
-
     @Column(nullable = false)
     private Date createdAt = new Date();
-
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_Document"))
     private Document document;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false,  foreignKey = @ForeignKey(name = "fk_AnswerSubjectDocument_SubjectDocument"))
     @JsonIgnore
     private SubjectDocument subjectDocument;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_AnswerSubject_DocumentUser"))
     private User owner;
-
     @OneToMany(mappedBy = "answerSubjectDocument", cascade = CascadeType.REMOVE)
     private List<FavoriteAnswerSubjectDocument> favorites = new ArrayList<>();
 }

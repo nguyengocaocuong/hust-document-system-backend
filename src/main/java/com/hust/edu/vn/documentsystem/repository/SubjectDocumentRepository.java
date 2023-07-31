@@ -16,9 +16,6 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
     @Query(value = "SELECT DISTINCT sd.subjectDocumentType FROM SubjectDocument AS sd")
     List<SubjectDocumentType> findAllSubjectDocumentType();
 
-    @Query(value = "SELECT DISTINCT sd.semester FROM SubjectDocument AS sd")
-    List<String> findAllSemester();
-
     @Query(value = "SELECT sd FROM SubjectDocument sd WHERE sd.owner.email = :email")
     List<SubjectDocument> findAllByUserEmail(String email);
 

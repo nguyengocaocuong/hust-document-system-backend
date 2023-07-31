@@ -16,22 +16,17 @@ import java.util.Date;
 @Getter
 @Setter
 public class SharePrivate {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_document_id", foreignKey = @ForeignKey(name = "fk_SharePrivate_SubjectDocument"))
     private SubjectDocument subjectDocument;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_SharePrivate_User"))
     private User user;
-
     @Column()
     private Date sharedAt = new Date();
-
     @Column()
     private Date expirationTime;
 }

@@ -13,7 +13,7 @@ import java.util.List;
 public class ReviewSubjectDto implements Serializable {
     private  Long id;
     private  String review;
-    private  boolean isDone;
+    private  boolean done;
     private  UserDto owner;
     private  SubjectDto subject;
     private  Date createdAt;

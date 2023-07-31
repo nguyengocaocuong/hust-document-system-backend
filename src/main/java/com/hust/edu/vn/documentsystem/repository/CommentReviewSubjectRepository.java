@@ -8,11 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface CommentReviewSubjectRepository extends JpaRepository<CommentReviewSubject, Long> {
-    @Query(value = "" +
-            "SELECT c " +
-            "FROM CommentReviewSubject  c " +
-            "WHERE c.reviewSubject.id = :reviewSubjectId " +
-            "AND c.parentComment.id = null"
+    @Query(value = """
+            SELECT c 
+            FROM CommentReviewSubject  c
+            WHERE c.reviewSubject.id = :reviewSubjectId
+            AND c.parentComment.id = null
+            AND c.score > 0
+            AND c.isHidden = false
+            """
     )
     List<CommentReviewSubject> findAllByReviewSubjectId(Long reviewSubjectId);
 
@@ -33,4 +36,12 @@ public interface CommentReviewSubjectRepository extends JpaRepository<CommentRev
             "AND c.reviewSubject.owner.email = :email"
     )
     CommentReviewSubject findByIdAndReviewSubjectIdAndOwnerEmail(Long commentId, Long reviewSubjectId, String email);
+
+    CommentReviewSubject findByIdAndIsHidden(Long commentId, boolean b);
+
+    @Query(value = """
+            SELECT c FROM CommentReviewSubject c
+            WHERE c.score < 0
+            """)
+    List<CommentReviewSubject> findAllBadComments();
 }

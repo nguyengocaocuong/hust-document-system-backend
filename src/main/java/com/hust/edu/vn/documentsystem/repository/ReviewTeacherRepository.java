@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.repository;
 
+import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import com.hust.edu.vn.documentsystem.entity.ReviewTeacher;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -58,4 +59,6 @@ public interface ReviewTeacherRepository extends JpaRepository<ReviewTeacher, Lo
             AND rt.owner.email = :email
             """)
     ReviewTeacher findByIdAndTeacherIdAndOwnerEmail(Long reviewTeacherId, Long teacherId, String email);
+
+    ReviewTeacher findByIdAndApproved(Long reviewTeacherId, ApproveType approveType);
 }

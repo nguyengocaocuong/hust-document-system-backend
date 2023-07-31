@@ -36,11 +36,11 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
-    public String uploadAvatarToGCP(@NotNull MultipartFile avatar, @NotNull String rootPath) throws IOException {
+    public String uploadAvatarToGCP(@NotNull MultipartFile avatar) throws IOException {
         String filename = avatar.getOriginalFilename();
         if (filename == null)
             return null;
-        String filenamePath = rootPath + "public/avatar" + filename.substring(filename.lastIndexOf("."));
+        String filenamePath = UUID.randomUUID() + "/" +   filename.substring(filename.lastIndexOf("."));
         ArrayList<Acl> owner = new ArrayList<>();
         owner.add(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
         return uploadToGCP(avatar.getBytes(), avatar.getContentType(), filenamePath, owner);
@@ -48,7 +48,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     @Override
     public boolean uploadDocumentToGCP(MultipartFile document, String rootPath)
-            throws IOException, ThumbnailingException, DocumentException {
+            throws Exception {
         String name = document.getOriginalFilename();
         String filename = document.getOriginalFilename();
         if (filename == null)
@@ -102,7 +102,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     @Override
     public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath)
-            throws IOException, ThumbnailingException, DocumentException {
+            throws Exception {
         String path = UUID.randomUUID() + "/";
         String childPath = rootPath + "documents/" + path;
         for (MultipartFile document : documents) {
@@ -182,7 +182,7 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     @Override
     public boolean updateDocumentByRootPath(String path, MultipartFile document)
-            throws IOException, ThumbnailingException, DocumentException {
+            throws Exception {
         var list = storage.list(BUCKET_NAME, Storage.BlobListOption.prefix(path),
                 Storage.BlobListOption.currentDirectory(), Storage.BlobListOption.fields(Storage.BlobField.NAME))
                 .getValues();
@@ -247,6 +247,8 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
         } catch (ThumbnailingException e) {
             throw new RuntimeException(e);
         } catch (DocumentException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return List.of((owner == null || owner.isEmpty()) ? filePath : generateUriFromPath(filePath));

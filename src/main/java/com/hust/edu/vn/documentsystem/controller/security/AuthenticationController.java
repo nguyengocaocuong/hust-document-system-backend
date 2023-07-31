@@ -1,18 +1,19 @@
 package com.hust.edu.vn.documentsystem.controller.security;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.common.type.RoleType;
 import com.hust.edu.vn.documentsystem.data.dto.UserDto;
 import com.hust.edu.vn.documentsystem.data.model.AuthenticationModel;
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.User;
-import com.hust.edu.vn.documentsystem.repository.UserRepository;
+import com.hust.edu.vn.documentsystem.service.GoogleLanguageService;
+import com.hust.edu.vn.documentsystem.service.ThumbnailService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.service.impl.CustomUserDetailsService;
 import com.hust.edu.vn.documentsystem.utils.JwtUtils;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,12 +21,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("/api/v1/authentication")
+@Slf4j
 public class AuthenticationController {
-    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
 
@@ -35,6 +38,9 @@ public class AuthenticationController {
 
     private final ModelMapperUtils modelMapperUtils;
 
+    private final ThumbnailService thumbnailService;
+    private final GoogleLanguageService googleLanguageService;
+
 
     @Autowired
     public AuthenticationController(
@@ -42,13 +48,14 @@ public class AuthenticationController {
             CustomUserDetailsService userDetailsService,
             UserService userService,
             JwtUtils jwtUtils,
-            UserRepository userRepository, ModelMapperUtils modelMapperUtils) {
+            ModelMapperUtils modelMapperUtils, ThumbnailService thumbnailService, GoogleLanguageService googleLanguageService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
-        this.userRepository = userRepository;
         this.modelMapperUtils = modelMapperUtils;
+        this.thumbnailService = thumbnailService;
+        this.googleLanguageService = googleLanguageService;
     }
 
     @PostMapping("authenticate")
@@ -61,6 +68,20 @@ public class AuthenticationController {
             return CustomResponse.generateResponse(HttpStatus.OK, jwtUtils.generateToken(userDetail));
         }
         return CustomResponse.generateResponse(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("resendJwtToken")
+    public ResponseEntity<CustomResponse> resendJwtToken(@RequestParam() String oldToken) {
+        log.info(oldToken);
+        String email = jwtUtils.extractUserName(oldToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        if (userDetails == null) return CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
+        if (jwtUtils.isTokenValid(oldToken, userDetails)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("token", jwtUtils.generateToken(userDetails));
+            return CustomResponse.generateResponse(HttpStatus.OK, map);
+        }
+        return CustomResponse.generateResponse(HttpStatus.CONFLICT);
     }
 
     @PostMapping("register")
@@ -108,7 +129,7 @@ public class AuthenticationController {
         final UserDetails userDetail = userDetailsService.loadUserByUsername(userModel.getEmail());
         UserDto userDto = modelMapperUtils.mapAllProperties(user, UserDto.class);
         userDto.setToken(jwtUtils.generateToken(userDetail));
-        return CustomResponse.generateResponse(HttpStatus.OK, userDto );
+        return CustomResponse.generateResponse(HttpStatus.OK, userDto);
     }
 
 
@@ -119,13 +140,11 @@ public class AuthenticationController {
                 + httpServletRequest.getServerPort()
                 + httpServletRequest.getContextPath();
     }
-    @GetMapping("setupAdmin")
-    public String setupAdmin(@RequestParam("passwrod") String adminPass){
-       User user = userService.findUserByEmail("cuong.nnc184055@sis.hust.edu.vn");
-       if(user == null) return "not found";
-       user.setEnable(true);
-       user.setRoleType(RoleType.ADMIN);
-       userRepository.save(user);
-       return "done";
+
+    @GetMapping("babComment")
+    public ResponseEntity<CustomResponse> detectBabComment(@RequestParam("comment") String comment) throws Exception {
+        return CustomResponse.generateResponse(HttpStatus.OK,googleLanguageService.detectBabComment(comment));
     }
+
+
 }

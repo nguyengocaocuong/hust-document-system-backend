@@ -19,17 +19,13 @@ public class FavoriteSubject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_Subject"))
     private Subject subject;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubject_User"))
     private User user;
-
     private Date createAt = new Date();
-
     @Column()
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType = NotificationType.ALL;

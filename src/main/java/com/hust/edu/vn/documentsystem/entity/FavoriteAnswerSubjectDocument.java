@@ -18,14 +18,11 @@ public class FavoriteAnswerSubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteAnswerSubjectDocument_SubjectDocument"))
     private AnswerSubjectDocument answerSubjectDocument;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn( nullable = false)
     private User user;
-
     private Date createAt = new Date();
 }

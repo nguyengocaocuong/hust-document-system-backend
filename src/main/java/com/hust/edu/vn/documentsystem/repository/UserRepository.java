@@ -19,13 +19,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT DATE(u.createdAt) AS date, COUNT(u.id) " +
             "FROM User u " +
-            "WHERE u.createdAt >= :startDate " +
+            "WHERE u.createdAt >= :startDate AND u.roleType = 'USER'" +
             "GROUP BY date " +
             "ORDER BY DATE(u.createdAt) DESC")
     List<Object[]> getUserForDashboard(Date startDate);
 
 
-    @Query(value = "SELECT u FROM User u WHERE u.createdAt >= :startDate")
+    @Query(value = "SELECT u FROM User u WHERE u.createdAt >= :startDate AND u.roleType = 'USER'")
     List<User> getAllNewUser(Date startDate);
 
     @Query(value = "" +
@@ -39,6 +39,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "ON u.id = rs.owner.id " +
             "WHERE u.id = :userId ")
     Object[] getProfileUser(Long userId);
+
     @Query(value = "" +
             "SELECT  sd.subjectDocumentType, COUNT(DISTINCT sd.id) " +
             "FROM User u " +
@@ -48,29 +49,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "GROUP BY sd.subjectDocumentType")
     Object[] getSubjectDocumentForProfile(Long userId);
 
-    @Query(value = "" +
-            "SELECT sd " +
-            "FROM SubjectDocument sd " +
-            "LEFT JOIN Subject s " +
-            "ON sd.subject.id = s.id " +
-            "LEFT JOIN FavoriteSubject fs " +
-            "ON fs.subject.id = s.id " +
-            "AND fs.user.id = :userId " +
-            "WHERE sd.owner.id != :userId " +
-            "ORDER BY fs.id, sd.id DESC "
+    @Query(value = """
+            SELECT sd
+            FROM SubjectDocument sd
+            LEFT JOIN SharePrivate sp
+            ON sd.id = sp.subjectDocument.id
+            LEFT JOIN Subject s
+            ON sd.subject.id = s.id
+            LEFT JOIN FavoriteSubject fs
+            ON fs.subject.id = s.id
+            AND fs.user.id = :userId
+            WHERE sd.owner.id != :userId 
+            AND (sd.isPublic = true OR sp.user.id = :userId)
+            ORDER BY fs.id, sd.id DESC
+            """
     )
     List<SubjectDocument> getSubjectDocumentForRecommend(Long userId, PageRequest pageRequest);
 
-    @Query(value = "" +
-            "SELECT asd " +
-            "FROM AnswerSubjectDocument asd " +
-            "LEFT JOIN SubjectDocument sd " +
-            "ON sd.id = asd.subjectDocument.id " +
-            "LEFT JOIN FavoriteSubjectDocument fsd " +
-            "ON fsd.subjectDocument.id = sd.id " +
-            "AND fsd.user.id = :userId " +
-            "WHERE asd.owner.id != :userId " +
-            "ORDER BY fsd.id, asd.id DESC "
-    )
-    List<AnswerSubjectDocument> getAnswerSubjectDocumentForRecommend(Long userId, PageRequest pageRequest);
 }

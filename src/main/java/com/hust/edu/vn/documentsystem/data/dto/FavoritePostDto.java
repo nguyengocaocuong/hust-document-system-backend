@@ -1,6 +1,7 @@
-package com.hust.edu.vn.documentsystem.entity;
+package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.data.dto.UserDto;
+import com.hust.edu.vn.documentsystem.entity.FavoritePost;
 import lombok.Data;
 
 import java.io.Serializable;

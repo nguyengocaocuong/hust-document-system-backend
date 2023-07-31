@@ -6,20 +6,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
-@Getter
-@Table(name = "NotificationToken")
-@Setter
-@AllArgsConstructor
+@Table(name = "Enrollments")
 @NoArgsConstructor
-public class NotificationToken {
+@AllArgsConstructor
+@Getter
+@Setter
+public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_NotificationToken_User"))
+    @ManyToOne
     private User user;
-    @Column(nullable = false)
-    private String token;
+
+    @ManyToOne
+    private Subject subject;
+
+    private Date createdAt = new Date();
 }
