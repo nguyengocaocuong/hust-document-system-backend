@@ -2,13 +2,20 @@ server:
   port: ${SERVER_PORT}
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql:hust-document
+    username: hust-document-system-db
+    password: Cuong123@123
+    hikari:
+      data-source-properties:
+        socketFactory: com.google.cloud.sql.postgres.SocketFactory
+        cloudSqlInstance: hust-doument-system:asia-south1:hust-document-system-db
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    properties:
+      hibernate.dialect: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
   mail:
     host: smtp.office365.com
     port: 587
@@ -31,4 +38,6 @@ spring:
     gcp:
       vision:
         enabled: true
-
+      sql:
+        database-name: hust-document
+        instance-connection-name: hust-doument-system:asia-south1:hust-document-system-db
