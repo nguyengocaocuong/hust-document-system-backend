@@ -36,7 +36,7 @@ jobs:
         with:
           username: 'oauth2accesstoken'
           password: '${{ steps.auth.outputs.access_token }}'
-          registry: '${{ secrets.GAR_LOCATION }}-docker.pkg.dev'
+          registry: 'asia-southeast1-docker.pkg.dev'
 
       - name: Build and Push Container
         run: |-
