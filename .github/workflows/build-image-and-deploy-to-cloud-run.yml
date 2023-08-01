@@ -4,13 +4,6 @@ on:
   push:
     branches: [ "master" ]
 
-env:
-  PROJECT_ID: ${{ env.PROJECT_ID }}
-  GAR_LOCATION: ${{ env.GAR_LOCATION }}
-  SERVICE: ${{ env.SERVICE }}
-  REGION: ${{ env.REGION }}
-  REPOSITORY: ${{ env.REPOSITORY }}
-
 jobs:
   deploy:
     permissions:
