@@ -52,7 +52,7 @@ env:
   PROJECT_ID: hust-doument-system
   GAR_LOCATION: asia-southeast1
   SERVICE: hust-document-system-backend
-  REGION: asia-south1-c
+  REGION: asia-southeast1
   REPOSITORY: hust-document-system-backend
 
 jobs:
