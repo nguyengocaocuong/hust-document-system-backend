@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to Cloud Run
         id: deploy
         run: |-
-          gcloud run deploy ${{ secrets.SERVICE }} 
+          gcloud run deploy ${{ secrets.SERVICE }} \
           --image ${{ secrets.GAR_LOCATION }}-docker.pkg.dev/${{ secrets.PROJECT_ID }}/${{ secrets.REPOSITORY }}/${{ secrets.SERVICE }}:${{ github.sha }} \
           --quiet \
           --platform managed \
