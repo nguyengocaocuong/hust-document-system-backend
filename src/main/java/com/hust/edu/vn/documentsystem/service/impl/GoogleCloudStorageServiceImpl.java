@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService {
     private static final String THUMBNAIL = "thumbnail";
-    private static final String BUCKET_NAME = System.getenv("BUCKET_NAME");
+    private static final String BUCKET_NAME = "hust-document-storage";
     private final Storage storage;
     private final ThumbnailService thumbnailService;
 
