@@ -16,7 +16,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Post findByIdAndIsHidden(Long id, boolean b);
 
-    @Query(value = "SELECT p FROM Post p WHERE p.isDone = true")
+    @Query(value = """
+            SELECT p FROM Post p
+            LEFT JOIN Enrollment e
+            ON p.subject.id = e.subject.id
+            ORDER BY 
+                CASE WHEN e.subject.id IS NOT NULL THEN 0 ELSE 1 END, p.id
+            """)
     List<Post> getPostForHomePage(PageRequest pageRequest);
 
     @Query(value = "SELECT p FROM Post p WHERE p.owner.email = :email")

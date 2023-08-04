@@ -242,7 +242,7 @@ public class UserServiceImpl implements UserService {
         String url = applicationUrl
                 + "/api/v1/auth/verifyRegistrationToken?token="
                 + verifyAccount.getToken();
-        return emailService.sendSimpleMessage(verifyAccount.getUser().getEmail(), "Kích hoạt tài khoản", url);
+        return emailService.sendSimpleMessage(verifyAccount.getUser(), "Kích hoạt tài khoản", url);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class UserServiceImpl implements UserService {
         String url = applicationUrl
                 + "/api/v1/auth/chainPasswordByToken?token="
                 + token;
-        return emailService.sendSimpleMessage(user.getEmail(), "Kích hoạt tài khoản", url);
+        return emailService.sendSimpleMessage(user, "Kích hoạt tài khoản", url);
     }
 
     @Override
