@@ -44,7 +44,8 @@ public class SpringSecurityConfig {
                     corsConfiguration.setAllowedOrigins(Arrays.asList("https://view.officeapps.live.com/op/embed.aspx", System.getenv("FRONTEND_URL")));
                     corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
                     corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
-                    corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+                    corsConfiguration.setAllowedHeaders(Arrays.asList("Content-Type", "X-HUST-DOCUMENT-KEY"));
+                    corsConfiguration.setExposedHeaders(Arrays.asList("X-HUST-DOCUMENT-KEY","Authorization"));
                     corsConfiguration.setAllowCredentials(false);
                     corsConfiguration.setMaxAge(Duration.ofMinutes(20));
                     return corsConfiguration;

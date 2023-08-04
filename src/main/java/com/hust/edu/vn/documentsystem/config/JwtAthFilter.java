@@ -36,13 +36,12 @@ public class JwtAthFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("X-HUST-DOCUMENT-KEY");
         final String userEmail;
-        final String jwtToken;
         if (authHeader == null && request.getRequestURI().startsWith("/api/v1/users/subject")) {
-            authHeader = "Bearer " + request.getParameter("token");
+            authHeader = request.getParameter("token");
         }
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null) {
             try {
                 filterChain.doFilter(request, response);
             } catch (IllegalArgumentException e) {
@@ -50,16 +49,16 @@ public class JwtAthFilter extends OncePerRequestFilter {
             }
             return;
         }
-        jwtToken = authHeader.substring(7);
         try {
-            userEmail = jwtUtils.extractUserName(jwtToken);
+            log.info(authHeader);
+            userEmail = jwtUtils.extractUserName(authHeader);
         } catch (ExpiredJwtException e) {
             filterChain.doFilter(request, response);
             return;
         }
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-            if (userDetails.isEnabled() && jwtUtils.isTokenValid(jwtToken, userDetails)) {
+            if (userDetails.isEnabled() && jwtUtils.isTokenValid(authHeader, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
