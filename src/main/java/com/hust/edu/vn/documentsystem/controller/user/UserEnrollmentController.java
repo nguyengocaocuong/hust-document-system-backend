@@ -43,4 +43,8 @@ public class UserEnrollmentController {
             return subjectDto;
         }));
     }
+    @DeleteMapping
+    public ResponseEntity<CustomResponse> deleteEnrollmentSubjects(@ModelAttribute EnrollmentRequest enrollment){
+        return CustomResponse.generateResponse(enrollmentService.deleteEnrollmentSubjects(enrollment.getSubjects()));
+    }
 }

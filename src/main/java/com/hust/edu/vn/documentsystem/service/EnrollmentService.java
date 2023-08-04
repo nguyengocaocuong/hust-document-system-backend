@@ -9,4 +9,6 @@ public interface EnrollmentService {
     boolean addEnrollmentSubject(List<Long> subjects);
 
     List<Subject> getAllEnrollmentSubjects();
+
+    boolean deleteEnrollmentSubjects(List<Long> subjects);
 }

@@ -47,4 +47,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     public List<Subject> getAllEnrollmentSubjects() {
         return subjectRepository.getAllEnrollmentSubjects(SecurityContextHolder.getContext().getAuthentication().getName());
     }
+
+    @Override
+    public boolean deleteEnrollmentSubjects(List<Long> subjects) {
+        return false;
+    }
 }
