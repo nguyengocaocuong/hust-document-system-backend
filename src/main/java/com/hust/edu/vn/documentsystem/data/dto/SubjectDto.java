@@ -36,6 +36,7 @@ public class SubjectDto implements Serializable {
 
     public SubjectDto(Subject subject, Long totalDocument, Long totalComment, Long totalFavorite, Long totalAnswer) {
         this.id = subject.getId();
+        this.institute = subject.getInstitute();
         this.name = subject.getName();
         this.description = subject.getDescription();
         this.createdAt = subject.getCreatedAt();

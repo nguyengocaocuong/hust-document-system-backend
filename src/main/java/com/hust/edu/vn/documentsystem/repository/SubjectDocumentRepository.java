@@ -22,13 +22,14 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
     @Query(value = "SELECT s FROM SubjectDocument s WHERE s.id = :subjectDocumentId AND s.owner.email = :name")
     SubjectDocument findByIdAndUserEmail(Long subjectDocumentId, String name);
 
-    @Query("SELECT DISTINCT sd FROM SubjectDocument sd " +
-            "LEFT JOIN SharePrivate sp " +
-            "ON sd.id = sp.subjectDocument.id  " +
-            "OR sd.isPublic = true " +
-            "OR sd.owner.id = :userId " +
-            "OR sp.user.id = :userId " +
-            "WHERE sd.isDelete = false AND sd.subject.id = :subjectId")
+    @Query("""
+            SELECT DISTINCT sd FROM SubjectDocument sd
+            LEFT JOIN SharePrivate sp
+            ON sd.id = sp.subjectDocument.id
+            WHERE sd.isDelete = false 
+            AND sd.subject.id = :subjectId 
+            AND (sd.isPublic = true OR sp.id IS NOT NULL AND sp.user.id = :userId)
+            """)
     List<SubjectDocument> findAllSubjectDocumentCanAccessByUserEmail(@Param("userId") Long userId, @Param("subjectId") Long subjectId);
 
     List<SubjectDocument> findAllByIsDeleteAndOwner(boolean b, User user);

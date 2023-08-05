@@ -9,7 +9,7 @@ public class PusherConfig {
     private final String appId = System.getenv("PUSHER_APP_ID");
     private final String appKey = System.getenv("PUSHER_KEY");
     private final String appSecret = System.getenv("PUSHER_SECRET");
-    private final String appCluster = System.getenv("PROJECT_ID");
+    private final String appCluster = System.getenv("PUSHER_CLUSTER");
 
     @Bean
     public Pusher pusher(){

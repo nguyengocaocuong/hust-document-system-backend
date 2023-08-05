@@ -37,3 +37,4 @@ security
 Dockerfile.dev
 docker-compose.dev.yml
 .gitpod.yml
+/src/main/resources/application-dev.yml
