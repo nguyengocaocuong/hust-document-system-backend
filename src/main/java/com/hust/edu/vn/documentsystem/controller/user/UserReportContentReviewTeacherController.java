@@ -26,4 +26,13 @@ public class UserReportContentReviewTeacherController {
         if(reportContentReviewTeacher == null) return CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
         return CustomResponse.generateResponse(HttpStatus.CREATED, modelMapperUtils.mapAllProperties(reportContentReviewTeacher, ReportContentReviewTeacherDto.class));
     }
+    @PatchMapping("{reportContentReviewTeacherId}")
+    public ResponseEntity<CustomResponse> updateReportContentReviewTeacher(@PathVariable("reviewTeacherId") Long reviewTeacherId, @PathVariable("reportContentReviewTeacherId") Long reportContentReviewTeacherId,@ModelAttribute ReportContentReviewTeacherModel reportContentReviewTeacherModel){
+        return CustomResponse.generateResponse(teacherService.updateReportContentReviewTeacher(reviewTeacherId,reportContentReviewTeacherId,reportContentReviewTeacherModel));
+    }
+    @DeleteMapping("{reportContentReviewTeacherId}")
+    public ResponseEntity<CustomResponse> deleteReportContentReviewTeacher(@PathVariable("reviewTeacherId") Long reviewTeacherId, @PathVariable("reportContentReviewTeacherId") Long reportContentReviewTeacherId){
+        return CustomResponse.generateResponse(teacherService.deleteReportContentReviewTeacher(reviewTeacherId,reportContentReviewTeacherId));
+
+    }
 }

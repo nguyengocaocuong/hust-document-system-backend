@@ -11,7 +11,9 @@ import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users/subjects")
@@ -147,5 +149,23 @@ public class UserSubjectController {
     public ResponseEntity<CustomResponse> getAllSubjectByInstitute(){
         return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllInstitute());
     }
+
+    @GetMapping("sharedByUser")
+    public ResponseEntity<CustomResponse> getAllSharedByUser(@RequestParam("userId") Long userId){
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSharedByUser(userId).stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
+    }
+    @GetMapping("reported")
+    public ResponseEntity<CustomResponse> getAllReported(){
+        List<Object> queryResults = subjectService.getAllReported();
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("reportContentReviewSubjects", ((List<ReportContentReviewSubject>)queryResults.get(0)).stream().map(report -> modelMapperUtils.mapAllProperties(report, ReportContentReviewSubjectDto.class)));
+        resultMap.put("reportContentReviewTeachers", ((List<ReportContentReviewTeacher>)queryResults.get(1)).stream().map(report -> modelMapperUtils.mapAllProperties(report, ReportContentReviewTeacherDto.class)));
+        resultMap.put("reportContentSubjectDocuments", ((List<ReportContentSubjectDocument>)queryResults.get(2)).stream().map(report -> modelMapperUtils.mapAllProperties(report, ReportContentSubjectDocumentDto.class)));
+        resultMap.put("reportDuplicateSubjectDocuments", ((List<ReportDuplicateSubjectDocument>)queryResults.get(3)).stream().map(report -> modelMapperUtils.mapAllProperties(report, ReportDuplicateSubjectDocumentDto.class)));
+
+        return CustomResponse.generateResponse(HttpStatus.OK,resultMap);
+    }
+
+
 
 }

@@ -9,6 +9,7 @@ import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.TeacherService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@Slf4j
 public class TeacherServiceImpl implements TeacherService {
     private final ReportContentReviewTeacherRepository reportContentReviewTeacherRepository;
     private final ReviewTeacherRepository reviewTeacherRepository;
@@ -61,16 +63,6 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public List<ReviewTeacher> findAllReviewTeacher() {
         return reviewTeacherRepository.findAllReviewTeacher();
-    }
-
-    @Override
-    public boolean deleteReviewTeacher(Long reviewTeacherId) {
-        ReviewTeacher reviewTeacher = reviewTeacherRepository.findByIdAndUserEmail(reviewTeacherId,
-                SecurityContextHolder.getContext().getAuthentication().getName());
-        if (reviewTeacher == null)
-            return false;
-        reviewTeacherRepository.delete(reviewTeacher);
-        return true;
     }
 
     @Override
@@ -130,5 +122,22 @@ public class TeacherServiceImpl implements TeacherService {
         reportContentReviewTeacher.setMessage(reportContentReviewTeacherModel.getMessage());
         reportContentReviewTeacher.setStatus(ReportStatus.NEW_REPORT);
         return reportContentReviewTeacherRepository.save(reportContentReviewTeacher);
+    }
+
+    @Override
+    public boolean updateReportContentReviewTeacher(Long reviewTeacherId, Long reportContentReviewTeacherId,ReportContentReviewTeacherModel reportContentReviewTeacherModel) {
+        ReportContentReviewTeacher reportContentReviewTeacher = reportContentReviewTeacherRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewTeacherId,reviewTeacherId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reportContentReviewTeacher == null) return false;
+        reportContentReviewTeacher.setMessage(reportContentReviewTeacherModel.getMessage());
+        reportContentReviewTeacherRepository.save(reportContentReviewTeacher);
+        return true;
+    }
+
+    @Override
+    public boolean deleteReportContentReviewTeacher(Long reviewTeacherId, Long reportContentReviewTeacherId) {
+        ReportContentReviewTeacher reportContentReviewTeacher = reportContentReviewTeacherRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewTeacherId,reviewTeacherId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reportContentReviewTeacher == null) return false;
+        reportContentReviewTeacherRepository.delete(reportContentReviewTeacher);
+        return true;
     }
 }

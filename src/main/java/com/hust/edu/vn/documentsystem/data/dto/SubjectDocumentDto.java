@@ -29,4 +29,15 @@ public class SubjectDocumentDto implements Serializable {
     private Date lastEditedAt;
     private Date deletedAt;
     private boolean isPublic;
+    private SubjectDto subject;
+
+    @Data
+    public static class SubjectDto implements Serializable {
+        private  Long id;
+        private  String institute;
+        private  String name;
+        private  String enName;
+        private  Date createdAt;
+        private String subjectCode;
+    }
 }

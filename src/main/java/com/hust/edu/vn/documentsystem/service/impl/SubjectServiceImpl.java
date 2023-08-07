@@ -36,6 +36,8 @@ public class SubjectServiceImpl implements SubjectService {
     private final DocumentService documentService;
 
     private final PusherService pusherService;
+    private final ReviewTeacherRepository reviewTeacherRepository;
+    private final ReportContentReviewTeacherRepository reportContentReviewTeacherRepository;
 
 
     public SubjectServiceImpl(
@@ -50,7 +52,9 @@ public class SubjectServiceImpl implements SubjectService {
             ReviewSubjectRepository reviewSubjectRepository,
             ReportContentReviewSubjectRepository reportContentReviewSubjectRepository,
             ReportContentSubjectDocumentRepository reportContentSubjectDocumentRepository,
-            ReportDuplicateSubjectDocumentRepository reportDuplicateSubjectDocumentRepository, PusherService pusherService) {
+            ReportDuplicateSubjectDocumentRepository reportDuplicateSubjectDocumentRepository, PusherService pusherService,
+            ReviewTeacherRepository reviewTeacherRepository,
+            ReportContentReviewTeacherRepository reportContentReviewTeacherRepository) {
         this.subjectRepository = subjectRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.userRepository = userRepository;
@@ -64,6 +68,8 @@ public class SubjectServiceImpl implements SubjectService {
         this.reportContentSubjectDocumentRepository = reportContentSubjectDocumentRepository;
         this.reportDuplicateSubjectDocumentRepository = reportDuplicateSubjectDocumentRepository;
         this.pusherService = pusherService;
+        this.reviewTeacherRepository = reviewTeacherRepository;
+        this.reportContentReviewTeacherRepository = reportContentReviewTeacherRepository;
     }
 
     @Override
@@ -199,6 +205,44 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<String> getAllInstitute() {
         return subjectRepository.getAllInstitute();
+    }
+
+    @Override
+    public List<SubjectDocument> getAllSharedByUser(Long userId) {
+        return subjectDocumentRepository.getAllSharedByUser(userId, SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public List<Object> getAllReported() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<ReportContentReviewSubject> reportContentReviewSubjects = reportContentReviewSubjectRepository.getAllReported(email);
+        List<ReportContentReviewTeacher> reportContentReviewTeachers = reportContentReviewTeacherRepository.getAllReported(email);
+        List<ReportContentSubjectDocument> reportContentSubjectDocuments = reportContentSubjectDocumentRepository.getAllReported(email);
+        List<ReportDuplicateSubjectDocument> reportDuplicateSubjectDocuments = reportDuplicateSubjectDocumentRepository.getAllReported(email);
+
+        return Arrays.asList(
+                reportContentReviewSubjects,
+                reportContentReviewTeachers,
+                reportContentSubjectDocuments,
+                reportDuplicateSubjectDocuments
+        );
+    }
+
+    @Override
+    public boolean updateReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel) {
+        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId,reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reportContentReviewSubject == null) return false;
+        reportContentReviewSubject.setMessage(reportContentReviewSubjectModel.getMessage());
+        reportContentReviewSubjectRepository.save(reportContentReviewSubject);
+        return true;
+    }
+
+    @Override
+    public boolean deleteReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId) {
+        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId,reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if(reportContentReviewSubject == null) return false;
+        reportContentReviewSubjectRepository.delete(reportContentReviewSubject);
+        return true;
     }
 
     @Override

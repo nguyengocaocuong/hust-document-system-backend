@@ -41,4 +41,14 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
 
     @Query(value = "SELECT s FROM SubjectDocument s WHERE s.id =:subjectDocumentId AND s.isDelete = false AND s.isPublic = :isPublic AND s.owner.email = :name")
     SubjectDocument findByIdAndUserEmailAndIsPublic(Long subjectDocumentId, String name, boolean isPublic);
+
+
+    @Query("""
+            SELECT sd
+            FROM SubjectDocument sd
+            LEFT JOIN SharePrivate sp
+            ON sd.id = sp.id 
+            WHERE sd.owner.id = :userId AND (sd.isPublic = true OR sp.id IS NOT NULL AND sp.user.email = :email)
+            """)
+    List<SubjectDocument> getAllSharedByUser(Long userId, String email);
 }

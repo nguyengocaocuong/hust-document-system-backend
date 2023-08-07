@@ -16,7 +16,6 @@ public interface TeacherService {
 
     List<ReviewTeacher> findAllReviewTeacher();
 
-    boolean deleteReviewTeacher(Long reviewTeacherId);
 
     List<ReviewTeacher> getAllReviewTeacherCreatedByUser();
 
@@ -28,4 +27,8 @@ public interface TeacherService {
 
     ReportContentReviewTeacher createReportContentReviewTeacher(Long reviewTeacherId,
                                                                 ReportContentReviewTeacherModel reportContentReviewTeacherModel);
+
+    boolean updateReportContentReviewTeacher(Long reviewTeacherId,Long reportContentReviewTeacherId, ReportContentReviewTeacherModel reportContentReviewTeacherModel);
+
+    boolean deleteReportContentReviewTeacher(Long reviewTeacherId, Long reportContentReviewTeacherId);
 }

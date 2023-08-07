@@ -12,65 +12,73 @@ import java.util.stream.DoubleStream;
 
 public interface SubjectService {
 
-        PageDto<SubjectDto> getAllSubjects(int page, int size);
+    PageDto<SubjectDto> getAllSubjects(int page, int size);
 
-        Subject getSubjectById(Long id);
+    Subject getSubjectById(Long id);
 
-        Subject createSubject(SubjectModel subjectModel);
+    Subject createSubject(SubjectModel subjectModel);
 
-        boolean updateSubject(SubjectModel subjectModel);
+    boolean updateSubject(SubjectModel subjectModel);
 
-        boolean deleteSubject(Long subjectId);
+    boolean deleteSubject(Long subjectId);
 
-        List<Subject> getAllSubjectsCreateByUser();
+    List<Subject> getAllSubjectsCreateByUser();
 
-        SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
+    SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId);
 
-        Object shareDocument(Long subjectDocumentId, ShareSubjectDocumentModel shareSubjectDocumentModel);
+    Object shareDocument(Long subjectDocumentId, ShareSubjectDocumentModel shareSubjectDocumentModel);
 
-        CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
-                        Long subjectDocumentId);
+    CommentSubjectDocument createCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
+                                                           Long subjectDocumentId);
 
-        CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
-                        Long subjectDocumentId, Long commentId);
+    CommentSubjectDocument updateCommentForSubjectDocument(CommentSubjectDocumentModel commentSubjectDocumentModel,
+                                                           Long subjectDocumentId, Long commentId);
 
-        boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId);
+    boolean hiddenCommentForSubjectDocument(Long commentId, Long subjectDocumentId);
 
-        List<User> getAllUserShareWithMe();
+    List<User> getAllUserShareWithMe();
 
-        List<SubjectDto> getAllSubjectsForFilter();
+    List<SubjectDto> getAllSubjectsForFilter();
 
-        List<SubjectDocumentType> findAllSubjectDocumentType();
+    List<SubjectDocumentType> findAllSubjectDocumentType();
 
-        List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
+    List<CommentSubjectDocument> getSubjectDocumentCommentBySubjectDocumentId(Long subjectDocumentId);
 
-        List<User> getAllUserShared(Long subjectDocumentId);
+    List<User> getAllUserShared(Long subjectDocumentId);
 
-        List<SubjectDocument> getAllSubjectDocumentCreateByUser();
+    List<SubjectDocument> getAllSubjectDocumentCreateByUser();
 
-        List<SharePrivate> getAllSubjectDocumentShared();
+    List<SharePrivate> getAllSubjectDocumentShared();
 
-        boolean clearSharedPrivateSubjectDocument(Long sharedId, Long subjectDocumentId);
+    boolean clearSharedPrivateSubjectDocument(Long sharedId, Long subjectDocumentId);
 
 
-        List<ReviewSubject> getAllReviewSubjectCreatedByUser();
+    List<ReviewSubject> getAllReviewSubjectCreatedByUser();
 
-        List<Object[]> getAllSubjectForAdmin();
+    List<Object[]> getAllSubjectForAdmin();
 
-        boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId);
+    boolean deleteCommentSubjectDocument(Long subjectDocumentId, Long commentId);
 
-        ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId,
-                        ReportContentReviewSubjectModel reportContentReviewSubjectModel);
+    ReportContentReviewSubject createReportContentReviewSubject(Long reviewSubjectId,
+                                                                ReportContentReviewSubjectModel reportContentReviewSubjectModel);
 
-        ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId,
-                        ReportContentSubjectDocumentModel reportContentSubjectDocumentModel);
+    ReportContentSubjectDocument createReportContentSubjectDocument(Long subjectDocumentId,
+                                                                    ReportContentSubjectDocumentModel reportContentSubjectDocumentModel);
 
-        ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId,
-                        ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
+    ReportDuplicateSubjectDocument createReportDuplicateSubjectDocument(Long subjectDocumentId,
+                                                                        ReportDuplicateSubjectDocumentModel reportContentSubjectDocumentModel);
 
-        List<ReviewSubject> getAllReviewSubjects();
+    List<ReviewSubject> getAllReviewSubjects();
 
     List<Subject> getAllSubjectByInstitute(String institute);
 
-        List<String> getAllInstitute();
+    List<String> getAllInstitute();
+
+    List<SubjectDocument> getAllSharedByUser(Long userId);
+
+    List<Object> getAllReported();
+
+    boolean updateReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel);
+
+    boolean deleteReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId);
 }

@@ -1,5 +1,7 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
+import com.hust.edu.vn.documentsystem.common.type.DocumentType;
+import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,24 @@ public class SubjectDto implements Serializable {
     private Long totalAnswer = 0L;
     private List<UserDto> enrollment = new ArrayList<>();
     private List<SubjectDocumentDto> subjectDocuments = new ArrayList<>();
+
+    @Data
+    public static class SubjectDocumentDto implements Serializable {
+        private Long id;
+        private SubjectDocumentType subjectDocumentType;
+        private DocumentType type;
+        private DocumentDto document;
+        private String description;
+        private UserDto owner;
+        private String semester;
+        private List<CommentSubjectDocumentDto> comments = new ArrayList<>();
+        private List<AnswerSubjectDocumentDto> answers = new ArrayList<>();
+        private List<FavoriteSubjectDocumentDto> favorites = new ArrayList<>();
+        private List<SharePrivateDto> shared;
+        private Date createdAt;
+        private Date deletedAt;
+        private boolean isPublic;
+    }
 
     public SubjectDto(Long id, String name) {
         this.id = id;

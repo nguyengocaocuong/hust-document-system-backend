@@ -50,6 +50,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public boolean deleteEnrollmentSubjects(List<Long> subjects) {
-        return false;
+        if(subjects.size() == 0) return false;
+        Enrollment enrollment = enrollmentRepository.findBySubjectIdAndUserEmail(subjects.get(0), SecurityContextHolder.getContext().getAuthentication().getName());
+        if (enrollment == null) return false;
+        enrollmentRepository.delete(enrollment);
+        return true;
     }
 }
