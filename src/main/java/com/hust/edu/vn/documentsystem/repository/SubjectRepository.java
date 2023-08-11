@@ -16,37 +16,27 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findAllByOwner(User user);
 
-    @Query(value = "SELECT new com.hust.edu.vn.documentsystem.data.dto.SubjectDto(s.id, s.name) FROM Subject AS s")
+    @Query(value = "SELECT new com.hust.edu.vn.documentsystem.data.dto.SubjectDto(s.id, s.name, s.subjectCode, s.institute) FROM Subject AS s")
     List<SubjectDto> findAllSubjectName();
 
     @Query(value =
-            "SELECT new com.hust.edu.vn.documentsystem.data.dto.SubjectDto(s, " +
-                    "count ( DISTINCT sd.id), " +
-                    "count (DISTINCT csd.id), " +
-                    "count(DISTINCT f.id), " +
-                    "count(DISTINCT asd.id)" +
-                    ") " +
-                    "FROM Subject s " +
-                    "LEFT JOIN SubjectDocument sd " +
-                    "ON s.id = sd.subject.id AND sd.isDelete = false " +
-                    "AND (" +
-                    "sd.isPublic = true " +
-                    "OR sd.owner.id = :userId " +
-                    "OR sd.id IN (" +
-                    "SELECT sd.id " +
-                    "FROM SubjectDocument  sd " +
-                    "JOIN SharePrivate sp " +
-                    "ON sd.id = sp.subjectDocument.id " +
-                    "AND sp.user.id = :userId" +
-                    ")" +
-                    ")" +
-                    "LEFT JOIN CommentSubjectDocument csd " +
-                    "ON sd.id = csd.subjectDocument.id " +
-                    "LEFT JOIN FavoriteSubject f " +
-                    "ON f.subject.id = s.id " +
-                    "LEFT JOIN AnswerSubjectDocument asd " +
-                    "ON asd.subjectDocument.id = sd.id " +
-                    "GROUP BY s.id")
+            """
+                    SELECT new com.hust.edu.vn.documentsystem.data.dto.SubjectDto(s,
+                                        count ( DISTINCT sd.id),
+                                        count (DISTINCT sd.id),
+                                        count(DISTINCT f.id),
+                                        count(DISTINCT f.id)
+                    )
+                                        FROM Subject s
+                                        LEFT JOIN SubjectDocument sd
+                                        ON s.id = sd.subject.id
+                                        LEFT JOIN SharePrivate  sp
+                                        ON sd.id = sp.subjectDocument.id
+                                        LEFT JOIN FavoriteSubject f
+                                        ON f.subject.id = s.id
+                                        WHERE sd.id IS NULL OR (sd.isDelete = false AND (sd.isPublic = true OR sd.owner.id = :userId OR sp.id IS NOT NULL AND sp.user.id = :userId))
+                                        GROUP BY s.id
+                    """)
     List<SubjectDto> findAllSubjects(@Param("userId") Long userId, PageRequest pageRequest);
 
 
@@ -63,9 +53,9 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query("""
                 SELECT s
                 FROM Subject s
-                WHERE s.institute = :institute
+                WHERE s.institute.id = :instituteId
             """)
-    List<Subject> findAllByInstitute(String institute);
+    List<Subject> findAllByInstitute(Long instituteId);
 
     @Query("""
                 SELECT DISTINCT  s.institute

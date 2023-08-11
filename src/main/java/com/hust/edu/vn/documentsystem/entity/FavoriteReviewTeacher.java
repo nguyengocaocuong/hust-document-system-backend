@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.entity;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +24,4 @@ public class FavoriteReviewTeacher {
     @JoinColumn( nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteReviewTeacher_User"))
     private User user;
     private Date createAt = new Date();
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType = NotificationType.ALL;
 }

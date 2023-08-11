@@ -1,7 +1,6 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +14,7 @@ import java.util.List;
 @Data
 public class SubjectDocumentDto implements Serializable {
     private Long id;
-    private SubjectDocumentType subjectDocumentType;
+    private SubjectDocumentTypeDto subjectDocumentType;
     private DocumentType type;
     private DocumentDto document;
     private String description;
@@ -30,11 +29,13 @@ public class SubjectDocumentDto implements Serializable {
     private Date deletedAt;
     private boolean isPublic;
     private SubjectDto subject;
+    private Long totalDownload;
+    private Long totalView;
 
     @Data
     public static class SubjectDto implements Serializable {
         private  Long id;
-        private  String institute;
+        private  InstituteDto institute;
         private  String name;
         private  String enName;
         private  Date createdAt;

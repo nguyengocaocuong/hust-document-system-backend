@@ -27,7 +27,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/authentication")
-@Slf4j
 public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
@@ -72,7 +71,6 @@ public class AuthenticationController {
 
     @PostMapping("resendJwtToken")
     public ResponseEntity<CustomResponse> resendJwtToken(@RequestParam() String oldToken) {
-        log.info(oldToken);
         String email = jwtUtils.extractUserName(oldToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         if (userDetails == null) return CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
@@ -145,6 +143,5 @@ public class AuthenticationController {
     public ResponseEntity<CustomResponse> detectBabComment(@RequestParam("comment") String comment) throws Exception {
         return CustomResponse.generateResponse(HttpStatus.OK,googleLanguageService.detectBabComment(comment));
     }
-
 
 }

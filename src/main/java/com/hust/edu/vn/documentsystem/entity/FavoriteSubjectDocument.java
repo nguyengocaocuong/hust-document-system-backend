@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.entity;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +25,4 @@ public class FavoriteSubjectDocument {
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_FavoriteSubjectDocument_User"))
     private User user;
     private Date createAt = new Date();
-    @Column()
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType = NotificationType.ALL;
 }

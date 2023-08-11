@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -57,5 +58,19 @@ public class UserAnswerSubjectDocumentController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(new ByteArrayResource((byte[]) data.get(1)));
+    }
+    @PostMapping("annotation")
+    public ResponseEntity<CustomResponse> createAnnotationForSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId, @ModelAttribute AnswerSubjectDocumentModel answerSubjectDocumentModel){
+        try {
+            AnswerSubjectDocument answerSubjectDocument = answerSubjectDocumentService.createAnnotationForSubjectDocument(subjectDocumentId, answerSubjectDocumentModel);
+            if(answerSubjectDocument == null) return CustomResponse.generateResponse(HttpStatus.BAD_REQUEST);
+            return CustomResponse.generateResponse(HttpStatus.CREATED, modelMapperUtils.mapAllProperties(answerSubjectDocument, AnswerSubjectDocumentDto.class));
+        } catch (IOException e) {
+            return CustomResponse.generateResponse(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("{answerSubjectDocumentId}")
+    public ResponseEntity<CustomResponse> deleteAnswerSubjectDocument(@PathVariable("answerSubjectDocumentId") Long answerSubjectDocumentId, @PathVariable("subjectDocumentId") Long subjectDocumentID){
+        return CustomResponse.generateResponse(answerSubjectDocumentService.deleteAnswerSubjectDocument(answerSubjectDocumentId, subjectDocumentID));
     }
 }

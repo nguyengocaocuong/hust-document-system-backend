@@ -28,4 +28,7 @@ public class UserDto implements Serializable {
     private RoleType roleType;
     private boolean isEnable;
     private boolean isSetup;
+
+    private String username;
+    private String address;
 }

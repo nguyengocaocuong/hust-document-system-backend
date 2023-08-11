@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
+import com.google.cloud.storage.Blob;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDocumentDto;
@@ -15,11 +16,14 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @RestController
 @RequestMapping("/api/v1/users/subjects/subjectDocument/{subjectDocumentId}")
@@ -153,4 +157,50 @@ public class UserSubjectDocumentController {
         return CustomResponse.generateResponse(true);
     }
 
+    @GetMapping("download")
+    public ResponseEntity<Resource> getDownloadUrlForSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId){
+        Blob blob = subjectDocumentService.getSubjectDocumentBlob(subjectDocumentId);
+        if(blob == null) return ResponseEntity.badRequest().body(new ByteArrayResource(new byte[0]));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(blob.getContentType()));
+        headers.setContentDisposition(ContentDisposition.attachment().filename(blob.getName()).build());
+        headers.setContentLength(blob.getSize());
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(new ByteArrayResource(blob.getContent()));
+    }
+
+    @GetMapping("download-multiple")
+    public ResponseEntity<Resource> downloadMultipleFiles(@PathVariable("subjectDocumentId") Long subjectDocumentId, @RequestParam("answerIds") List<Long> answerIds) {
+        List<Blob> blobs = subjectDocumentService.getSubjectDocumentBlobAndAnswers(subjectDocumentId, answerIds);
+        if (blobs.isEmpty()) {
+            return ResponseEntity.badRequest().body(new ByteArrayResource(new byte[0]));
+        }
+
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
+            for (Blob blob : blobs) {
+                ZipEntry zipEntry = new ZipEntry(blob.getName());
+                zipOutputStream.putNextEntry(zipEntry);
+                zipOutputStream.write(blob.getContent());
+                zipOutputStream.closeEntry();
+            }
+            zipOutputStream.close();
+            byteArrayOutputStream.close();
+            byte[] zipData = byteArrayOutputStream.toByteArray();
+            ByteArrayResource resource = new ByteArrayResource(zipData);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.attachment().filename("files.zip").build());
+            headers.setContentLength(zipData.length);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

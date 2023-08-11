@@ -8,7 +8,7 @@ import java.util.Date;
 @Entity
 @Table(name = "SubjectDocumentTypes")
 @Data
-public class SubjectDocumentType_ {
+public class SubjectDocumentType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

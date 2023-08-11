@@ -12,8 +12,8 @@ import java.io.Serializable;
 public class SubjectModel implements Serializable {
     private Long id;
     private String name;
+    private Long instituteId;
     private String description;
     private String subjectCode;
     private String enName;
-    private String institute;
 }

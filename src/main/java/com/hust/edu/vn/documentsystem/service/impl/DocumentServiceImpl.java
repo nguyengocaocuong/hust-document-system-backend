@@ -52,4 +52,14 @@ public class DocumentServiceImpl implements DocumentService {
         document.setName(documentFile.getOriginalFilename());
         return documentRepository.save(document);
     }
+
+    @Override
+    public Document saveAnnotationToCGP(MultipartFile documentFile) throws IOException {
+        Document document = new Document();
+        String path = googleCloudStorageService.uploadAnnotationToGCP(documentFile);
+        document.setPath(path);
+        document.setContentType(documentFile.getContentType());
+        document.setName(documentFile.getOriginalFilename());
+        return documentRepository.save(document);
+    }
 }

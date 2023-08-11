@@ -15,7 +15,6 @@ public interface GoogleCloudStorageService {
     String uploadAvatarToGCP(MultipartFile avatar) throws IOException;
     boolean uploadDocumentToGCP(MultipartFile document, String rootPath) throws Exception;
 
-    boolean createFolderForUser(String email);
     String uploadDocumentsToGCP(MultipartFile[] document, String rootPath) throws Exception;
     boolean setAclForAccessBlob(Acl owner, String path);
 
@@ -27,11 +26,9 @@ public interface GoogleCloudStorageService {
 
      boolean deleteUlrSigned(String url);
 
-     List<String> searchKeywordInAllBlob(String keyword, List<String> blobPrefixes);
 
     boolean deleteDocumentByRootPath(String s);
 
-    String getUrlDownload(String path, Long timeout);
 
     boolean updateDocumentByRootPath(String path, MultipartFile document) throws Exception;
 
@@ -44,4 +41,8 @@ public interface GoogleCloudStorageService {
     List<String> createThumbnailAndUploadDocumentToGCP(MultipartFile multipartFile, List<Acl> owner) throws IOException;
 
     byte[] readBlobByPath(String path);
+
+    boolean deleteBlobByPath(String path);
+
+    String uploadAnnotationToGCP(MultipartFile documentFile) throws IOException;
 }

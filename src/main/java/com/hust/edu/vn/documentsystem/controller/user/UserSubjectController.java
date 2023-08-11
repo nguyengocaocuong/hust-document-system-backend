@@ -33,13 +33,6 @@ public class UserSubjectController {
                 modelMapperUtils.mapAllProperties(subject, SubjectDto.class));
     }
 
-    @GetMapping("owner")
-    public ResponseEntity<CustomResponse> getAllSubjectsCreateByUser() {
-        Object content = subjectService.getAllSubjectsCreateByUser().stream()
-                .map(subject -> modelMapperUtils.mapAllProperties(subject, SubjectDto.class)).toList();
-        return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách các môn học do bạn tạo ", content);
-    }
-
     @PatchMapping()
     public ResponseEntity<CustomResponse> updateSubject(@ModelAttribute SubjectModel subjectModel) {
         boolean status = subjectService.updateSubject(subjectModel);
@@ -85,7 +78,7 @@ public class UserSubjectController {
 
     @GetMapping("subjectDocumentTypeForFilter")
     public ResponseEntity<CustomResponse> getAllSubjectDocumentType() {
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.findAllSubjectDocumentType());
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.findAllSubjectDocumentType().stream().map(subjectDocumentType -> modelMapperUtils.mapAllProperties(subjectDocumentType, SubjectDocumentTypeDto.class)));
     }
 
     @PostMapping()
@@ -137,8 +130,8 @@ public class UserSubjectController {
     }
 
     @GetMapping("search")
-    public ResponseEntity<CustomResponse> getAllSubjectByInstitute(@RequestParam("institute") String institute){
-        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjectByInstitute(institute).stream().map(subject -> {
+    public ResponseEntity<CustomResponse> getAllSubjectByInstitute(@RequestParam("instituteId") Long instituteId){
+        return CustomResponse.generateResponse(HttpStatus.OK, subjectService.getAllSubjectByInstitute(instituteId).stream().map(subject -> {
            subject.setSubjectDocuments(null);
            subject.setFavorites(null);
            subject.setReviews(null);

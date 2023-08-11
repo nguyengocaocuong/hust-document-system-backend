@@ -1,6 +1,5 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,5 +14,4 @@ public class FavoriteSubjectDto implements Serializable {
     private  SubjectDto subject;
     private  UserDto user;
     private  Date createAt;
-    private  NotificationType notificationType;
 }

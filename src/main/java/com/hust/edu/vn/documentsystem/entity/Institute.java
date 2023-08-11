@@ -16,5 +16,12 @@ public class Institute {
     @Column(unique = true, nullable = false)
     private String institute;
 
+    private String office;
+
+    private String phoneNumber;
+
+    @Column(unique = true)
+    private String website;
+    
     private Date createdAt = new Date();
 }

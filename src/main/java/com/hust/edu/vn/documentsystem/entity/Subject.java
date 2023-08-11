@@ -23,13 +23,20 @@ public class Subject {
     private Long id;
     @Column(nullable = false)
     private String name;
+    private String enName;
+
     @Column(columnDefinition = "TEXT")
     private String description;
+
     @Column(nullable = false)
     private String subjectCode;
-    private String institute;
-    private String enName;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Institute institute;
+
     private Date createdAt = new Date();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_Subject_User"))
     private User owner;

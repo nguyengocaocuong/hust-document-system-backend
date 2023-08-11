@@ -2,6 +2,7 @@ package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.ReportContentSubjectDocumentDto;
+import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewSubjectModel;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentSubjectDocumentModel;
 import com.hust.edu.vn.documentsystem.data.model.ReportDuplicateSubjectDocumentModel;
 import com.hust.edu.vn.documentsystem.entity.ReportContentSubjectDocument;
@@ -34,5 +35,14 @@ public class UserReportSubjectDocumentController {
         ReportDuplicateSubjectDocument reportDuplicateSubjectDocument = subjectService.createReportDuplicateSubjectDocument(subjectDocumentId, reportContentSubjectDocumentModel);
         if(reportDuplicateSubjectDocument == null) return CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
         return CustomResponse.generateResponse(HttpStatus.CREATED, modelMapperUtils.mapAllProperties(reportDuplicateSubjectDocument, ReportContentSubjectDocumentDto.class));
+    }
+
+    @PatchMapping("reportContent/{reportContentSubjectDocumentId}")
+    public ResponseEntity<CustomResponse> updateReportContentSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId, @PathVariable("reportContentSubjectDocumentId") Long reportContentSubjectDocumentId,@ModelAttribute ReportContentSubjectDocumentModel reportContentSubjectDocumentModel){
+        return CustomResponse.generateResponse(subjectService.updateReportContentSubjectDocument(subjectDocumentId,reportContentSubjectDocumentId, reportContentSubjectDocumentModel));
+    }
+    @DeleteMapping("reportContent/{reportContentSubjectDocumentId}")
+    public ResponseEntity<CustomResponse> deleteReportContentSubjectDocument(@PathVariable("subjectDocumentId") Long subjectDocumentId, @PathVariable("reportContentSubjectDocumentId") Long reportContentSubjectDocumentId){
+        return CustomResponse.generateResponse(subjectService.deleteReportContentSubjectDocument(subjectDocumentId,reportContentSubjectDocumentId));
     }
 }

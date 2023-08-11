@@ -1,8 +1,6 @@
 package com.hust.edu.vn.documentsystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +19,8 @@ public class SubjectDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private SubjectDocumentType subjectDocumentType;
     private DocumentType type;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -30,15 +28,27 @@ public class SubjectDocument {
     private Document document;
     private String description;
     private String descriptionEn;
+    private String descriptionNoDiacritics;
+
+    @Column(nullable = false)
+    private String semester;
+
+    private Long tesSemester;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User owner;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, foreignKey = @ForeignKey(name = "fk_SubjectDocument_Subject"))
-    @JsonIgnore
     private Subject subject;
     private boolean isPublic = false;
     private Date createdAt = new Date();
+
+    private Long totalDownload = 0L;
+
+    private Long totalView = 0L;
+
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)
     private List<CommentSubjectDocument> comments = new ArrayList<>();
     @OneToMany(mappedBy = "subjectDocument", cascade = CascadeType.REMOVE)

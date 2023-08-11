@@ -4,6 +4,7 @@ public enum DocumentType {
     FOLDER,
     LINK,
     PDF,
+    ANNOTATE,
     DOC,
     DOCX,
     XLSX,
@@ -53,6 +54,8 @@ public enum DocumentType {
                 return DocumentType.GIF;
             case "image/svg+xml":
                 return DocumentType.SVG;
+            case "application/vnd.adobe.xfdf":
+                return DocumentType.ANNOTATE;
             case "image/bmp":
                 return DocumentType.BMP;
             case "audio/mp3":

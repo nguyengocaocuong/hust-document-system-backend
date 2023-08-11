@@ -11,4 +11,6 @@ import java.io.IOException;
 public interface DocumentService {
     Document savePrivateDocumentToGoogleCloud(MultipartFile[] documents) throws DocumentException, ThumbnailingException, IOException;
     Document savePublicDocumentToGoogleCloud(MultipartFile[] documents) throws IOException;
+
+    Document saveAnnotationToCGP(MultipartFile document) throws IOException;
 }

@@ -1,9 +1,8 @@
-package com.hust.edu.vn.documentsystem.entity;
+package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
-import com.hust.edu.vn.documentsystem.data.dto.DocumentDto;
-import com.hust.edu.vn.documentsystem.data.dto.UserDto;
+import com.hust.edu.vn.documentsystem.entity.History;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -25,7 +24,7 @@ public class HistoryDto implements Serializable {
     @Data
     public static class SubjectDocumentDto implements Serializable {
         private  Long id;
-        private  SubjectDocumentType subjectDocumentType;
+        private SubjectDocumentTypeDto subjectDocumentType;
         private  DocumentType type;
         private  String description;
         private  String descriptionEn;

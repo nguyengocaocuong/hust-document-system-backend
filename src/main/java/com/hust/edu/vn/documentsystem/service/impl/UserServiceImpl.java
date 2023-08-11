@@ -15,11 +15,13 @@ import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.UserService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     private final SubjectDocumentRepository subjectDocumentRepository;
     private final UserRepository userRepository;
@@ -45,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     private final EmailService emailService;
 
-    
+
     public UserServiceImpl(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
@@ -204,7 +207,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean createUser(UserModel userModel) {
-        if (userRepository.existsByEmail(userModel.getEmail()) || !userModel.getEmail().endsWith("@sis.hust.edu.vn") || userModel.getPassword().length() < 8 ) return false;
+        if (userRepository.existsByEmail(userModel.getEmail()) || !userModel.getEmail().endsWith("@sis.hust.edu.vn") || userModel.getPassword().length() < 8)
+            return false;
         User user = new User();
         if (userModel.getAvatarFile() != null) {
             try {
@@ -236,6 +240,50 @@ public class UserServiceImpl implements UserService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
         return userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest);
+    }
+
+    @Override
+    public String updateAvatar(MultipartFile avatar) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        try {
+            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+                String path = user.getAvatar().split(System.getenv("BUCKET_NAME") + "/")[1];
+                googleCloudStorageService.deleteBlobByPath(path);
+            }
+            String url = googleCloudStorageService.uploadAvatarToGCP(avatar);
+            user.setAvatar(url);
+            userRepository.save(user);
+            return url;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public User updateUserInfo(UserModel userModel) {
+        log.info(userModel.toString());
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        user.setInstagramUrl(userModel.getInstagramUrl());
+        user.setFacebookUrl(userModel.getFacebookUrl());
+        user.setTwitterUrl(userModel.getTwitterUrl());
+        user.setAddress(userModel.getAddress());
+        user.setFirstName(userModel.getFirstName());
+        user.setLastName(userModel.getLastName());
+        user.setPhoneNumber(userModel.getPhoneNumber());
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateAccountInfo(UserModel userModel) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (passwordEncoder.matches(userModel.getOldPassword(), user.getPassword())) {
+            if (userModel.getNewPassword() != null && userModel.getNewPassword().length() > 7)
+                user.setPassword(passwordEncoder.encode(userModel.getNewPassword()));
+            user.setUsername(userModel.getUsername());
+            return userRepository.save(user);
+        }
+        return null;
     }
 
     private boolean resendVerificationAccountTokenMail(String applicationUrl, VerifyAccount verifyAccount) {
@@ -279,7 +327,6 @@ public class UserServiceImpl implements UserService {
         if (passwordResetToken == null || (passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             return false;
         }
-
         User user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(passwordModel.getNewPassword()));
         userRepository.save(user);

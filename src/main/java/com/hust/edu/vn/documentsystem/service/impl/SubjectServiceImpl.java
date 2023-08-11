@@ -8,6 +8,7 @@ import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.*;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import com.hust.edu.vn.documentsystem.utils.StringUtils;
 import com.itextpdf.text.DocumentException;
 
 import org.springframework.data.domain.Page;
@@ -38,6 +39,9 @@ public class SubjectServiceImpl implements SubjectService {
     private final PusherService pusherService;
     private final ReviewTeacherRepository reviewTeacherRepository;
     private final ReportContentReviewTeacherRepository reportContentReviewTeacherRepository;
+    private final InstituteRepository instituteRepository;
+    private final SubjectDocumentTypeRepository subjectDocumentTypeRepository;
+    private final GoogleCloudTranslateService googleCloudTranslateService;
 
 
     public SubjectServiceImpl(
@@ -54,7 +58,9 @@ public class SubjectServiceImpl implements SubjectService {
             ReportContentSubjectDocumentRepository reportContentSubjectDocumentRepository,
             ReportDuplicateSubjectDocumentRepository reportDuplicateSubjectDocumentRepository, PusherService pusherService,
             ReviewTeacherRepository reviewTeacherRepository,
-            ReportContentReviewTeacherRepository reportContentReviewTeacherRepository) {
+            ReportContentReviewTeacherRepository reportContentReviewTeacherRepository,
+            InstituteRepository instituteRepository,
+            SubjectDocumentTypeRepository subjectDocumentTypeRepository, GoogleCloudTranslateService googleCloudTranslateService) {
         this.subjectRepository = subjectRepository;
         this.modelMapperUtils = modelMapperUtils;
         this.userRepository = userRepository;
@@ -70,6 +76,9 @@ public class SubjectServiceImpl implements SubjectService {
         this.pusherService = pusherService;
         this.reviewTeacherRepository = reviewTeacherRepository;
         this.reportContentReviewTeacherRepository = reportContentReviewTeacherRepository;
+        this.instituteRepository = instituteRepository;
+        this.subjectDocumentTypeRepository = subjectDocumentTypeRepository;
+        this.googleCloudTranslateService = googleCloudTranslateService;
     }
 
     @Override
@@ -79,7 +88,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<SubjectDocumentType> findAllSubjectDocumentType() {
-        return subjectDocumentRepository.findAllSubjectDocumentType();
+        return subjectDocumentTypeRepository.findAll();
     }
 
 
@@ -198,8 +207,8 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public List<Subject> getAllSubjectByInstitute(String institute) {
-        return subjectRepository.findAllByInstitute(institute);
+    public List<Subject> getAllSubjectByInstitute(Long instituteId) {
+        return subjectRepository.findAllByInstitute(instituteId);
     }
 
     @Override
@@ -230,8 +239,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public boolean updateReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId, ReportContentReviewSubjectModel reportContentReviewSubjectModel) {
-        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId,reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(reportContentReviewSubject == null) return false;
+        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId, reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (reportContentReviewSubject == null) return false;
         reportContentReviewSubject.setMessage(reportContentReviewSubjectModel.getMessage());
         reportContentReviewSubjectRepository.save(reportContentReviewSubject);
         return true;
@@ -239,9 +248,30 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public boolean deleteReportContentReviewSubject(Long reviewSubjectId, Long reportContentReviewSubjectId) {
-        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId,reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
-        if(reportContentReviewSubject == null) return false;
+        ReportContentReviewSubject reportContentReviewSubject = reportContentReviewSubjectRepository.findByTeacherIdAndIdAndOwnerEmail(reportContentReviewSubjectId, reviewSubjectId, SecurityContextHolder.getContext().getAuthentication().getName());
+        if (reportContentReviewSubject == null) return false;
         reportContentReviewSubjectRepository.delete(reportContentReviewSubject);
+        return true;
+    }
+
+    @Override
+    public boolean updateReportContentSubjectDocument(Long subjectDocumentId, Long reportContentSubjectDocumentId, ReportContentSubjectDocumentModel reportContentSubjectDocumentModel) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportContentSubjectDocument reportContentSubjectDocument = reportContentSubjectDocumentRepository.findByIdAndSubjectDocumentIdAndUserId(reportContentSubjectDocumentId, subjectDocumentId, user.getId());
+        if (reportContentSubjectDocument == null)
+            return false;
+        reportContentSubjectDocument.setMessage(reportContentSubjectDocumentModel.getMessage());
+        reportContentSubjectDocumentRepository.save(reportContentSubjectDocument);
+        return true;
+    }
+
+    @Override
+    public boolean deleteReportContentSubjectDocument(Long subjectDocumentId, Long reportContentSubjectDocumentId) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        ReportContentSubjectDocument reportContentSubjectDocument = reportContentSubjectDocumentRepository.findByIdAndSubjectDocumentIdAndUserId(reportContentSubjectDocumentId, subjectDocumentId, user.getId());
+        if (reportContentSubjectDocument == null)
+            return false;
+        reportContentSubjectDocumentRepository.delete(reportContentSubjectDocument);
         return true;
     }
 
@@ -258,8 +288,11 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public Subject createSubject(SubjectModel subjectModel) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Institute institute = instituteRepository.findById(subjectModel.getInstituteId()).orElse(null);
+        if (institute == null) return null;
         Subject subject = modelMapperUtils.mapAllProperties(subjectModel, Subject.class);
         subject.setOwner(user);
+        subject.setInstitute(institute);
         subjectRepository.save(subject);
         return subject;
     }
@@ -283,18 +316,14 @@ public class SubjectServiceImpl implements SubjectService {
         return true;
     }
 
-    @Override
-    public List<Subject> getAllSubjectsCreateByUser() {
-        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        return subjectRepository.findAllByOwner(user);
-    }
 
     @Override
     public SubjectDocument saveDocumentForSubject(SubjectDocumentModel subjectDocumentModel, Long subjectId) {
         int length = subjectDocumentModel.getDocuments().length;
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Subject subject = subjectRepository.findById(subjectId).orElse(null);
-        if (length <= 0 || subject == null)
+        SubjectDocumentType subjectDocumentType = subjectDocumentTypeRepository.findById(subjectDocumentModel.getSubjectDocumentTypeId()).orElse(null);
+        if (length == 0 || subject == null || subjectDocumentType == null)
             return null;
         try {
             SubjectDocument subjectDocument = new SubjectDocument();
@@ -302,20 +331,26 @@ public class SubjectServiceImpl implements SubjectService {
 
             if (subjectDocument.getType() != DocumentType.LINK) {
                 document = documentService.savePrivateDocumentToGoogleCloud(subjectDocumentModel.getDocuments());
+                subjectDocument.setType(DocumentType.getDocumentTypeFromContentType(subjectDocumentModel.getDocuments()[0].getContentType()));
             } else {
                 document = new Document();
                 document.setUrl(subjectDocumentModel.getUrl());
                 subjectDocument.setType(DocumentType.LINK);
                 document.setContentType(MediaType.ALL.getType());
                 document = documentRepository.save(document);
+
             }
             subjectDocument.setDocument(document);
             subjectDocument.setOwner(user);
             subjectDocument.setSubject(subject);
-            subjectDocument.setSubjectDocumentType(subjectDocumentModel.getSubjectDocumentType());
+            subjectDocument.setSubjectDocumentType(subjectDocumentType);
+
             subjectDocument.setDescription(subjectDocumentModel.getDescription());
+            subjectDocument.setDescriptionNoDiacritics(StringUtils.removeDiacritics(subjectDocumentModel.getDescription()));
+            subjectDocument.setDescriptionEn(googleCloudTranslateService.translateText(subjectDocumentModel.getDescription(), TargetLanguageType.ENGLISH).get(0).toLowerCase());
+
             subjectDocument.setPublic(subjectDocumentModel.getIsPublic() == 1);
-            subjectDocument.setType(subjectDocumentModel.getType());
+            subjectDocument.setSemester(subjectDocumentModel.getSemester());
 
             subjectDocument = subjectDocumentRepository.save(subjectDocument);
             return subjectDocument;
@@ -425,11 +460,10 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public PageDto<SubjectDto> getAllSubjects(int page, int size) {
-        Sort sort = Sort.by("id").descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+        PageRequest pageRequest = PageRequest.of(page, size);
         Page<Subject> pages = subjectRepository.findAll(pageRequest);
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        List<SubjectDto> subjects = subjectRepository.findAllSubjects(user.getId(),pageRequest);
+        List<SubjectDto> subjects = subjectRepository.findAllSubjects(user.getId(), pageRequest);
         PageDto<SubjectDto> pageResult = new PageDto<>();
         pageResult.setTotalPages(pages.getTotalPages());
         pageResult.setTotalItems(pages.getTotalElements());

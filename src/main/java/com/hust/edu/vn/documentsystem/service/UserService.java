@@ -4,6 +4,7 @@ import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.User;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -50,4 +51,10 @@ public interface UserService {
     boolean createUser(UserModel userModel);
 
     List<SubjectDocument> getObjectForRecommend(int page, int size);
+
+    String updateAvatar(MultipartFile avatar);
+
+    User updateUserInfo(UserModel userModel);
+
+    User updateAccountInfo(UserModel userModel);
 }

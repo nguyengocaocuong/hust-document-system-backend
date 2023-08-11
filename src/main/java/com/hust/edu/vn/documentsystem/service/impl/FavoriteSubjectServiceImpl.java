@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.hust.edu.vn.documentsystem.common.type.NotificationType;
 import com.hust.edu.vn.documentsystem.entity.FavoriteSubject;
 import com.hust.edu.vn.documentsystem.entity.Subject;
 import com.hust.edu.vn.documentsystem.entity.User;
@@ -15,13 +14,13 @@ import com.hust.edu.vn.documentsystem.repository.UserRepository;
 import com.hust.edu.vn.documentsystem.service.FavoriteSubjectService;
 
 @Service
-public class FavoriteSubjectServiceimpl implements FavoriteSubjectService {
+public class FavoriteSubjectServiceImpl implements FavoriteSubjectService {
     private final FavoriteSubjectRepository favoriteSubjectRepository;
     private final SubjectRepository subjectRepository;
     private final UserRepository userRepository;
 
-    public FavoriteSubjectServiceimpl(FavoriteSubjectRepository favoriteSubjectRepository,
-            SubjectRepository subjectRepository, UserRepository userRepository) {
+    public FavoriteSubjectServiceImpl(FavoriteSubjectRepository favoriteSubjectRepository,
+                                      SubjectRepository subjectRepository, UserRepository userRepository) {
         this.favoriteSubjectRepository = favoriteSubjectRepository;
         this.subjectRepository = subjectRepository;
         this.userRepository = userRepository;
@@ -40,7 +39,6 @@ public class FavoriteSubjectServiceimpl implements FavoriteSubjectService {
             return true;
         }
         favoriteSubject = new FavoriteSubject();
-        favoriteSubject.setNotificationType(NotificationType.ALL);
         favoriteSubject.setSubject(subject);
         favoriteSubject.setUser(user);
         favoriteSubjectRepository.save(favoriteSubject);

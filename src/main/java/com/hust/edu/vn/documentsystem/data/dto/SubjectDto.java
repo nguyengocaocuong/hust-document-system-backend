@@ -1,8 +1,9 @@
 package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
+import com.hust.edu.vn.documentsystem.entity.Institute;
 import com.hust.edu.vn.documentsystem.entity.Subject;
+import com.hust.edu.vn.documentsystem.entity.SubjectDocumentType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,7 +21,7 @@ public class SubjectDto implements Serializable {
     private Long id;
     private String name;
     private String enName;
-    private String institute;
+    private InstituteDto institute;
     private String description;
     private Date createdAt;
     private String subjectCode;
@@ -39,7 +40,6 @@ public class SubjectDto implements Serializable {
         private DocumentDto document;
         private String description;
         private UserDto owner;
-        private String semester;
         private List<CommentSubjectDocumentDto> comments = new ArrayList<>();
         private List<AnswerSubjectDocumentDto> answers = new ArrayList<>();
         private List<FavoriteSubjectDocumentDto> favorites = new ArrayList<>();
@@ -49,21 +49,29 @@ public class SubjectDto implements Serializable {
         private boolean isPublic;
     }
 
-    public SubjectDto(Long id, String name) {
+    public SubjectDto(Long id, String name, String subjectCode, Institute institute) {
         this.id = id;
         this.name = name;
+        this.subjectCode = subjectCode;
+        InstituteDto instituteDto = new InstituteDto();
+        instituteDto.setId(institute.getId());
+        instituteDto.setInstitute(institute.getInstitute());
+        this.institute = instituteDto;
     }
 
     public SubjectDto(Subject subject, Long totalDocument, Long totalComment, Long totalFavorite, Long totalAnswer) {
         this.id = subject.getId();
-        this.institute = subject.getInstitute();
+        InstituteDto instituteDto = new InstituteDto();
+        instituteDto.setInstitute(subject.getInstitute().getInstitute());
+        instituteDto.setId(subject.getInstitute().getId());
+        this.institute = instituteDto;
         this.name = subject.getName();
         this.description = subject.getDescription();
         this.createdAt = subject.getCreatedAt();
         this.totalDocument = totalDocument;
-        this.totalComment = totalComment;
+        this.totalComment = 0L;
         this.totalFavorite = totalFavorite;
-        this.totalAnswer = totalAnswer;
+        this.totalAnswer = 0L;
         this.subjectCode = subject.getSubjectCode();
         this.subjectDocuments = null;
     }

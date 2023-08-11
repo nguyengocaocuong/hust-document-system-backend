@@ -1,7 +1,7 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.entity.HistoryDto;
+import com.hust.edu.vn.documentsystem.data.dto.HistoryDto;
 import com.hust.edu.vn.documentsystem.service.HistoryService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.http.HttpStatus;

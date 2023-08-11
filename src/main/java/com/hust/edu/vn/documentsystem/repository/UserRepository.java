@@ -15,8 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    User findByRoleType(String admin);
-
     @Query("SELECT DATE(u.createdAt) AS date, COUNT(u.id) " +
             "FROM User u " +
             "WHERE u.createdAt >= :startDate AND u.roleType = 'USER'" +

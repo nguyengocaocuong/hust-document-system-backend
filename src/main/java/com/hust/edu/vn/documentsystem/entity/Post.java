@@ -9,11 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "Posts")
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

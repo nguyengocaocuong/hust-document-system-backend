@@ -2,7 +2,6 @@ package com.hust.edu.vn.documentsystem.data.dto;
 
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
 import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -27,7 +26,7 @@ public class ReportContentSubjectDocumentDto implements Serializable {
     @Data
     public static class SubjectDocumentDto implements Serializable {
         private Long id;
-        private SubjectDocumentType subjectDocumentType;
+        private SubjectDocumentTypeDto subjectDocumentType;
         private DocumentType type;
         private String description;
         private String descriptionEn;

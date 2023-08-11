@@ -12,8 +12,11 @@ import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -21,7 +24,7 @@ public class UserController {
     private final UserService userService;
     private final ModelMapperUtils modelMapperUtils;
 
-    
+
     public UserController(UserService userService, ModelMapperUtils modelMapperUtils) {
         this.userService = userService;
         this.modelMapperUtils = modelMapperUtils;
@@ -40,14 +43,39 @@ public class UserController {
     }
 
     @GetMapping("allUserForFilter")
-    public ResponseEntity<CustomResponse> getAllUserForFilter(){
+    public ResponseEntity<CustomResponse> getAllUserForFilter() {
         List<User> users = userService.getAllUser();
         return CustomResponse.generateResponse(HttpStatus.OK, users.stream().map(user -> modelMapperUtils.mapAllProperties(user, UserDto.class)));
     }
+
     @GetMapping("trash")
-    public ResponseEntity<CustomResponse> getAllTrash(){
+    public ResponseEntity<CustomResponse> getAllTrash() {
         List<SubjectDocument> subjectDocuments = userService.getAllSubjectDocumentTrash();
         return CustomResponse.generateResponse(HttpStatus.OK, subjectDocuments.stream().map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
+    }
+
+    @PatchMapping("update-avatar")
+    public ResponseEntity<CustomResponse> updateAvatar(@ModelAttribute UserModel userModel) {
+        String avatarUrl = userService.updateAvatar(userModel.getAvatarFile());
+        if (avatarUrl == null) return CustomResponse.generateResponse(HttpStatus.BAD_GATEWAY);
+        Map<String, String> result = new HashMap<>();
+        result.put("avatarUrl", avatarUrl);
+        return CustomResponse.generateResponse(HttpStatus.OK, result);
+    }
+
+    @PatchMapping("update-user-info")
+    public ResponseEntity<CustomResponse> updateUserInfo(@ModelAttribute UserModel userModel) {
+        User user = userService.updateUserInfo(userModel);
+        if(user == null) return CustomResponse.generateResponse(HttpStatus.CONFLICT);
+        return CustomResponse.generateResponse(HttpStatus.OK,modelMapperUtils.mapAllProperties(user, UserDto.class));
+    }
+
+    @PatchMapping("update-account-info")
+    public ResponseEntity<CustomResponse> updateAccountInfo(@ModelAttribute UserModel userModel) {
+        User user = userService.updateAccountInfo(userModel);
+        if(user == null) return CustomResponse.generateResponse(HttpStatus.CONFLICT);
+        return CustomResponse.generateResponse(HttpStatus.OK,modelMapperUtils.mapAllProperties(user, UserDto.class));
+
     }
 
 }

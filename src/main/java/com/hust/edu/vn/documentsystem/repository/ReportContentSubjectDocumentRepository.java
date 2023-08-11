@@ -15,4 +15,12 @@ public interface ReportContentSubjectDocumentRepository extends JpaRepository<Re
             WHERE r.owner.email = :email
             """)
     List<ReportContentSubjectDocument> getAllReported(String email);
+
+
+    @Query("""
+            SELECT r
+            FROM ReportContentSubjectDocument r
+            WHERE r.id = :reportContentSubjectDocumentId AND r.owner.id = :userId AND r.subjectDocument.id =:subjectDocumentId 
+            """)
+    ReportContentSubjectDocument findByIdAndSubjectDocumentIdAndUserId(Long reportContentSubjectDocumentId, Long subjectDocumentId, Long userId);
 }

@@ -1,6 +1,6 @@
 package com.hust.edu.vn.documentsystem.service;
 
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
+import com.google.cloud.storage.Blob;
 import com.hust.edu.vn.documentsystem.common.type.TargetLanguageType;
 import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,4 +31,8 @@ public interface SubjectDocumentService {
     boolean makeSubjectDocumentPublic(Long subjectDocumentId);
 
     byte[] translateSubjectDocumentByFile(MultipartFile document, TargetLanguageType targetLanguageType) throws IOException;
+
+    Blob getSubjectDocumentBlob(Long subjectDocumentId);
+
+    List<Blob> getSubjectDocumentBlobAndAnswers(Long subjectDocumentId, List<Long> answerIds);
 }

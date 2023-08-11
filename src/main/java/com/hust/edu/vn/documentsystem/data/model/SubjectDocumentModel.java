@@ -1,8 +1,6 @@
 package com.hust.edu.vn.documentsystem.data.model;
 
 import com.hust.edu.vn.documentsystem.common.type.DocumentType;
-import com.hust.edu.vn.documentsystem.common.type.SubjectDocumentType;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,12 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class SubjectDocumentModel {
     private Long id;
-    @NotNull
-    private SubjectDocumentType subjectDocumentType;
+    private Long subjectDocumentTypeId;
     private DocumentType type;
     private MultipartFile[] documents;
     private String url;
-    @NotNull
     private String description;
     private Long isPublic = 0L;
+    private String semester;
 }

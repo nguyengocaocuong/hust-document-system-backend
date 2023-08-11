@@ -2,8 +2,6 @@ package com.hust.edu.vn.documentsystem.service.impl;
 
 import co.elastic.thumbnails4j.core.ThumbnailingException;
 import com.google.cloud.storage.*;
-import com.hust.edu.vn.documentsystem.common.type.BlobType;
-import com.hust.edu.vn.documentsystem.common.type.GoogleTranslateSupportType;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.ThumbnailService;
 import com.itextpdf.text.DocumentException;
@@ -72,33 +70,6 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     }
 
-    @Override
-    public boolean createFolderForUser(String rootPath) {
-        String documentRootPath = rootPath + "documents/";
-        String publicRootPath = rootPath + "public/";
-        BlobType blobRootType = checkPathType(rootPath);
-        BlobType blobDocumentType = checkPathType(documentRootPath);
-        BlobType blobPublicType = checkPathType(publicRootPath);
-        if (blobRootType != BlobType.UN_KNOW || blobDocumentType != BlobType.UN_KNOW
-                || blobPublicType != BlobType.UN_KNOW)
-            return true;
-        BlobInfo bucketRootInfo = BlobInfo
-                .newBuilder(BUCKET_NAME, rootPath)
-                .setContentType(GoogleTranslateSupportType.FOLDER.getMimeType())
-                .build();
-        BlobInfo bucketDocumentInfo = BlobInfo
-                .newBuilder(BUCKET_NAME, documentRootPath)
-                .setContentType(GoogleTranslateSupportType.FOLDER.getMimeType())
-                .build();
-        BlobInfo bucketPublicInfo = BlobInfo
-                .newBuilder(BUCKET_NAME, publicRootPath)
-                .setContentType(GoogleTranslateSupportType.FOLDER.getMimeType())
-                .build();
-        Blob blobRoot = storage.create(bucketRootInfo);
-        Blob blobDocument = storage.create(bucketDocumentInfo);
-        Blob blobPublic = storage.create(bucketPublicInfo);
-        return blobRoot != null && blobDocument != null && blobPublic != null;
-    }
 
     @Override
     public String uploadDocumentsToGCP(MultipartFile[] documents, String rootPath)
@@ -120,7 +91,6 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
 
     private String uploadToGCP(byte[] data, String contentType, String filenamePath, ArrayList<Acl> owner) {
         BlobId blobId = BlobId.of(BUCKET_NAME, filenamePath);
-        log.info(filenamePath);
         BlobInfo.Builder blobInfoBuilder = BlobInfo.newBuilder(blobId)
                 .setContentType(contentType);
         if (owner != null)
@@ -162,22 +132,11 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
         return storage.delete(blobId);
     }
 
-    @Override
-    public List<String> searchKeywordInAllBlob(String keyword, List<String> blobPrefixes) {
-        return null;
-    }
 
     @Override
     public boolean deleteDocumentByRootPath(String path) {
         BlobId blobId = BlobId.of(BUCKET_NAME, path);
         return storage.delete(blobId);
-    }
-
-    @Override
-    public String getUrlDownload(String path, Long timeout) {
-        BlobId blobId = BlobId.of(BUCKET_NAME, path);
-        Blob blob = storage.get(blobId);
-        return blob.signUrl(timeout, TimeUnit.MINUTES).toString();
     }
 
     @Override
@@ -261,14 +220,24 @@ public class GoogleCloudStorageServiceImpl implements GoogleCloudStorageService 
     }
 
     @Override
+    public boolean deleteBlobByPath(String path) {
+        return storage.delete(BlobId.of(BUCKET_NAME, path));
+    }
+
+    @Override
+    public String uploadAnnotationToGCP(MultipartFile documentFile) throws IOException {
+        String filenamePath = UUID.randomUUID() + "/" + documentFile.getOriginalFilename();
+        BlobId blobId = BlobId.of(BUCKET_NAME, filenamePath);
+        BlobInfo.Builder blobInfoBuilder = BlobInfo.newBuilder(blobId)
+                .setContentType(documentFile.getContentType());
+        storage.create(blobInfoBuilder.build(), documentFile.getInputStream().readAllBytes());
+
+        return filenamePath;
+    }
+
+    @Override
     public String generateUriFromPath(String path) {
         return "https://storage.googleapis.com/" + BUCKET_NAME + "/" + path;
     }
 
-    private BlobType checkPathType(String path) {
-        Blob blob = storage.get(BUCKET_NAME, path);
-        if (blob == null)
-            return BlobType.UN_KNOW;
-        return blob.isDirectory() ? BlobType.FOLDER : BlobType.FILE;
-    }
 }
