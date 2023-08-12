@@ -139,8 +139,6 @@ public class AuthenticationController {
     private String applicationUrl(HttpServletRequest httpServletRequest) {
         return "https://"
                 + httpServletRequest.getServerName()
-                + ":"
-                + httpServletRequest.getServerPort()
                 + httpServletRequest.getContextPath();
     }
 

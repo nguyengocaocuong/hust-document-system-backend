@@ -34,6 +34,6 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
         String url = event.getApplicationUrl()
                 + "/api/v1/authentication/verificationAccountToken?token="
                 + tokenForEnableAccount;
-        emailService.sendSimpleMessage(user, "Kích hoạt tài khoản", "Link: " + url);
+        emailService.sendSimpleMessage(user, "Kích hoạt tài khoản", url);
     }
 }
