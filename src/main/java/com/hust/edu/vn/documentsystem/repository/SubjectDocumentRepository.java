@@ -34,7 +34,7 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
                     sp.user.id = :userId
                 )
             """)
-    List<SubjectDocument> findAllSubjectDocumentCanAccessByUserEmail(@Param("userId") Long userId, @Param("subjectId") Long subjectId);
+    List<SubjectDocument> findAllSubjectDocumentCanAccessByUserEmail(@Param("subjectId") Long subjectId,@Param("userId") Long userId);
 
     List<SubjectDocument> findAllByIsDeleteAndOwner(boolean b, User user);
 
@@ -82,16 +82,16 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
                 ON sd.id = sp.subjectDocument.id
                 LEFT JOIN ShareByLink sl
                 ON sd.id = sl.subjectDocument.id
-                WHERE sd.id = :subjectDocumentId 
+                WHERE sd.id = :subjectDocumentId
                 AND sd.isDelete = false 
                 AND 
                     (
                         sd.isPublic = true 
                         OR sd.owner.id = :userId 
-                        OR sp.id IS NOT NULL 
-                        AND sp.user.id = :userId 
-                        OR sl.id IS NOT NULL 
-                        AND sl.token = :token
+                        OR (sp.id IS NOT NULL 
+                        AND sp.user.id = :userId )
+                        OR (sl.id IS NOT NULL 
+                        AND sl.token = :token)
                     )
             """)
     SubjectDocument findByIdAndUserEmailAndToken(Long subjectDocumentId, Long userId, String token);

@@ -8,7 +8,7 @@ import java.util.List;
 public interface EnrollmentService {
     boolean addEnrollmentSubject(List<Long> subjects);
 
-    List<Subject> getAllEnrollmentSubjects();
+    List<Subject> getAllEnrollmentSubjects(Long userId);
 
     boolean deleteEnrollmentSubjects(List<Long> subjects);
 }

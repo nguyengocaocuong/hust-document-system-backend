@@ -89,8 +89,13 @@ public class AuthenticationController {
     }
 
     @GetMapping("verificationAccountToken")
-    public ResponseEntity<CustomResponse> verifyRegistration(@RequestParam("token") String token) {
+    public ResponseEntity<?> verifyRegistration(@RequestParam("token") String token) {
         boolean status = userService.validateVerificationToken(token);
+        if (status)
+            return ResponseEntity
+                    .status(302)
+                    .header("Location", System.getenv("FRONTEND_URL")  +"sign-in")
+                    .build();
         return CustomResponse.generateResponse(status ? HttpStatus.OK : HttpStatus.CONFLICT);
     }
 
@@ -102,12 +107,12 @@ public class AuthenticationController {
 
     @GetMapping("resetPassword")
     public ResponseEntity<CustomResponse> resetPassword(@RequestParam String email, HttpServletRequest servletRequest) {
-        boolean status = userService.createPasswordResetTokenForUser(email, applicationUrl(servletRequest));
+        boolean status = userService.createPasswordResetTokenForUser(email);
         return CustomResponse.generateResponse(status ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("chainPasswordByToken")
-    public ResponseEntity<CustomResponse> chainPasswordByToken(@RequestParam("token") String token, @RequestBody PasswordModel passwordModel) {
+    public ResponseEntity<CustomResponse> chainPasswordByToken(@RequestParam("token") String token, @ModelAttribute PasswordModel passwordModel) {
         boolean status = userService.validatePasswordResetToken(token, passwordModel);
         return CustomResponse.generateResponse(status);
     }
@@ -141,7 +146,7 @@ public class AuthenticationController {
 
     @GetMapping("babComment")
     public ResponseEntity<CustomResponse> detectBabComment(@RequestParam("comment") String comment) throws Exception {
-        return CustomResponse.generateResponse(HttpStatus.OK,googleLanguageService.detectBabComment(comment));
+        return CustomResponse.generateResponse(HttpStatus.OK, googleLanguageService.detectBabComment(comment));
     }
 
 }

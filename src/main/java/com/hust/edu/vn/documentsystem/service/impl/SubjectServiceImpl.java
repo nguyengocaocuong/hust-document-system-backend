@@ -280,7 +280,7 @@ public class SubjectServiceImpl implements SubjectService {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Subject subject = subjectRepository.findById(id).orElse(null);
         List<SubjectDocument> subjectDocuments = subjectDocumentRepository
-                .findAllSubjectDocumentCanAccessByUserEmail(user.getId(), id);
+                .findAllSubjectDocumentCanAccessByUserEmail( id,user.getId());
         subject.setSubjectDocuments(subjectDocuments);
         return subject;
     }

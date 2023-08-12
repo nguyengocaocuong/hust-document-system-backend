@@ -52,9 +52,9 @@ public class SubjectDocumentServiceImpl implements SubjectDocumentService {
     public List<Object> readSubjectDocumentFile(Long subjectDocumentId, String token) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         SubjectDocument subjectDocument = subjectDocumentRepository.findByIdAndUserEmailAndToken(subjectDocumentId, user.getId(), token);
+        log.info("TEst");
         if (subjectDocument == null || subjectDocument.getType() == DocumentType.LINK)
             return null;
-
         byte[] data = googleCloudStorageService.readBlobByPath(subjectDocument.getDocument().getPath());
         if (data == null || data.length == 0)
             return null;

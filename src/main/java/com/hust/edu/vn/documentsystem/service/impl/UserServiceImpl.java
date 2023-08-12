@@ -2,14 +2,13 @@ package com.hust.edu.vn.documentsystem.service.impl;
 
 import com.google.cloud.storage.Acl;
 import com.hust.edu.vn.documentsystem.common.type.RoleType;
+import com.hust.edu.vn.documentsystem.data.dto.ReviewSubjectDto;
+import com.hust.edu.vn.documentsystem.data.dto.ReviewTeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.PasswordModel;
 import com.hust.edu.vn.documentsystem.data.model.UserModel;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.event.RegistrationCompleteEvent;
-import com.hust.edu.vn.documentsystem.repository.PasswordResetTokenRepository;
-import com.hust.edu.vn.documentsystem.repository.SubjectDocumentRepository;
-import com.hust.edu.vn.documentsystem.repository.UserRepository;
-import com.hust.edu.vn.documentsystem.repository.VerifyAccountRepository;
+import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.EmailService;
 import com.hust.edu.vn.documentsystem.service.GoogleCloudStorageService;
 import com.hust.edu.vn.documentsystem.service.UserService;
@@ -24,14 +23,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+    private final ReviewSubjectRepository reviewSubjectRepository;
+    private final ReviewTeacherRepository reviewTeacherRepository;
     private final SubjectDocumentRepository subjectDocumentRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -56,7 +54,9 @@ public class UserServiceImpl implements UserService {
             PasswordResetTokenRepository passwordResetTokenRepository,
             ApplicationEventPublisher publisher, ModelMapperUtils modelMapperUtils,
             GoogleCloudStorageService googleCloudStorageService, EmailService emailService,
-            SubjectDocumentRepository subjectDocumentRepository) {
+            SubjectDocumentRepository subjectDocumentRepository,
+            ReviewTeacherRepository reviewTeacherRepository,
+            ReviewSubjectRepository reviewSubjectRepository) {
         this.googleCloudStorageService = googleCloudStorageService;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -66,6 +66,8 @@ public class UserServiceImpl implements UserService {
         this.publisher = publisher;
         this.emailService = emailService;
         this.subjectDocumentRepository = subjectDocumentRepository;
+        this.reviewTeacherRepository = reviewTeacherRepository;
+        this.reviewSubjectRepository = reviewSubjectRepository;
     }
 
     @Override
@@ -286,6 +288,21 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public User getUserProfile(Long userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public Map<String, Object> getAllWroteByUserId(Long userId) {
+        List<ReviewTeacher> reviewTeachers = reviewTeacherRepository.findAllWroteByUseId(userId);
+        List<ReviewSubject> reviewSubjects = reviewSubjectRepository.findAllWroteByUserId(userId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("reviewTeachers", reviewTeachers.stream().map(review -> modelMapperUtils.mapAllProperties(review, ReviewTeacherDto.class)));
+        result.put("reviewSubjects", reviewSubjects.stream().map(review -> modelMapperUtils.mapAllProperties(review, ReviewSubjectDto.class)));
+        return result;
+    }
+
     private boolean resendVerificationAccountTokenMail(String applicationUrl, VerifyAccount verifyAccount) {
         String url = applicationUrl
                 + "/api/v1/auth/verifyRegistrationToken?token="
@@ -299,20 +316,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean createPasswordResetTokenForUser(String email, String applicationUrl) {
+    public boolean createPasswordResetTokenForUser(String email) {
         User user = findUserByEmail(email);
         if (user == null) return false;
-        String token = UUID.randomUUID().toString();
-        PasswordResetToken passwordResetToken = new PasswordResetToken(user, token);
-        passwordResetTokenRepository.save(passwordResetToken);
-        return sendPasswordResetTokenMail(user, applicationUrl, token);
+        PasswordResetToken oldPasswordResetToken = passwordResetTokenRepository.findByUser(user);
+        String token = UUID.randomUUID().toString() +UUID.randomUUID() +UUID.randomUUID();
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
+        Date tomorrow = calendar.getTime();
+        if (oldPasswordResetToken != null){
+            oldPasswordResetToken.setToken(token);
+            oldPasswordResetToken.setExpirationTime(tomorrow);
+            passwordResetTokenRepository.save(oldPasswordResetToken);
+        }
+       else {
+            PasswordResetToken passwordResetToken = new PasswordResetToken(user, token);
+            passwordResetToken.setExpirationTime(tomorrow);
+            passwordResetTokenRepository.save(passwordResetToken);
+        }
+        return sendPasswordResetTokenMail(user, token);
     }
 
-    private boolean sendPasswordResetTokenMail(User user, String applicationUrl, String token) {
-        String url = applicationUrl
-                + "/api/v1/auth/chainPasswordByToken?token="
-                + token;
-        return emailService.sendSimpleMessage(user, "Kích hoạt tài khoản", url);
+    private boolean sendPasswordResetTokenMail(User user, String token) {
+        String url = System.getenv("FRONTEND_URL") + "/reset-password/" + token;
+        return emailService.sendSimpleMessage(user, "Đặt lại mật khẩu", url);
     }
 
     @Override
@@ -324,10 +351,13 @@ public class UserServiceImpl implements UserService {
     public boolean validatePasswordResetToken(String token, PasswordModel passwordModel) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
         Calendar calendar = Calendar.getInstance();
-        if (passwordResetToken == null || (passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
+        User user = passwordResetToken.getUser();
+        log.info(user.toString());
+        log.info(passwordModel.toString());
+        log.info("{}",!user.getEmail().equals(passwordModel.getEmail().trim()));
+        if (passwordResetToken == null || !user.getEmail().equals(passwordModel.getEmail().trim()) || (passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             return false;
         }
-        User user = passwordResetToken.getUser();
         user.setPassword(passwordEncoder.encode(passwordModel.getNewPassword()));
         userRepository.save(user);
         passwordResetTokenRepository.delete(passwordResetToken);

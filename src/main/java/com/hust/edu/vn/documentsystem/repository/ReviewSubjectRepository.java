@@ -39,4 +39,11 @@ public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Lo
     ReviewSubject findByIdAndSubjectIdAndUserEmail(Long reviewSubjectId, Long subjectId, String email);
 
     ReviewSubject findByIdAndApproved(Long reviewSubjectId, ApproveType approveType);
+
+    @Query("""
+            SELECT r
+            FROM ReviewSubject r
+            WHERE r.isDelete = false AND r.owner.id = :userId AND r.done = true 
+            """)
+    List<ReviewSubject> findAllWroteByUserId(Long userId);
 }

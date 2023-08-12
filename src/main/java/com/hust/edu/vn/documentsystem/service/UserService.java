@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     boolean registerUser(UserModel userModel, String applicationUrl);
@@ -19,7 +20,7 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    boolean createPasswordResetTokenForUser(String email, String applicationUrl);
+    boolean createPasswordResetTokenForUser(String email);
 
     List<User> getAllUser();
 
@@ -57,4 +58,8 @@ public interface UserService {
     User updateUserInfo(UserModel userModel);
 
     User updateAccountInfo(UserModel userModel);
+
+    User getUserProfile(Long userId);
+
+    Map<String, Object> getAllWroteByUserId(Long userId);
 }

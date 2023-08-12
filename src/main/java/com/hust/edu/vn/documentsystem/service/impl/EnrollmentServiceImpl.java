@@ -44,7 +44,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     }
 
     @Override
-    public List<Subject> getAllEnrollmentSubjects() {
+    public List<Subject> getAllEnrollmentSubjects(Long userId) {
+        if(userId != null)
+            return subjectRepository.getAllEnrollmentSubjectsByUserId(userId);
         return subjectRepository.getAllEnrollmentSubjects(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 

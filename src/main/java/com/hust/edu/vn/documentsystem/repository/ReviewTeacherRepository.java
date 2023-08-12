@@ -61,4 +61,11 @@ public interface ReviewTeacherRepository extends JpaRepository<ReviewTeacher, Lo
     ReviewTeacher findByIdAndTeacherIdAndOwnerEmail(Long reviewTeacherId, Long teacherId, String email);
 
     ReviewTeacher findByIdAndApproved(Long reviewTeacherId, ApproveType approveType);
+
+    @Query("""
+            SELECT r
+            FROM ReviewTeacher r
+            WHERE r.isDelete = false AND r.owner.id = :userId AND r.done = true 
+            """)
+    List<ReviewTeacher> findAllWroteByUseId(Long userId);
 }

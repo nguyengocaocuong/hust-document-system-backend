@@ -77,5 +77,18 @@ public class UserController {
         return CustomResponse.generateResponse(HttpStatus.OK,modelMapperUtils.mapAllProperties(user, UserDto.class));
 
     }
+    @GetMapping("profile")
+    public ResponseEntity<CustomResponse> getUserProfile(@RequestParam("userId") Long userId){
+        User user = userService.getUserProfile(userId);
+        if(user == null)
+                return  CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
+        return CustomResponse.generateResponse(HttpStatus.OK, modelMapperUtils.mapAllProperties(user, UserDto.class));
+    }
+
+    @GetMapping("wrote")
+    public ResponseEntity<CustomResponse> getAllWroteByUserId(@RequestParam("userId") Long userId){
+        Map<String, Object> result = userService.getAllWroteByUserId(userId);
+        return CustomResponse.generateResponse(HttpStatus.OK, result);
+    }
 
 }

@@ -33,8 +33,6 @@ public class SubjectDocument {
     @Column(nullable = false)
     private String semester;
 
-    private Long tesSemester;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User owner;

@@ -12,15 +12,15 @@ spring:
         cloudSqlInstance: ${CLOUD_SQL_INSTANCE}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQL10Dialect
     show-sql: true
   mail:
     host: smtp.office365.com
     port: 587
-    username: cuong.nnc184055@sis.hust.edu.vn
-    password: ldjQKW57
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:

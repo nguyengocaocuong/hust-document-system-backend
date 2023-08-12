@@ -32,9 +32,9 @@ public class UserEnrollmentController {
         boolean status = enrollmentService.addEnrollmentSubject(enrollment.getSubjects());
         return CustomResponse.generateResponse(status);
     }
-    @GetMapping
-    public ResponseEntity<CustomResponse> getAllEnrollmentSubjects(){
-        return CustomResponse.generateResponse(HttpStatus.OK, enrollmentService.getAllEnrollmentSubjects().stream().map(subject ->{
+    @GetMapping()
+    public ResponseEntity<CustomResponse> getAllEnrollmentSubjects(@RequestParam(name = "userId", required = false) Long userId){
+        return CustomResponse.generateResponse(HttpStatus.OK, enrollmentService.getAllEnrollmentSubjects(userId).stream().map(subject ->{
             subject.setSubjectDocuments(null);
             subject.setFavorites(null);
             subject.setSubjectDocuments(null);
@@ -43,6 +43,8 @@ public class UserEnrollmentController {
             return subjectDto;
         }));
     }
+
+
     @DeleteMapping
     public ResponseEntity<CustomResponse> deleteEnrollmentSubjects(@ModelAttribute EnrollmentRequest enrollment){
         return CustomResponse.generateResponse(enrollmentService.deleteEnrollmentSubjects(enrollment.getSubjects()));

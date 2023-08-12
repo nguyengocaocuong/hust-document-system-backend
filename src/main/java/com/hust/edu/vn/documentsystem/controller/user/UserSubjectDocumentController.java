@@ -44,6 +44,7 @@ public class UserSubjectDocumentController {
     public ResponseEntity<Resource> readSubjectDocumentFile(@PathVariable("subjectDocumentId") Long subjectDocumentId,
                                                             @RequestParam(required = false) String token) throws UnsupportedEncodingException {
         List<Object> data = subjectDocumentService.readSubjectDocumentFile(subjectDocumentId, token);
+        log.info("test");
         if (data == null || ((byte[]) data.get(1)).length == 0)
             return ResponseEntity.notFound().build();
         Document document = (Document) data.get(0);
