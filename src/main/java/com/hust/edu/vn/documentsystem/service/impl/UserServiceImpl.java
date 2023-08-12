@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService {
 
     private boolean sendPasswordResetTokenMail(User user, String token) {
         String url = System.getenv("FRONTEND_URL") + "/reset-password/" + token;
-        return emailService.sendSimpleMessage(user, "Đặt lại mật khẩu", url);
+        return emailService.sendSimpleMessageForResetPassword(user, "Đặt lại mật khẩu", url);
     }
 
     @Override

@@ -104,4 +104,31 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public boolean sendSimpleMessageForResetPassword(User user, String subject, String url) {
+        MimeMessage message = emailMailSender.createMimeMessage();
+        MimeMessageHelper helper;
+        String username = user.getFirstName() + " " + user.getLastName();
+        String activeUrl = url;
+        String frontendUrl = System.getenv("FRONTEND_URL");
+        Context context = new Context();
+        context.setVariable("username", username);
+        context.setVariable("activeUrl", activeUrl);
+        context.setVariable("frontendUrl", frontendUrl);
+        String emailContent = templateEngine.process("reset-account-template",context);
+
+        try {
+            helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom("cuong.nnc184055@sis.hust.edu.vn");
+            helper.setTo(user.getEmail());
+            helper.setSubject(subject);
+            helper.setText(emailContent, true);
+            emailMailSender.send(message);
+            return true;
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

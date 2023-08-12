@@ -106,7 +106,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("resetPassword")
-    public ResponseEntity<CustomResponse> resetPassword(@RequestParam String email, HttpServletRequest servletRequest) {
+    public ResponseEntity<CustomResponse> resetPassword(@RequestParam String email) {
         boolean status = userService.createPasswordResetTokenForUser(email);
         return CustomResponse.generateResponse(status ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
