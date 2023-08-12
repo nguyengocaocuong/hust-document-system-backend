@@ -12,7 +12,7 @@ spring:
         cloudSqlInstance: ${CLOUD_SQL_INSTANCE}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQL10Dialect
     show-sql: true
