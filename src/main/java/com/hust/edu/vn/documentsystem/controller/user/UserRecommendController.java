@@ -3,6 +3,7 @@ package com.hust.edu.vn.documentsystem.controller.user;
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
 import com.hust.edu.vn.documentsystem.data.dto.AnswerSubjectDocumentDto;
 import com.hust.edu.vn.documentsystem.data.dto.SubjectDocumentDto;
+import com.hust.edu.vn.documentsystem.dto.SubjectDocumentInfoDto;
 import com.hust.edu.vn.documentsystem.entity.AnswerSubjectDocument;
 import com.hust.edu.vn.documentsystem.entity.SubjectDocument;
 import com.hust.edu.vn.documentsystem.service.UserService;
@@ -35,6 +36,6 @@ public class UserRecommendController {
             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
         List<SubjectDocument> recommend = userService.getObjectForRecommend(page, size);
         return CustomResponse.generateResponse(HttpStatus.OK, recommend.stream()
-                .map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentDto.class)));
+                .map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentInfoDto.class)));
     }
 }

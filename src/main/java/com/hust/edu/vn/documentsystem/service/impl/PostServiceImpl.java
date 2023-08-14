@@ -6,6 +6,7 @@ import com.hust.edu.vn.documentsystem.data.dto.PageDto;
 import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
+import com.hust.edu.vn.documentsystem.dto.PostInfoDto;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.repository.*;
 import com.hust.edu.vn.documentsystem.service.DocumentService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,7 +37,7 @@ public class PostServiceImpl implements PostService {
     private final CommentPostRepository commentPostRepository;
     private final DocumentService documentService;
 
-    
+
     public PostServiceImpl(
             PostRepository postRepository,
             UserRepository userRepository,
@@ -57,16 +59,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PageDto<PostDto> getAllPostForHomePage(int page, int size) {
-        Sort sort = Sort.by("id").descending();
-        PageRequest pageRequest = PageRequest.of(page, size, sort);
+    public PageDto<PostInfoDto> getAllPostForHomePage(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
         Page<Post> pages = postRepository.findAll(pageRequest);
-        List<Post> posts = postRepository.getPostForHomePage(pageRequest);
-        PageDto<PostDto> pageResult = new PageDto<>();
+        List<PostInfoDto> posts = postRepository.getPostForHomePage(SecurityContextHolder.getContext().getAuthentication().getName(),pageRequest);
+        PageDto<PostInfoDto> pageResult = new PageDto<>();
         pageResult.setTotalPages(pages.getTotalPages());
         pageResult.setTotalItems(pages.getTotalElements());
-        pageResult.setItems(
-                posts.stream().map(post -> (PostDto) modelMapperUtils.mapAllProperties(post, PostDto.class)).toList());
+        pageResult.setItems(posts);
         return pageResult;
     }
 

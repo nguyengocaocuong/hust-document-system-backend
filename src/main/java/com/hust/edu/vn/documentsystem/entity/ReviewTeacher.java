@@ -41,5 +41,6 @@ public class ReviewTeacher {
     private List<CommentReviewTeacher> comments;
     @OneToMany(mappedBy = "reviewTeacher", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<ReportContentReviewTeacher> reportContents;
+    private String processMessage;
     private boolean isDelete = false;
 }

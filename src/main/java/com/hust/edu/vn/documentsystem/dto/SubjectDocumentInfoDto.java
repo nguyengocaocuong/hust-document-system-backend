@@ -1,30 +1,24 @@
-package com.hust.edu.vn.documentsystem.data.dto;
+package com.hust.edu.vn.documentsystem.dto;
 
+import com.hust.edu.vn.documentsystem.data.dto.*;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
- * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.Post} entity
+ * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.SubjectDocument} entity
  */
 @Data
-public class PostDto implements Serializable {
+public class SubjectDocumentInfoDto implements Serializable {
     private Long id;
-    private UserDto owner;
-    private String description;
+    private SubjectDocumentTypeDto subjectDocumentType;
     private DocumentDto document;
+    private String description;
+    private UserDto owner;
     private Date createdAt;
-    private SubjectForPostDto subject;
-    private boolean isHidden;
-    private List<CommentPostDto> comments = new ArrayList<>();
-    private List<AnswerPostDto> answers = new ArrayList<>();
-    private List<FavoritePostDto> favorites = new ArrayList<>();
-
-
-
+    private Date deletedAt;
+    private SubjectDto subject;
     /**
      * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.User} entity
      */
@@ -43,12 +37,13 @@ public class PostDto implements Serializable {
     @Data
     public static class DocumentDto implements Serializable{
         private Long id;
-        private String path;
+        private String thumbnail;
     }
 
     /**
      * A DTO for the {@link com.hust.edu.vn.documentsystem.entity.Subject} entity
      */
+    @Data
     private static class SubjectDto implements  Serializable{
         private Long id;
         private String name;

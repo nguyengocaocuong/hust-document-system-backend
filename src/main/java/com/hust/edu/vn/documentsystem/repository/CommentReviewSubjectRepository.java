@@ -41,7 +41,7 @@ public interface CommentReviewSubjectRepository extends JpaRepository<CommentRev
 
     @Query(value = """
             SELECT c FROM CommentReviewSubject c
-            WHERE c.score < 0
+            WHERE c.score < 0 AND c.isHidden = false
             """)
     List<CommentReviewSubject> findAllBadComments();
 }

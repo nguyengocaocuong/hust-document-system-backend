@@ -140,7 +140,7 @@ public interface SubjectDocumentRepository extends JpaRepository<SubjectDocument
                                     'english',
                                     (
                                         SELECT
-                                            string_agg(part, ' & ') AS trigram_sequence
+                                            string_agg(part, ' | ') AS trigram_sequence
                                         FROM
                                             (
                                                 SELECT

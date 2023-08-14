@@ -182,7 +182,9 @@ public class UserSubjectDocumentController {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
             for (Blob blob : blobs) {
-                ZipEntry zipEntry = new ZipEntry(blob.getName());
+                String[] parts = blob.getName().split("/");
+                String fileNameWithExtension = parts[parts.length - 1];
+                ZipEntry zipEntry = new ZipEntry(fileNameWithExtension);
                 zipOutputStream.putNextEntry(zipEntry);
                 zipOutputStream.write(blob.getContent());
                 zipOutputStream.closeEntry();

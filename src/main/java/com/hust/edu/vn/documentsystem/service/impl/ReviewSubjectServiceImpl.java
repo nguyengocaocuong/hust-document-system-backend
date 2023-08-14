@@ -60,7 +60,7 @@ public class ReviewSubjectServiceImpl implements ReviewSubjectService {
 
     @Override
     public List<ReviewSubject> getAllReviewSubjects() {
-        return reviewSubjectRepository.findAllByDone(true);
+        return reviewSubjectRepository.findAllByDoneAndApproved(true, ApproveType.APPROVED);
     }
 
     @Override

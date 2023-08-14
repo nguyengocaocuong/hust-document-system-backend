@@ -13,7 +13,6 @@ import com.itextpdf.text.DocumentException;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -203,7 +202,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public List<ReviewSubject> getAllReviewSubjects() {
-        return reviewSubjectRepository.findAllByDone(true);
+        return reviewSubjectRepository.findAllByDoneAndApproved(true, ApproveType.APPROVED);
     }
 
     @Override

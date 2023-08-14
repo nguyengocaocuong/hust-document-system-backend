@@ -10,14 +10,7 @@ import java.util.List;
 
 public interface ReviewTeacherRepository extends JpaRepository<ReviewTeacher, Long> {
 
-    @Query("""
-            SELECT rt
-            FROM ReviewTeacher rt
-            WHERE rt.done = true
-            AND rt.hidden = false
-            ORDER BY rt.createdAt
-            """)
-    List<ReviewTeacher> findAllReviewTeacher();
+    List<ReviewTeacher> findAllByDoneAndApproved(boolean done, ApproveType approveType);
 
     @Query(value = """
             SELECT rt FROM

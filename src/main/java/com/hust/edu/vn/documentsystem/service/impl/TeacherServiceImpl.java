@@ -1,5 +1,6 @@
 package com.hust.edu.vn.documentsystem.service.impl;
 
+import com.hust.edu.vn.documentsystem.common.type.ApproveType;
 import com.hust.edu.vn.documentsystem.common.type.ReportStatus;
 import com.hust.edu.vn.documentsystem.data.dto.TeacherDto;
 import com.hust.edu.vn.documentsystem.data.model.ReportContentReviewTeacherModel;
@@ -62,7 +63,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<ReviewTeacher> findAllReviewTeacher() {
-        return reviewTeacherRepository.findAllReviewTeacher();
+        return reviewTeacherRepository.findAllByDoneAndApproved(true, ApproveType.APPROVED);
     }
 
     @Override

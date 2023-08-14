@@ -5,6 +5,7 @@ import com.hust.edu.vn.documentsystem.data.dto.PageDto;
 import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.CommentPostModel;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
+import com.hust.edu.vn.documentsystem.dto.PostInfoDto;
 import com.hust.edu.vn.documentsystem.entity.CommentPost;
 import com.hust.edu.vn.documentsystem.entity.Post;
 
@@ -12,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface PostService {
-    PageDto<PostDto> getAllPostForHomePage(int page, int size);
+    PageDto<PostInfoDto> getAllPostForHomePage(int page, int size);
 
     Post getPostById(Long id);
 

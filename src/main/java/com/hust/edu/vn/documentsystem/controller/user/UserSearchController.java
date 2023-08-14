@@ -21,11 +21,9 @@ import java.util.List;
 @Slf4j
 public class UserSearchController {
     private final SearchService searchService;
-    private final ModelMapperUtils modelMapperUtils;
 
-    public UserSearchController(SearchService searchService, ModelMapperUtils modelMapperUtils) {
+    public UserSearchController(SearchService searchService) {
         this.searchService = searchService;
-        this.modelMapperUtils = modelMapperUtils;
     }
 
     @GetMapping("search-subject-document")

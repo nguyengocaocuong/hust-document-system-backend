@@ -52,8 +52,6 @@ public class SearchServiceImpl implements SearchService {
         }
         List<Object[]> results = subjectDocumentRepository.findAllSubjectDocumentBySearchOption(StringUtils.removeDiacritics(key), semester, semester.size(), subjectDocumentType, subjectDocumentType.size(), subject,subject.size(), institute, institute.size(), user.getId(), deepSearch, fuzzySearch);
         List<SubjectDocumentSearchResult> subjectDocuments = new ArrayList<>();
-        log.info("key: {}",key);
-        log.info("size: {}", results.size());
         results.forEach( objects -> {
             SubjectDocumentSearchResult subjectDocument = new SubjectDocumentSearchResult();
             subjectDocument.setId((Long) objects[0]);

@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface ReviewSubjectRepository extends JpaRepository<ReviewSubject, Long> {
 
-    List<ReviewSubject> findAllByDone(boolean isDone);
+    List<ReviewSubject> findAllByDoneAndApproved(boolean isDone, ApproveType approveType);
 
 
     @Query(value = "SELECT rs FROM ReviewSubject rs WHERE rs.owner.email = :email")

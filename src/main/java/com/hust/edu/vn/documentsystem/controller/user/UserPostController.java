@@ -1,11 +1,14 @@
 package com.hust.edu.vn.documentsystem.controller.user;
 
 import com.hust.edu.vn.documentsystem.common.CustomResponse;
-import com.hust.edu.vn.documentsystem.data.dto.*;
+import com.hust.edu.vn.documentsystem.data.dto.PageDto;
+import com.hust.edu.vn.documentsystem.data.dto.PostDto;
 import com.hust.edu.vn.documentsystem.data.model.PostModel;
+import com.hust.edu.vn.documentsystem.dto.PostInfoDto;
 import com.hust.edu.vn.documentsystem.entity.*;
 import com.hust.edu.vn.documentsystem.service.PostService;
 import com.hust.edu.vn.documentsystem.utils.ModelMapperUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/posts")
+@Slf4j
 public class UserPostController {
     private final PostService postService;
     private final ModelMapperUtils modelMapperUtils;
@@ -26,7 +30,7 @@ public class UserPostController {
     public ResponseEntity<CustomResponse> getAllPosts(
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "8") int size) {
-        PageDto<PostDto> pageResult = postService.getAllPostForHomePage(page, size);
+        PageDto<PostInfoDto> pageResult = postService.getAllPostForHomePage(page, size);
         return CustomResponse.generateResponse(HttpStatus.OK, "Danh sách bài viết của bạn", pageResult);
     }
 
