@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -241,7 +244,47 @@ public class UserServiceImpl implements UserService {
         PageRequest pageRequest = PageRequest.of(page, size);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email);
-        return userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest);
+
+        Date currentDate = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+        Date oneWeekAgo = calendar.getTime();
+        List<Long> fs = userRepository.getCurrentAccessSubject(user.getId(), currentDate, oneWeekAgo);
+        List<Long> hs = userRepository.getCurrentView(user.getId(), currentDate, oneWeekAgo);
+        List<Long> es = userRepository.getEnrollmentSubject(user.getId());
+        Map<Long, Float> result = new HashMap<>();
+        log.info(fs.toString());
+        log.info(hs.toString());
+        log.info(es.toString());
+        for(int i = 0;i < fs.size();i++){
+            if(fs.get(i) != null && result.get(fs.get(i)) != null){
+                result.replace(fs.get(i),result.get(fs.get(i)) + 1 );
+            }
+            else result.put(fs.get(i),1f);
+        }
+        for(int i = 0;i < hs.size();i++){
+            if(hs.get(i) != null && result.get(hs.get(i)) != null){
+                result.replace(hs.get(i),result.get(hs.get(i)) + 2 );
+            }
+            else result.put(hs.get(i),2f);
+        }
+        for(int i = 0;i < es.size();i++){
+            if(es.get(i) != null && result.get(es.get(i)) != null){
+                result.replace(es.get(i),result.get(es.get(i)) + 1 );
+            }
+            else result.put(es.get(i),1f);
+        }
+
+        List<Long> topKeys = result.entrySet()
+                .stream()
+                .sorted(Map.Entry.<Long, Float>comparingByValue().reversed())
+                .limit(3)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        log.info(topKeys.toString());
+        return userRepository.getSubjectDocumentForRecommend(user.getId(), pageRequest, topKeys);
     }
 
     @Override

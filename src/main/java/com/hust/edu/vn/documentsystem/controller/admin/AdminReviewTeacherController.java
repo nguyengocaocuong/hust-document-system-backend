@@ -54,8 +54,8 @@ public class AdminReviewTeacherController {
     }
 
     @PatchMapping("{reviewTeacherId}/reject")
-    public ResponseEntity<CustomResponse> rejectReviewSubject(@PathVariable("reviewTeacherId") Long reviewTeacherId){
-        ReviewTeacher reviewTeacher = reviewTeacherService.rejectReviewTeacher(reviewTeacherId);
+    public ResponseEntity<CustomResponse> rejectReviewSubject(@PathVariable("reviewTeacherId") Long reviewTeacherId, @RequestParam(value = "processMessage", required = false) String processMessage){
+        ReviewTeacher reviewTeacher = reviewTeacherService.rejectReviewTeacher(reviewTeacherId, processMessage);
         if(reviewTeacher == null) return CustomResponse.generateResponse(HttpStatus.NOT_FOUND);
         reviewTeacher.setReportContents(null);
         reviewTeacher.setFavorites(null);

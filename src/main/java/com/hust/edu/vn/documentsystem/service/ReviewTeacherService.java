@@ -33,7 +33,7 @@ public interface ReviewTeacherService {
 
     ReviewTeacher approveReviewTeacher(Long reviewTeacherId);
 
-    ReviewTeacher rejectReviewTeacher(Long reviewTeacherId);
+    ReviewTeacher rejectReviewTeacher(Long reviewTeacherId, String processMessage);
 
     boolean hiddenCommentReviewTeacher(Long commentId);
 

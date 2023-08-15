@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class UserRecommendController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "5") int size) {
         List<SubjectDocument> recommend = userService.getObjectForRecommend(page, size);
+
         return CustomResponse.generateResponse(HttpStatus.OK, recommend.stream()
                 .map(subjectDocument -> modelMapperUtils.mapAllProperties(subjectDocument, SubjectDocumentInfoDto.class)));
     }

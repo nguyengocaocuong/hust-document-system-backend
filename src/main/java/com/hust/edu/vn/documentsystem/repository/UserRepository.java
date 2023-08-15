@@ -59,9 +59,42 @@ public interface UserRepository extends JpaRepository<User, Long> {
             AND fs.user.id = :userId
             WHERE sd.owner.id != :userId 
             AND (sd.isPublic = true OR sp.user.id = :userId)
-            ORDER BY fs.id, sd.id DESC
+            ORDER BY CASE WHEN sd.subject.id IN (:preSubjectId) THEN 1 END,fs.id, sd.id DESC
             """
     )
-    List<SubjectDocument> getSubjectDocumentForRecommend(Long userId, PageRequest pageRequest);
+    List<SubjectDocument> getSubjectDocumentForRecommend(Long userId, PageRequest pageRequest, List<Long> preSubjectId);
 
+
+    @Query("""
+   SELECT  fs.subject.id
+    FROM FavoriteSubject fs
+    WHERE fs.user.id = :userId AND fs.createAt BETWEEN :endDate AND :startDate
+    GROUP BY fs.subject.id
+    ORDER BY COUNT(fs.id) DESC
+    LIMIT 3
+""")
+    List<Long> getCurrentAccessSubject(Long userId, Date startDate, Date endDate);
+
+    @Query("""
+   SELECT s.id
+    FROM History h
+    JOIN SubjectDocument sd
+    ON sd.id = h.subjectDocument.id
+    JOIN Subject s
+    ON s.id = sd.subject.id
+    WHERE h.user.id = :userId AND h.createdAt BETWEEN :endDate AND :startDate
+    GROUP BY s.id
+    ORDER BY COUNT(s.id) DESC
+    LIMIT 3
+""")
+    List<Long> getCurrentView(Long userId, Date startDate, Date endDate);
+
+    @Query("""
+            SELECT DISTINCT s.id
+            FROM Subject s
+            JOIN Enrollment e
+            ON e.subject.id = s.id
+            WHERE e.user.id = :userId
+            """)
+    List<Long> getEnrollmentSubject(Long userId);
 }

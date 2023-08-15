@@ -140,9 +140,10 @@ public class ReviewTeacherServiceImpl implements ReviewTeacherService {
     }
 
     @Override
-    public ReviewTeacher rejectReviewTeacher(Long reviewTeacherId) {
+    public ReviewTeacher rejectReviewTeacher(Long reviewTeacherId, String processMessage) {
         ReviewTeacher reviewTeacher = reviewTeacherRepository.findByIdAndApproved(reviewTeacherId, ApproveType.NEW);
         if(reviewTeacher == null) {return null;}
+        reviewTeacher.setProcessMessage(processMessage);
         reviewTeacher.setApproved(ApproveType.REJECT);
         return reviewTeacherRepository.save(reviewTeacher);
     }

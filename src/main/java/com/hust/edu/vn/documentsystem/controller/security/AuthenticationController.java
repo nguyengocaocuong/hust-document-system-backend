@@ -37,7 +37,6 @@ public class AuthenticationController {
 
     private final ModelMapperUtils modelMapperUtils;
 
-    private final ThumbnailService thumbnailService;
     private final GoogleLanguageService googleLanguageService;
 
 
@@ -47,13 +46,12 @@ public class AuthenticationController {
             CustomUserDetailsService userDetailsService,
             UserService userService,
             JwtUtils jwtUtils,
-            ModelMapperUtils modelMapperUtils, ThumbnailService thumbnailService, GoogleLanguageService googleLanguageService) {
+            ModelMapperUtils modelMapperUtils,  GoogleLanguageService googleLanguageService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.modelMapperUtils = modelMapperUtils;
-        this.thumbnailService = thumbnailService;
         this.googleLanguageService = googleLanguageService;
     }
 
